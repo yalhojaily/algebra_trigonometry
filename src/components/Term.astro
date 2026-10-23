@@ -1,0 +1,10 @@
+---
+// مصطلح عربي مع مقابله الإنجليزي
+interface Props { ar: string; en: string }
+const { ar, en } = Astro.props;
+---
+<dfn class="term">{ar} <span class="en" lang="en" dir="ltr">({en})</span></dfn>
+<style>
+  .term { font-style: normal; font-weight: 700; }
+  .term .en { font-weight: 400; color: var(--muted); }
+</style>

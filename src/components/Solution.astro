@@ -1,0 +1,46 @@
+---
+// خطوات الحل، تُكشف واحدة تلو الأخرى (وتظهر كلها دون JavaScript)
+---
+<div class="solution" data-steps>
+  <p class="sol-head">الحل</p>
+  <slot />
+  <div class="ctrl" hidden>
+    <button type="button" class="btn small primary" data-next>الخطوة التالية</button>
+    <button type="button" class="btn small" data-all>أظهر الحل كاملًا</button>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-steps]').forEach((box) => {
+    const steps = Array.from(
+      box.querySelectorAll<HTMLElement>(':scope > ol > li, :scope > ul > li, :scope > p:not(.sol-head), :scope > .katex-display, :scope > figure, :scope > table'),
+    );
+    if (steps.length < 3) return;
+    const ctrl = box.querySelector<HTMLElement>('.ctrl')!;
+    const next = ctrl.querySelector<HTMLButtonElement>('[data-next]')!;
+    const all = ctrl.querySelector<HTMLButtonElement>('[data-all]')!;
+    let shown = 1;
+    const paint = () => {
+      steps.forEach((s, k) => s.classList.toggle('step-hidden', k >= shown));
+      ctrl.hidden = shown >= steps.length;
+      next.textContent = `الخطوة التالية (${shown} من ${steps.length})`;
+    };
+    next.addEventListener('click', () => { shown++; paint(); });
+    all.addEventListener('click', () => { shown = steps.length; paint(); });
+    paint();
+  });
+</script>
+
+<style>
+  .solution {
+    margin: 0.8rem 0 0;
+    padding: 0.4rem 1rem 0.6rem;
+    border-inline-start: 2px dashed var(--accent);
+  }
+  .sol-head { margin: 0; font: 700 0.85rem var(--font-head); color: var(--accent); }
+  .solution :global(p) { margin: 0.45rem 0; }
+  .solution :global(ol), .solution :global(ul) { margin: 0.4rem 0; padding-inline-start: 1.4rem; }
+  .solution :global(li) { margin: 0.35rem 0; }
+  .solution :global(.step-hidden) { display: none !important; }
+  .ctrl { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.6rem; }
+</style>

@@ -1,0 +1,63 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { lessonSlug } from '../data/curriculum';
+const base = import.meta.env.BASE_URL;
+const lessons = (await getCollection('lessons')).sort((a, b) => a.data.section.localeCompare(b.data.section, 'en', { numeric: true }));
+const terms = lessons.flatMap((l) => l.data.terms.map((t) => ({ ...t, section: l.data.section })));
+const sorted = [...terms].sort((a, b) => a.ar.localeCompare(b.ar, 'ar'));
+---
+<Base title="المصطلحات | الجبر وعلم المثلثات" description="قاموس المصطلحات العربية والإنجليزية في الجبر وعلم المثلثات.">
+  <div class="wrap">
+    <h1>المصطلحات</h1>
+    <p class="lede">كل مصطلح بالعربية ومقابله الإنجليزي كما يرد في الكتاب، مع تعريف مختصر ورابط للدرس الذي شُرح فيه. يتوسع القاموس مع كل فصل جديد.</p>
+    <label class="search">
+      <span class="sr">ابحث في المصطلحات</span>
+      <input type="text" placeholder="ابحث بالعربية أو بالإنجليزية…" data-filter />
+    </label>
+    <p class="count"><span data-n>{sorted.length}</span> مصطلحًا</p>
+    <dl class="list">
+      {sorted.map((t) => (
+        <div class="row" data-text={`${t.ar} ${t.en} ${t.def}`.toLowerCase()}>
+          <dt>
+            <span class="ar">{t.ar}</span>
+            <span class="en" lang="en" dir="ltr">{t.en}</span>
+          </dt>
+          <dd>
+            {t.def}
+            <a href={`${base}lessons/${lessonSlug(t.section)}/`}>{t.section}</a>
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+  <script>
+    const input = document.querySelector<HTMLInputElement>('[data-filter]')!;
+    const rows = Array.from(document.querySelectorAll<HTMLElement>('.row'));
+    const n = document.querySelector('[data-n]')!;
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      let k = 0;
+      rows.forEach((r) => {
+        const show = !q || r.dataset.text!.includes(q);
+        r.hidden = !show;
+        if (show) k++;
+      });
+      n.textContent = String(k);
+    });
+  </script>
+</Base>
+<style>
+  .wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1rem 0; }
+  .lede { color: var(--muted); max-width: 60ch; }
+  .search input { width: 100%; font-family: var(--font-body); font-size: 1.1rem; }
+  .count { color: var(--muted); font-size: 0.9rem; margin: 0.5rem 0 1rem; }
+  .list { margin: 0; }
+  .row { display: grid; grid-template-columns: minmax(12rem, 16rem) 1fr; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--line); }
+  dt .ar { display: block; font-weight: 700; }
+  dt .en { color: var(--muted); }
+  dd { margin: 0; }
+  dd a { font: 600 0.8rem var(--font-en); margin-inline-start: 0.5rem; text-decoration: none; padding: 0.05rem 0.45rem; border: 1px solid var(--line); border-radius: 99px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (max-width: 600px) { .row { grid-template-columns: 1fr; gap: 0.2rem; } }
+</style>

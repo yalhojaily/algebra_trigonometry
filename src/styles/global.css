@@ -1,0 +1,204 @@
+/* ===== الرموز اللونية ===== */
+:root {
+  --paper: #f5f7fa;
+  --surface: #ffffff;
+  --ink: #172033;
+  --muted: #5a6478;
+  --line: #dbe1ea;
+  --grid: rgba(23, 32, 51, 0.045);
+  --accent: #0b6e6e;
+  --accent-ink: #ffffff;
+  --accent-soft: #e0f0ef;
+  --def: #3446b8;
+  --def-soft: #e9ecfa;
+  --rule: #0b6e6e;
+  --rule-soft: #e0f0ef;
+  --warn: #8f5400;
+  --warn-soft: #fbf0dc;
+  --err: #b3261e;
+  --err-soft: #fbe8e6;
+  --ok: #1e7b3a;
+  --ok-soft: #e3f3e7;
+  --plot-curve: #0b6e6e;
+  --plot-alt: #3446b8;
+  --plot-hot: #c2410c;
+
+  --font-body: 'Noto Naskh Arabic', 'Noto Sans', serif;
+  --font-head: 'Noto Kufi Arabic', 'Noto Sans', sans-serif;
+  --font-en: 'Noto Sans', sans-serif;
+  --font-mono: 'Noto Sans Mono', monospace;
+
+  --radius-s: 6px;
+  --radius-m: 10px;
+  --measure: 70ch;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #0e141f;
+    --surface: #151d2b;
+    --ink: #e4e9f2;
+    --muted: #9aa5b8;
+    --line: #2a3547;
+    --grid: rgba(228, 233, 242, 0.04);
+    --accent: #4fc7c0;
+    --accent-ink: #062222;
+    --accent-soft: #12302f;
+    --def: #9aa6ff;
+    --def-soft: #1c2347;
+    --rule: #4fc7c0;
+    --rule-soft: #12302f;
+    --warn: #f0b35a;
+    --warn-soft: #33260f;
+    --err: #ff8a80;
+    --err-soft: #3a1a18;
+    --ok: #6fd38c;
+    --ok-soft: #13301d;
+    --plot-curve: #4fc7c0;
+    --plot-alt: #9aa6ff;
+    --plot-hot: #fb923c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  --paper: #0e141f;
+  --surface: #151d2b;
+  --ink: #e4e9f2;
+  --muted: #9aa5b8;
+  --line: #2a3547;
+  --grid: rgba(228, 233, 242, 0.04);
+  --accent: #4fc7c0;
+  --accent-ink: #062222;
+  --accent-soft: #12302f;
+  --def: #9aa6ff;
+  --def-soft: #1c2347;
+  --rule: #4fc7c0;
+  --rule-soft: #12302f;
+  --warn: #f0b35a;
+  --warn-soft: #33260f;
+  --err: #ff8a80;
+  --err-soft: #3a1a18;
+  --ok: #6fd38c;
+  --ok-soft: #13301d;
+  --plot-curve: #4fc7c0;
+  --plot-alt: #9aa6ff;
+  --plot-hot: #fb923c;
+  color-scheme: dark;
+}
+
+/* ===== الأساس ===== */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.95;
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-head);
+  line-height: 1.5;
+  font-weight: 700;
+  margin: 0;
+}
+h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.2rem; }
+a { color: var(--accent); text-underline-offset: 0.25em; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+img, svg, canvas { max-width: 100%; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 2.5rem 0; }
+
+/* المصطلح الإنجليزي داخل النص العربي */
+.en, [lang='en'] {
+  font-family: var(--font-en);
+  font-size: 0.86em;
+  unicode-bidi: isolate;
+}
+
+/* الرياضيات دائمًا من اليسار لليمين */
+.katex { direction: ltr; unicode-bidi: isolate; font-size: 1.08em; }
+.katex-display {
+  direction: ltr;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.6rem 0.25rem;
+  margin: 1rem 0;
+}
+.katex-display > .katex { font-size: 1.15em; }
+.ltr { direction: ltr; unicode-bidi: isolate; }
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: 1rem;
+  top: -4rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-s);
+  z-index: 100;
+}
+.skip-link:focus { top: 1rem; }
+
+/* ===== الأزرار والحقول ===== */
+.btn {
+  font: 600 0.95rem/1 var(--font-head);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 0.7rem 1.1rem;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.small { padding: 0.45rem 0.8rem; font-size: 0.85rem; }
+
+input[type='text'], select {
+  font: 1.05rem var(--font-en);
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  padding: 0.55rem 0.75rem;
+}
+input[type='text']:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+input[type='range'] { accent-color: var(--accent); width: 100%; }
+
+.tag-soon {
+  font: 600 0.75rem/1 var(--font-head);
+  color: var(--warn);
+  background: var(--warn-soft);
+  padding: 0.35rem 0.6rem;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* الأسطر الإنجليزية المستقلة تبقى محاذاة لبداية الصفحة العربية (اليمين) */
+p[dir='ltr'], div[dir='ltr'].en { text-align: right; }
+
+details.derive {
+  margin: 1.2rem 0;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  background: var(--surface);
+}
+details.derive summary { cursor: pointer; font: 600 0.95rem var(--font-head); color: var(--accent); }
+details.derive[open] summary { margin-bottom: 0.5rem; }
+input[type='range'] { direction: ltr; }
+/* لا نكسر المعادلة القصيرة بين سطرين */
+.katex { white-space: nowrap; }

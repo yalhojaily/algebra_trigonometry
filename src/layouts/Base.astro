@@ -1,0 +1,157 @@
+---
+import 'katex/dist/katex.min.css';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = 'شرح عربي تفاعلي لكتاب الجبر الجامعي وعلم المثلثات، مع المصطلحات الإنجليزية.' } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const path = Astro.url.pathname;
+const isActive = (p: string) => path.startsWith(base + p);
+---
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@500;600;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Sans:ital,wght@0,400;0,600;1,400&family=Noto+Sans+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">تخطَّ إلى المحتوى</a>
+    <header class="site-header">
+      <div class="bar">
+        <a class="brand" href={base}>
+          <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M3 27 H29 M5 5 V29" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" />
+            <path d="M7 24 Q16 -6 27 24" stroke="var(--accent)" stroke-width="2.6" fill="none" stroke-linecap="round" />
+          </svg>
+          <span>
+            <strong>الجبر وعلم المثلثات</strong>
+            <small class="en" lang="en">College Algebra &amp; Trigonometry</small>
+          </span>
+        </a>
+        <nav aria-label="التنقل الرئيسي">
+          <a href={base} aria-current={path === base ? 'page' : undefined}>الفصول</a>
+          <a href={`${base}glossary/`} aria-current={isActive('glossary') ? 'page' : undefined}>المصطلحات</a>
+          <button class="theme-toggle" type="button" aria-label="تبديل الوضع الليلي" title="الوضع الليلي">
+            <svg class="i-moon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" fill="currentColor" /></svg>
+            <svg class="i-sun" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor" /><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" /></g></svg>
+          </button>
+        </nav>
+      </div>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <p>شرح مستقل مبني على فهرس كتاب <span class="en" lang="en">College Algebra and Trigonometry</span>. المحتوى مكتوب بصياغة خاصة لأغراض التعلّم.</p>
+    </footer>
+
+    <script>
+      const btn = document.querySelector<HTMLButtonElement>('.theme-toggle')!;
+      const root = document.documentElement;
+      const current = () =>
+        root.getAttribute('data-theme') ??
+        (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      btn.addEventListener('click', () => {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try { localStorage.setItem('theme', next); } catch {}
+        window.dispatchEvent(new CustomEvent('themechange'));
+      });
+      matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () =>
+        window.dispatchEvent(new CustomEvent('themechange')),
+      );
+    </script>
+
+    <style>
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: color-mix(in srgb, var(--paper) 88%, transparent);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--line);
+      }
+      .bar {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 0.6rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .brand span { display: flex; flex-direction: column; line-height: 1.35; }
+      .brand strong { font-family: var(--font-head); font-size: 1rem; }
+      .brand small { color: var(--muted); font-size: 0.72rem; }
+      nav { display: flex; align-items: center; gap: 0.25rem; }
+      nav a {
+        font: 600 0.92rem var(--font-head);
+        color: var(--muted);
+        text-decoration: none;
+        padding: 0.45rem 0.75rem;
+        border-radius: var(--radius-s);
+      }
+      nav a:hover, nav a[aria-current='page'] { color: var(--ink); background: var(--surface); }
+      .theme-toggle {
+        margin-inline-start: 0.35rem;
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--ink);
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      .theme-toggle:hover { border-color: var(--accent); }
+      .i-sun { display: none; }
+      :global([data-theme='dark']) .i-sun { display: block; }
+      :global([data-theme='dark']) .i-moon { display: none; }
+      @media (prefers-color-scheme: dark) {
+        :global(:root:not([data-theme='light'])) .i-sun { display: block; }
+        :global(:root:not([data-theme='light'])) .i-moon { display: none; }
+      }
+      .site-footer {
+        border-top: 1px solid var(--line);
+        margin-top: 4rem;
+        padding: 2rem 1rem;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .site-footer p { max-width: 60ch; margin: 0 auto; }
+      @media (max-width: 560px) {
+        .brand small { display: none; }
+        nav a { padding: 0.4rem 0.5rem; }
+      }
+    </style>
+  </body>
+</html>

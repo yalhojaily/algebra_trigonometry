@@ -1,0 +1,63 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-ext" title="من أين يأتي الحل الدخيل؟" en="Extraneous solutions">
+  <div class="controls">
+    <label><span class="ltr">a = <output data-o="a"></output></span><input type="range" min="-4" max="10" step="1" value="7" data-i="a" /></label>
+    <label><span class="ltr">b = <output data-o="b"></output></span><input type="range" min="-4" max="6" step="1" value="5" data-i="b" /></label>
+  </div>
+  <canvas aria-label="رسم طرفي المعادلة الجذرية"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--plot-curve)"></i><span class="ltr">y = √(x + a)</span></span>
+    <span><i style="background:var(--plot-alt)"></i><span class="ltr">y = x − b</span></span>
+    <span><i style="background:var(--plot-hot)"></i><span class="ltr">y = −(x − b)</span> «الشبح» الذي يضيفه التربيع</span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  import { poly } from '../../lib/gen';
+
+  const root = document.getElementById('w-ext')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -6, xmax: 14, ymin: -6, ymax: 8 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+
+  function draw() {
+    const a = v('a'), b = v('b');
+    for (const k of ['a', 'b']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    plot.fit(0.62);
+    plot.clear();
+    plot.grid(1, 2);
+    plot.fn((x) => -(x - b), css('--plot-hot'), 2, [6, 5]);
+    plot.fn((x) => x - b, css('--plot-alt'), 2.5);
+    plot.fn((x) => (x + a >= 0 ? Math.sqrt(x + a) : NaN), css('--plot-curve'), 3);
+    // التربيع: x + a = (x − b)² ⇒ x² − (2b + 1)x + (b² − a) = 0
+    const B = -(2 * b + 1), C = b * b - a;
+    const D = B * B - 4 * C;
+    const sq = `$${poly([1, B, C])} = 0$`;
+    const lines = [`<p>المعادلة: ${tex(`$\\sqrt{${poly([1, a])}} = ${poly([1, -b])}$`)}. بعد التربيع: ${tex(sq)}</p>`];
+    if (D < 0) lines.push('<p>المعادلة بعد التربيع ليس لها حلول حقيقية، فلا تقاطع.</p>');
+    else {
+      const rs = [...new Set([(-B - Math.sqrt(D)) / 2, (-B + Math.sqrt(D)) / 2].map((r) => +r.toFixed(9)))];
+      rs.forEach((r) => {
+        const ok = r + a >= 0 && r - b >= -1e-9 && Math.abs(Math.sqrt(r + a) - (r - b)) < 1e-7;
+        plot.dot(r, Math.sqrt(Math.max(r + a, 0)), ok ? css('--ok') : css('--plot-hot'), 6, !ok);
+        lines.push(
+          `<p>${tex(`$x = ${fmt(r)}$`)}: ${
+            ok
+              ? '<strong style="color:var(--ok)">حل صحيح</strong> لأن المنحنى يلتقي بالمستقيم الحقيقي.'
+              : `<strong style="color:var(--err)">حل دخيل</strong>: الطرف الأيمن ${tex(`$${fmt(r - b)}$`)} سالب، والجذر لا يعطي قيمة سالبة. هذا التقاطع مع «الشبح» فقط.`
+          }</p>`,
+        );
+      });
+    }
+    lines.push('<p>التربيع لا يميّز بين ' + tex('$u = v$') + ' و ' + tex('$u = -v$') + '، لذلك يضيف تقاطعات وهمية. الحل: تحقق دائمًا بالتعويض في المعادلة الأصلية.</p>');
+    out.innerHTML = lines.join('');
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

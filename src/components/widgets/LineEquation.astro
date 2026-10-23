@@ -1,0 +1,53 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-line-eq" title="المعادلة الخطية كتقاطع مستقيمين" en="ax + b = cx + d">
+  <div class="controls" data-w="line-eq">
+    <label><span class="ltr">a = <output data-o="a"></output></span><input type="range" min="-4" max="4" step="1" value="2" data-i="a" /></label>
+    <label><span class="ltr">b = <output data-o="b"></output></span><input type="range" min="-6" max="6" step="1" value="-3" data-i="b" /></label>
+    <label><span class="ltr">c = <output data-o="c"></output></span><input type="range" min="-4" max="4" step="1" value="-1" data-i="c" /></label>
+    <label><span class="ltr">d = <output data-o="d"></output></span><input type="range" min="-6" max="6" step="1" value="3" data-i="d" /></label>
+  </div>
+  <canvas aria-label="رسم الطرفين الأيسر والأيمن كمستقيمين"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--plot-curve)"></i>الطرف الأيسر <span class="ltr">y = ax + b</span></span>
+    <span><i style="background:var(--plot-alt)"></i>الطرف الأيمن <span class="ltr">y = cx + d</span></span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  import { poly, frac } from '../../lib/gen';
+
+  const root = document.getElementById('w-line-eq')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -10, xmax: 10, ymin: -10, ymax: 10 });
+  const val = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+
+  function draw() {
+    const a = val('a'), b = val('b'), c = val('c'), d = val('d');
+    for (const k of ['a', 'b', 'c', 'd']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(val(k));
+    plot.fit(0.6);
+    plot.clear();
+    plot.grid(1, 2);
+    plot.fn((x) => a * x + b, css('--plot-curve'), 3);
+    plot.fn((x) => c * x + d, css('--plot-alt'), 3, [8, 5]);
+    const eq = `$${poly([a, b])} = ${poly([c, d])}$`;
+    let html = `<p>المعادلة: ${tex(eq)}</p><p>بعد التجميع: ${tex(`$${poly([a - c, 0]).replace(/^0$/, '0x')} = ${d - b}$`)}</p>`;
+    if (a !== c) {
+      const x = (d - b) / (a - c);
+      plot.dot(x, a * x + b);
+      html += `<p><strong>معادلة مشروطة <span class="en">(Conditional)</span>:</strong> المستقيمان يتقاطعان في نقطة واحدة، والحل ${tex(`$x = ${frac(d - b, a - c)}$`)}.</p>`;
+    } else if (b === d) {
+      html += `<p><strong>متطابقة <span class="en">(Identity)</span>:</strong> المستقيمان منطبقان، فكل عدد حقيقي حلٌّ. مجموعة الحل ${tex('$(-\\infty, \\infty)$')}.</p>`;
+    } else {
+      html += `<p><strong>تناقض <span class="en">(Contradiction)</span>:</strong> المستقيمان متوازيان لا يلتقيان، فلا حل. مجموعة الحل ${tex('$\\varnothing$')}.</p>`;
+    }
+    out.innerHTML = html;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

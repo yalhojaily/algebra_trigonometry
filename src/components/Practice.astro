@@ -1,0 +1,223 @@
+---
+// تمارين مولّدة عشوائيًا مع تصحيح فوري وتلميح وحل
+interface Props { set: string; count?: number }
+const { set, count = 5 } = Astro.props;
+---
+<section class="practice" data-set={set} data-count={count} aria-label="تمارين تفاعلية">
+  <header>
+    <h2 id="practice">تدرّب <span class="en" lang="en">Practice</span></h2>
+    <p class="meta">
+      <span>الأسئلة تتغير في كل مرة. النتيجة: <strong data-score>0</strong> صحيحة من <strong data-total>0</strong></span>
+      <button class="btn small" type="button" data-new>أسئلة جديدة</button>
+    </p>
+    <details class="howto">
+      <summary>كيف أكتب الإجابة؟</summary>
+      <p>
+        اكتب الأعداد بالأرقام: <code>3</code> أو <code>-2/5</code> أو <code>1.5</code>. الأعداد المركبة: <code>2-3i</code>.
+        الجذور: <code>sqrt(5)</code> أو <code>2√3</code>. عند وجود أكثر من حل افصل بينها بفاصلة: <code>4, -1</code> (الترتيب لا يهم).
+        إن لم يوجد حل اكتب <code>لا يوجد</code>.
+      </p>
+    </details>
+  </header>
+  <ol class="items" data-items></ol>
+  <noscript><p>التمارين تحتاج تفعيل JavaScript.</p></noscript>
+</section>
+
+<script>
+  import { ch1 } from '../lib/practice/ch1';
+  import { tex } from '../lib/tex';
+  import { parseList, sameSet } from '../lib/answer';
+  import type { Problem } from '../lib/gen';
+
+  const banks: Record<string, (() => Problem)[]> = { ...ch1 };
+
+  function render(sec: HTMLElement) {
+    const gens = banks[sec.dataset.set!];
+    const count = Number(sec.dataset.count);
+    const list = sec.querySelector<HTMLOListElement>('[data-items]')!;
+    const scoreEl = sec.querySelector('[data-score]')!;
+    const totalEl = sec.querySelector('[data-total]')!;
+    list.innerHTML = '';
+    let score = 0;
+    totalEl.textContent = String(count);
+    scoreEl.textContent = '0';
+
+    // نوزع الأسئلة على كل الأنواع قبل التكرار
+    const order: number[] = [];
+    while (order.length < count) {
+      const idx = gens.map((_, k) => k).sort(() => Math.random() - 0.5);
+      order.push(...idx);
+    }
+
+    order.slice(0, count).forEach((gi, n) => {
+      const p = gens[gi]();
+      const li = document.createElement('li');
+      li.className = 'item';
+      const uid = `${sec.dataset.set}-${n}-${Math.random().toString(36).slice(2, 7)}`;
+      let body = `<div class="q">${tex(p.prompt)}</div>`;
+      if (p.kind === 'values') {
+        body += `<form class="ans" novalidate>
+          <label class="sr" for="${uid}">إجابتك</label>
+          <input id="${uid}" type="text" dir="auto" autocomplete="off" spellcheck="false" placeholder="${p.placeholder ?? 'اكتب الإجابة'}" />
+          <button class="btn primary small" type="submit">تحقّق</button>
+        </form>`;
+      } else {
+        body += `<div class="choices" role="radiogroup">${p.choices
+          .map((ch, k) => `<button type="button" class="choice" data-k="${k}">${tex(ch)}</button>`)
+          .join('')}</div>`;
+      }
+      body += `<p class="fb" aria-live="polite"></p>
+        <div class="tools">
+          <button type="button" class="link" data-hint>تلميح</button>
+          <button type="button" class="link" data-sol>اعرض الحل</button>
+        </div>
+        <div class="hint" hidden>${tex(p.hint)}</div>
+        <div class="sol" hidden>${p.solution.map((s) => `<p>${tex(s)}</p>`).join('')}</div>`;
+      li.innerHTML = body;
+      list.appendChild(li);
+
+      const fb = li.querySelector<HTMLElement>('.fb')!;
+      let solved = false;
+      const mark = (ok: boolean, msg: string) => {
+        li.classList.toggle('ok', ok);
+        li.classList.toggle('bad', !ok);
+        fb.innerHTML = msg;
+        if (ok && !solved) {
+          solved = true;
+          score++;
+          scoreEl.textContent = String(score);
+        }
+      };
+
+      if (p.kind === 'values') {
+        const form = li.querySelector('form')!;
+        const input = form.querySelector('input')!;
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          if (!input.value.trim()) return mark(false, 'اكتب إجابة أولًا.');
+          try {
+            const given = parseList(input.value);
+            if (sameSet(given, p.answer)) mark(true, 'صحيح ✓');
+            else if (given.length !== new Set(p.answer.map((a) => `${a.re.toFixed(6)},${a.im.toFixed(6)}`)).size && p.answer.length > 0)
+              mark(false, `غير صحيح. عدد الحلول المتوقع: ${new Set(p.answer.map((a) => `${a.re.toFixed(6)},${a.im.toFixed(6)}`)).size}.`);
+            else mark(false, 'غير صحيح، حاول مرة أخرى أو اطلب تلميحًا.');
+          } catch (err) {
+            mark(false, `لم أفهم الإجابة: ${(err as Error).message}`);
+          }
+        });
+      } else {
+        li.querySelectorAll<HTMLButtonElement>('.choice').forEach((b) =>
+          b.addEventListener('click', () => {
+            li.querySelectorAll('.choice').forEach((x) => x.classList.remove('picked', 'right', 'wrong'));
+            const k = Number(b.dataset.k);
+            b.classList.add('picked', k === p.correct ? 'right' : 'wrong');
+            mark(k === p.correct, k === p.correct ? 'صحيح ✓' : 'غير صحيح، جرّب خيارًا آخر.');
+          }),
+        );
+      }
+      li.querySelector('[data-hint]')!.addEventListener('click', () => {
+        const h = li.querySelector<HTMLElement>('.hint')!;
+        h.hidden = !h.hidden;
+      });
+      li.querySelector('[data-sol]')!.addEventListener('click', () => {
+        const s = li.querySelector<HTMLElement>('.sol')!;
+        s.hidden = !s.hidden;
+      });
+    });
+  }
+
+  document.querySelectorAll<HTMLElement>('.practice').forEach((sec) => {
+    render(sec);
+    sec.querySelector('[data-new]')!.addEventListener('click', () => render(sec));
+  });
+</script>
+
+<style>
+  .practice {
+    margin: 3rem 0 1rem;
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--accent);
+    border-radius: var(--radius-m);
+  }
+  header h2 { margin-bottom: 0.25rem; }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin: 0 0 0.5rem;
+  }
+  .howto { font-size: 0.92rem; color: var(--muted); }
+  .howto summary { cursor: pointer; color: var(--accent); font-family: var(--font-head); font-size: 0.85rem; }
+  .howto code { direction: ltr; unicode-bidi: isolate; font-family: var(--font-mono); background: var(--paper); padding: 0 0.3rem; border-radius: 4px; }
+  .items { padding: 0; margin: 1rem 0 0; list-style: none; counter-reset: q; }
+  :global(.practice .item) {
+    counter-increment: q;
+    position: relative;
+    padding: 1rem 2.6rem 1rem 0;
+    border-top: 1px dashed var(--line);
+  }
+  :global(.practice .item::before) {
+    content: counter(q);
+    position: absolute;
+    inset-inline-start: 0;
+    top: 1rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    font: 600 0.85rem var(--font-head);
+  }
+  :global(.practice .item.ok::before) { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+  :global(.practice .item.bad::before) { background: var(--err-soft); border-color: var(--err); color: var(--err); }
+  :global(.practice .q) { margin-bottom: 0.6rem; }
+  :global(.practice .ans) { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  :global(.practice .ans input) { flex: 1 1 14rem; min-width: 0; }
+  :global(.practice .choices) { display: grid; gap: 0.5rem; }
+  :global(.practice .choice) {
+    text-align: start;
+    font: inherit;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-s);
+    padding: 0.5rem 0.85rem;
+    cursor: pointer;
+  }
+  :global(.practice .choice:hover) { border-color: var(--accent); }
+  :global(.practice .choice.right) { border-color: var(--ok); background: var(--ok-soft); }
+  :global(.practice .choice.wrong) { border-color: var(--err); background: var(--err-soft); }
+  :global(.practice .fb) { margin: 0.4rem 0 0; min-height: 1.4em; font-family: var(--font-head); font-size: 0.9rem; }
+  :global(.practice .item.ok .fb) { color: var(--ok); }
+  :global(.practice .item.bad .fb) { color: var(--err); }
+  :global(.practice .tools) { display: flex; gap: 1rem; }
+  :global(.practice .link) {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--accent);
+    font: 600 0.85rem var(--font-head);
+    cursor: pointer;
+  }
+  :global(.practice .hint), :global(.practice .sol) {
+    margin-top: 0.6rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: var(--radius-s);
+    font-size: 1rem;
+  }
+  :global(.practice .hint) { background: var(--warn-soft); }
+  :global(.practice .sol) { background: var(--paper); border: 1px solid var(--line); }
+  :global(.practice .sol p) { margin: 0.25rem 0; }
+  :global(.sr) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (max-width: 560px) { .practice { padding: 1rem; } }
+</style>

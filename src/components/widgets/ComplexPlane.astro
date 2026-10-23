@@ -1,0 +1,66 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-complex" title="المستوى المركب وقوى i" en="The complex plane and powers of i">
+  <div class="controls">
+    <label>الجزء الحقيقي a = <output data-o="a"></output><input type="range" min="-5" max="5" step="1" value="3" data-i="a" /></label>
+    <label>الجزء التخيلي b = <output data-o="b"></output><input type="range" min="-5" max="5" step="1" value="2" data-i="b" /></label>
+    <label>الأس n في <span class="ltr">iⁿ</span> = <output data-o="n"></output><input type="range" min="0" max="12" step="1" value="1" data-i="n" /></label>
+  </div>
+  <canvas aria-label="المستوى المركب"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--plot-curve)"></i><span class="ltr">z = a + bi</span></span>
+    <span><i style="background:var(--plot-alt)"></i>المرافق <span class="ltr">z̄ = a − bi</span></span>
+    <span><i style="background:var(--plot-hot)"></i><span class="ltr">iⁿ · z</span> (دوران بمقدار 90° × n)</span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  import { cx } from '../../lib/gen';
+
+  const root = document.getElementById('w-complex')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -7, xmax: 7, ymin: -7, ymax: 7 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+
+  function arrow(x: number, y: number, color: string, dash: number[] = []) {
+    const { ctx } = plot;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash(dash);
+    ctx.beginPath();
+    ctx.moveTo(plot.X(0), plot.Y(0));
+    ctx.lineTo(plot.X(x), plot.Y(y));
+    ctx.stroke();
+    ctx.setLineDash([]);
+    plot.dot(x, y, color, 5);
+  }
+
+  function draw() {
+    const a = v('a'), b = v('b'), n = v('n');
+    for (const k of ['a', 'b', 'n']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    plot.fit(0.75);
+    plot.clear();
+    plot.grid(1, 2);
+    plot.label(6.2, 0.1, 'Re', css('--muted'));
+    plot.label(0.25, 6.4, 'Im', css('--muted'));
+    // iⁿ z: الدوران
+    const r = n % 4;
+    const [re, im] = [[a, b], [-b, a], [-a, -b], [b, -a]][r];
+    arrow(a, -b, css('--plot-alt'), [6, 4]);
+    if (n > 0) arrow(re, im, css('--plot-hot'));
+    arrow(a, b, css('--plot-curve'));
+    plot.label(a, b, 'z', css('--plot-curve'));
+    const ival = ['1', 'i', '-1', '-i'][r];
+    out.innerHTML =
+      `<p>${tex(`$z = ${cx(a, b)}$`)} ومرافقه ${tex(`$\\bar z = ${cx(a, -b)}$`)}، وحاصل ضربهما عدد حقيقي دائمًا: ${tex(`$z\\bar z = a^2 + b^2 = ${a * a + b * b}$`)}.</p>` +
+      `<p>${tex(`$i^{${n}} = ${ival}$`)} لأن باقي قسمة ${n} على 4 هو ${r}، و ${tex(`$i^{${n}} \\cdot z = ${cx(re, im)}$`)}.</p>` +
+      `<p>الضرب في ${tex('$i$')} يدير النقطة ربع دورة (90°) عكس عقارب الساعة، لذلك تتكرر قوى ${tex('$i$')} كل أربع خطوات.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

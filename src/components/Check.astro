@@ -1,0 +1,47 @@
+---
+// سؤال فهم سريع داخل الدرس
+import { tex } from '../lib/tex';
+interface Props { q: string; options: string[]; answer: number; explain: string }
+const { q, options, answer, explain } = Astro.props;
+---
+<div class="check" data-answer={answer}>
+  <p class="cq"><span class="tag">تحقق من فهمك</span> <span set:html={tex(q)} /></p>
+  <div class="opts">
+    {options.map((o, k) => <button type="button" class="opt" data-k={k} set:html={tex(o)} />)}
+  </div>
+  <p class="why" hidden set:html={tex(explain)} />
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>('.check').forEach((box) => {
+    const ans = Number(box.dataset.answer);
+    const why = box.querySelector<HTMLElement>('.why')!;
+    box.querySelectorAll<HTMLButtonElement>('.opt').forEach((b) =>
+      b.addEventListener('click', () => {
+        box.querySelectorAll('.opt').forEach((x) => x.classList.remove('right', 'wrong'));
+        const ok = Number(b.dataset.k) === ans;
+        b.classList.add(ok ? 'right' : 'wrong');
+        why.hidden = !ok;
+      }),
+    );
+  });
+</script>
+<style>
+  .check { margin: 1.8rem 0; padding: 1rem 1.2rem; border: 1px dashed var(--accent); border-radius: var(--radius-m); }
+  .cq { margin: 0 0 0.6rem; }
+  .tag { font: 700 0.8rem var(--font-head); color: var(--accent); margin-inline-end: 0.4rem; }
+  .opts { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .opt {
+    font: inherit;
+    font-size: 1rem;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-s);
+    padding: 0.35rem 0.9rem;
+    cursor: pointer;
+  }
+  .opt:hover { border-color: var(--accent); }
+  .opt.right { background: var(--ok-soft); border-color: var(--ok); }
+  .opt.wrong { background: var(--err-soft); border-color: var(--err); }
+  .why { margin: 0.7rem 0 0; padding: 0.5rem 0.8rem; background: var(--ok-soft); border-radius: var(--radius-s); }
+</style>

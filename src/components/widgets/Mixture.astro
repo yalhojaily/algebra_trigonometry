@@ -1,0 +1,79 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-mix" title="خلط محلولين" en="Mixture problems">
+  <div class="controls">
+    <label>حجم المحلول الأول (لتر): <output data-o="v1"></output><input type="range" min="0" max="20" step="1" value="8" data-i="v1" /></label>
+    <label>تركيزه (%): <output data-o="p1"></output><input type="range" min="0" max="100" step="5" value="20" data-i="p1" /></label>
+    <label>حجم المحلول الثاني (لتر): <output data-o="v2"></output><input type="range" min="0" max="20" step="1" value="4" data-i="v2" /></label>
+    <label>تركيزه (%): <output data-o="p2"></output><input type="range" min="0" max="100" step="5" value="50" data-i="p2" /></label>
+  </div>
+  <div class="tanks" aria-hidden="true">
+    <div class="tank"><div class="fill" data-t="1"></div><span data-l="1"></span></div>
+    <span class="op">+</span>
+    <div class="tank"><div class="fill" data-t="2"></div><span data-l="2"></span></div>
+    <span class="op">=</span>
+    <div class="tank big"><div class="fill" data-t="3"></div><span data-l="3"></span></div>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+
+<script>
+  import { tex } from '../../lib/tex';
+  import { fmt } from '../../lib/plot';
+  const root = document.getElementById('w-mix')!;
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  function draw() {
+    const v1 = v('v1'), p1 = v('p1'), v2 = v('v2'), p2 = v('p2');
+    for (const k of ['v1', 'p1', 'v2', 'p2']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    const pure = (v1 * p1 + v2 * p2) / 100;
+    const total = v1 + v2;
+    const p3 = total ? (100 * pure) / total : 0;
+    const set = (n: number, vol: number, pct: number, max: number) => {
+      const f = root.querySelector<HTMLElement>(`[data-t="${n}"]`)!;
+      f.style.height = `${(vol / max) * 100}%`;
+      f.style.setProperty('--pct', String(pct / 100));
+      root.querySelector(`[data-l="${n}"]`)!.textContent = `${fmt(vol, 1)} L · ${fmt(pct, 1)}%`;
+    };
+    set(1, v1, p1, 40);
+    set(2, v2, p2, 40);
+    set(3, total, p3, 40);
+    out.innerHTML =
+      `<p>المادة النقية قبل الخلط = المادة النقية بعده:</p>` +
+      tex(`$$${p1 / 100}(${v1}) + ${p2 / 100}(${v2}) = p\\,(${v1} + ${v2})$$`) +
+      `<p>${tex(`$${fmt((v1 * p1) / 100)} + ${fmt((v2 * p2) / 100)} = ${fmt(pure)}$`)} لتر نقي، فالتركيز الناتج ${tex(`$p = ${fmt(pure)} \\div ${total} \\approx ${fmt(p3, 1)}\\%$`)}.</p>` +
+      `<p>لاحظ: التركيز الناتج يقع دائمًا <strong>بين</strong> التركيزين الأصليين، وهذه طريقة سريعة للتحقق من معقولية إجابتك.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  draw();
+</script>
+
+<style>
+  .tanks { display: flex; align-items: flex-end; justify-content: center; gap: 0.8rem; height: 190px; direction: ltr; }
+  .tank {
+    position: relative;
+    width: 80px;
+    height: 100%;
+    border: 2px solid var(--muted);
+    border-top: 0;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+  }
+  .tank.big { width: 120px; }
+  .fill {
+    position: absolute;
+    inset: auto 0 0 0;
+    background: color-mix(in srgb, var(--accent) calc(var(--pct, 0) * 100%), var(--line));
+    transition: height 0.2s;
+  }
+  .tank span {
+    position: absolute;
+    top: 6px;
+    inset-inline: 0;
+    text-align: center;
+    font: 600 0.72rem var(--font-en);
+    color: var(--ink);
+  }
+  .op { font: 700 1.5rem var(--font-en); align-self: center; color: var(--muted); }
+</style>

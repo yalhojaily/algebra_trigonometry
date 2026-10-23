@@ -1,0 +1,75 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-abs" title="القيمة المطلقة كمسافة" en="|x − h| compared with r">
+  <div class="controls">
+    <label>المركز h = <output data-o="h"></output><input type="range" min="-6" max="6" step="1" value="1" data-i="h" /></label>
+    <label>المسافة r = <output data-o="r"></output><input type="range" min="-2" max="7" step="1" value="3" data-i="r" /></label>
+    <div><span style="font-size:.95rem">العلاقة</span><br />
+      <div class="seg" role="group" aria-label="العلاقة" dir="ltr">
+        <button type="button" data-op="=" aria-pressed="false">=</button>
+        <button type="button" data-op="<" aria-pressed="true">&lt;</button>
+        <button type="button" data-op="<=" aria-pressed="false">≤</button>
+        <button type="button" data-op=">" aria-pressed="false">&gt;</button>
+        <button type="button" data-op=">=" aria-pressed="false">≥</button>
+      </div>
+    </div>
+  </div>
+  <canvas aria-label="خط الأعداد"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  import { solve, drawLine, runsTex, opTex, type Op } from '../../lib/numberline';
+
+  const root = document.getElementById('w-abs')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -12, xmax: 12, ymin: -1, ymax: 1 });
+  let op: Op | '=' = '<';
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+
+  function draw() {
+    const h = v('h'), r = v('r');
+    root.querySelector('[data-o="h"]')!.textContent = String(h);
+    root.querySelector('[data-o="r"]')!.textContent = String(r);
+    const f = (x: number) => Math.abs(x - h) - r;
+    const pts = r >= 0 ? [h - r, h + r] : [];
+    plot.fit(0.2);
+    let setTex: string;
+    if (op === '=') {
+      const sol = solve(f, pts, '<=');
+      const eqSol = { ...sol, runs: r < 0 ? [] : [...new Set(pts)].map((c) => ({ a: c, b: c, ca: true, cb: true })) };
+      drawLine(plot, eqSol);
+      setTex = r < 0 ? '\\varnothing' : r === 0 ? `\\{${h}\\}` : `\\{${h - r}, ${h + r}\\}`;
+    } else {
+      const sol = solve(f, pts, op);
+      drawLine(plot, sol);
+      setTex = runsTex(sol.runs);
+    }
+    // المركز
+    plot.dot(h, 0, css('--plot-alt'), 3);
+    const hx = `x ${h < 0 ? '+' : '-'} ${Math.abs(h)}`.replace('x - 0', 'x');
+    const rel = op === '=' ? '=' : opTex[op];
+    let meaning = '';
+    if (r < 0) meaning = 'العدد على اليمين سالب، والمسافة لا تكون سالبة أبدًا: ' + (op === '>' || op === '>=' ? 'المتباينة صحيحة لكل الأعداد.' : 'لا يوجد حل.');
+    else if (op === '=') meaning = `النقاط التي تبعد عن ${h} مسافة ${r} بالضبط.`;
+    else if (op === '<' || op === '<=') meaning = `النقاط التي تبعد عن ${h} مسافة أقل من ${r}${op === '<=' ? ' أو تساويها' : ''}: فترة واحدة متصلة حول المركز.`;
+    else meaning = `النقاط التي تبعد عن ${h} مسافة أكبر من ${r}${op === '>=' ? ' أو تساويها' : ''}: جزءان متباعدان باتجاه اللانهاية.`;
+    out.innerHTML =
+      `<p>${tex(`$|${hx}| ${rel} ${r}$`)} تعني: ${meaning}</p>` +
+      (r > 0 && op !== '=' ? `<p>${op === '<' || op === '<=' ? tex(`$-${r} ${rel} ${hx} ${rel} ${r}$`) : `${tex(`$${hx} ${op === '>' ? '<' : '\\le'} -${r}$`)} أو ${tex(`$${hx} ${rel} ${r}$`)}`}</p>` : '') +
+      `<p><strong>مجموعة الحل:</strong> ${tex(`$${setTex}$`)}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  root.querySelectorAll<HTMLButtonElement>('[data-op]').forEach((b) =>
+    b.addEventListener('click', () => {
+      op = b.dataset.op as Op | '=';
+      root.querySelectorAll('[data-op]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      draw();
+    }),
+  );
+  onRedraw(canvas, draw);
+</script>

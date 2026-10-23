@@ -1,0 +1,240 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { findSection, readySections, lessonSlug } from '../../data/curriculum';
+
+export async function getStaticPaths() {
+  const lessons = await getCollection('lessons');
+  return lessons.map((entry) => ({ params: { slug: lessonSlug(entry.data.section) }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const base = import.meta.env.BASE_URL;
+const found = findSection(entry.data.section)!;
+const { chapter, section } = found;
+const flat = readySections;
+const pos = flat.findIndex((s) => s.section.id === section.id);
+const prev = flat[pos - 1];
+const next = flat[pos + 1];
+const toc = headings.filter((h) => h.depth === 2);
+const prereqs = entry.data.prerequisites.map((id) => ({ id, s: findSection(id) }));
+---
+<Base title={`${section.id} ${section.ar} | الجبر وعلم المثلثات`} description={entry.data.summary}>
+  <div class="layout">
+    <aside class="side" aria-label="أقسام الفصل">
+      <a class="chap" href={`${base}chapters/${chapter.id}/`}>
+        <span class="chap-id">الفصل {chapter.id}</span>
+        <span>{chapter.ar}</span>
+      </a>
+      <ol>
+        {chapter.sections.map((s) => (
+          <li class={s.id === section.id ? 'current' : ''} data-progress-id={s.id}>
+            <a href={`${base}lessons/${lessonSlug(s.id)}/`} aria-current={s.id === section.id ? 'page' : undefined}>
+              <span class="sid">{s.id}</span>
+              <span>{s.ar}</span>
+            </a>
+            {s.id === section.id && toc.length > 0 && (
+              <ul class="toc">
+                {toc.map((h) => (
+                  <li><a href={`#${h.slug}`}>{h.text.replace(/\s*[A-Za-z(].*$/, '')}</a></li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ol>
+    </aside>
+
+    <article class="lesson">
+      <nav class="crumbs" aria-label="مسار التنقل">
+        <a href={base}>الفصول</a>
+        <span aria-hidden="true">‹</span>
+        <a href={`${base}chapters/${chapter.id}/`}>الفصل {chapter.id}: {chapter.ar}</a>
+      </nav>
+      <header class="head">
+        <span class="big-id" aria-hidden="true">{section.id}</span>
+        <div>
+          <h1>{section.ar}</h1>
+          <p class="en-title en" lang="en" dir="ltr">{section.en}</p>
+          <p class="summary">{entry.data.summary}</p>
+          <p class="meta">
+            <span>وقت القراءة تقريبًا {entry.data.minutes} دقيقة</span>
+            {prereqs.length > 0 && (
+              <span>
+                يفترض أنك تعرف:{' '}
+                {prereqs.map((p, k) => (
+                  <>
+                    {k > 0 && '، '}
+                    {p.s ? `${p.id} ${p.s.section.ar}` : p.id}
+                  </>
+                ))}
+              </span>
+            )}
+          </p>
+          <ul class="topics" aria-label="موضوعات القسم">
+            {section.topics.map((t) => (
+              <li>{t.ar} <span class="en" lang="en" dir="ltr">{t.en}</span></li>
+            ))}
+          </ul>
+        </div>
+      </header>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      {entry.data.terms.length > 0 && (
+        <section class="terms" aria-labelledby="terms-h">
+          <h2 id="terms-h">مصطلحات الدرس</h2>
+          <dl>
+            {entry.data.terms.map((t) => (
+              <div>
+                <dt>{t.ar} <span class="en" lang="en" dir="ltr">{t.en}</span></dt>
+                <dd>{t.def}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      <div class="done-row">
+        <button class="btn primary" type="button" data-done={section.id}>أنهيت هذا الدرس</button>
+        <span class="done-note" hidden>محفوظ في هذا المتصفح ✓</span>
+      </div>
+
+      <nav class="pager" aria-label="الدرس السابق والتالي">
+        {prev ? (
+          <a class="prev" href={`${base}lessons/${lessonSlug(prev.section.id)}/`}>
+            <small>السابق</small>
+            <span>{prev.section.id} {prev.section.ar}</span>
+          </a>
+        ) : <span />}
+        {next ? (
+          <a class="next" href={`${base}lessons/${lessonSlug(next.section.id)}/`}>
+            <small>التالي</small>
+            <span>{next.section.id} {next.section.ar}</span>
+          </a>
+        ) : (
+          <a class="next" href={base}>
+            <small>انتهى الفصل</small>
+            <span>عُد إلى خريطة الفصول</span>
+          </a>
+        )}
+      </nav>
+    </article>
+  </div>
+
+  <script>
+    import { getProgress, setDone, paintProgress } from '../../lib/progress';
+    const btn = document.querySelector<HTMLButtonElement>('[data-done]')!;
+    const note = document.querySelector<HTMLElement>('.done-note')!;
+    const id = btn.dataset.done!;
+    const paint = () => {
+      const done = !!getProgress()[id];
+      btn.textContent = done ? 'تراجع: لم أنهه بعد' : 'أنهيت هذا الدرس';
+      btn.classList.toggle('primary', !done);
+      note.hidden = !done;
+      paintProgress();
+    };
+    btn.addEventListener('click', () => {
+      setDone(id, !getProgress()[id]);
+      paint();
+    });
+    paint();
+  </script>
+</Base>
+
+<style>
+  .layout {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 0;
+    display: grid;
+    grid-template-columns: 270px minmax(0, 1fr);
+    gap: 3rem;
+  }
+  .side {
+    position: sticky;
+    top: 5rem;
+    align-self: start;
+    max-height: calc(100vh - 6rem);
+    overflow: auto;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    padding-bottom: 2rem;
+  }
+  .chap { display: flex; flex-direction: column; text-decoration: none; color: var(--ink); font-family: var(--font-head); font-weight: 700; margin-bottom: 0.8rem; }
+  .chap-id { font-size: 0.8rem; color: var(--accent); }
+  .side ol { list-style: none; margin: 0; padding: 0; border-inline-start: 1px solid var(--line); }
+  .side li a {
+    display: flex;
+    gap: 0.55rem;
+    padding: 0.4rem 0.8rem;
+    color: var(--muted);
+    text-decoration: none;
+    margin-inline-start: -1px;
+    border-inline-start: 2px solid transparent;
+  }
+  .side li a:hover { color: var(--ink); }
+  .side li.current > a { color: var(--ink); font-weight: 700; border-color: var(--accent); }
+  .sid { font-family: var(--font-en); font-size: 0.82rem; min-width: 1.9rem; padding-top: 0.12rem; }
+  .side li.is-done > a .sid::after { content: ' ✓'; color: var(--ok); }
+  .toc { list-style: none; padding: 0 2.6rem 0.4rem 0; margin: 0; }
+  .toc a { padding: 0.2rem 0.4rem !important; font-size: 0.87rem; border: 0 !important; }
+
+  .lesson { min-width: 0; max-width: 46rem; }
+  .crumbs { font-size: 0.85rem; color: var(--muted); display: flex; gap: 0.5rem; flex-wrap: wrap; font-family: var(--font-head); }
+  .crumbs a { color: var(--muted); text-decoration: none; }
+  .crumbs a:hover { color: var(--accent); }
+  .head { display: grid; grid-template-columns: auto 1fr; gap: 1.4rem; align-items: start; margin: 1.2rem 0 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--line); }
+  .big-id {
+    font: 700 clamp(3rem, 9vw, 5.2rem)/0.9 var(--font-en);
+    color: var(--accent);
+    letter-spacing: -0.04em;
+    direction: ltr;
+    text-align: right;
+  }
+  .en-title { margin: 0.1rem 0 0.6rem; color: var(--muted); font-size: 1rem; }
+  .summary { margin: 0 0 0.6rem; font-size: 1.15rem; }
+  .meta { margin: 0 0 0.8rem; display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; font-size: 0.88rem; color: var(--muted); }
+  .topics { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .topics li { font-size: 0.85rem; padding: 0.15rem 0.7rem; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); }
+  .topics .en { color: var(--muted); margin-inline-start: 0.25rem; }
+
+  .prose :global(h2) { margin: 3rem 0 0.8rem; padding-top: 0.5rem; scroll-margin-top: 5rem; }
+  .prose :global(h2 .en) { font-weight: 400; color: var(--muted); font-size: 0.65em; margin-inline-start: 0.4rem; }
+  .prose :global(h3) { margin: 2rem 0 0.5rem; scroll-margin-top: 5rem; }
+  .prose :global(p) { margin: 0.9rem 0; }
+  .prose :global(ul), .prose :global(ol) { padding-inline-start: 1.5rem; }
+  .prose :global(li) { margin: 0.3rem 0; }
+  .prose :global(table) { border-collapse: collapse; width: 100%; margin: 1.4rem 0; font-size: 1rem; display: block; overflow-x: auto; }
+  .prose :global(th), .prose :global(td) { border: 1px solid var(--line); padding: 0.5rem 0.75rem; text-align: start; vertical-align: top; }
+  .prose :global(th) { background: var(--surface); font-family: var(--font-head); font-size: 0.9rem; }
+  .prose :global(strong) { font-weight: 700; }
+
+  .terms { margin-top: 3rem; }
+  .terms h2 { margin-bottom: 1rem; }
+  .terms dl { margin: 0; display: grid; gap: 0.1rem; }
+  .terms dl > div { display: grid; grid-template-columns: minmax(10rem, 15rem) 1fr; gap: 1rem; padding: 0.6rem 0; border-bottom: 1px solid var(--line); }
+  .terms dt { font-weight: 700; }
+  .terms dt .en { display: block; font-weight: 400; color: var(--muted); }
+  .terms dd { margin: 0; }
+
+  .done-row { display: flex; align-items: center; gap: 1rem; margin: 2.5rem 0 1.5rem; }
+  .done-note { color: var(--ok); font-family: var(--font-head); font-size: 0.9rem; }
+  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .pager a { display: flex; flex-direction: column; padding: 0.9rem 1.1rem; border: 1px solid var(--line); border-radius: var(--radius-m); text-decoration: none; color: var(--ink); background: var(--surface); }
+  .pager a:hover { border-color: var(--accent); }
+  .pager small { color: var(--muted); font-family: var(--font-head); }
+  .pager .next { text-align: end; }
+
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; gap: 1rem; }
+    .side { position: static; max-height: none; border-bottom: 1px solid var(--line); padding-bottom: 1rem; }
+    .toc, .side ol { display: none; }
+    .chap { margin: 0; }
+    .head { grid-template-columns: 1fr; gap: 0.4rem; }
+    .terms dl > div { grid-template-columns: 1fr; gap: 0.2rem; }
+  }
+</style>

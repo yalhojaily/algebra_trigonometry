@@ -1,0 +1,66 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-proj" title="ارتفاع جسم مقذوف" en="s = −16t² + v₀t + s₀">
+  <div class="controls">
+    <label>السرعة الابتدائية <span class="ltr">v₀</span> (قدم/ث): <output data-o="v"></output><input type="range" min="16" max="160" step="8" value="96" data-i="v" /></label>
+    <label>الارتفاع الابتدائي <span class="ltr">s₀</span> (قدم): <output data-o="s"></output><input type="range" min="0" max="200" step="10" value="0" data-i="s" /></label>
+    <label>الارتفاع المطلوب <span class="ltr">h</span> (قدم): <output data-o="h"></output><input type="range" min="0" max="400" step="8" value="80" data-i="h" /></label>
+  </div>
+  <canvas aria-label="منحنى الارتفاع مع الزمن"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--plot-curve)"></i>الارتفاع <span class="ltr">s(t)</span></span>
+    <span><i style="background:var(--plot-alt)"></i>الخط <span class="ltr">s = h</span></span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+
+  const root = document.getElementById('w-proj')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: 0, xmax: 10, ymin: 0, ymax: 200 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+
+  function draw() {
+    const v0 = v('v'), s0 = v('s'), h = v('h');
+    for (const k of ['v', 's', 'h']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    const s = (t: number) => -16 * t * t + v0 * t + s0;
+    const tTop = v0 / 32, top = s(tTop);
+    const tLand = (v0 + Math.sqrt(v0 * v0 + 64 * s0)) / 32;
+    const ymax = Math.max(Math.ceil((top * 1.15) / 50) * 50, 100);
+    const xmax = Math.max(Math.ceil(tLand + 0.5), 3);
+    plot.view = { xmin: -xmax * 0.06, xmax, ymin: -ymax * 0.08, ymax };
+    plot.fit(0.6);
+    plot.clear();
+    plot.grid(1, xmax > 8 ? 2 : 1, ymax > 300 ? 50 : 25);
+    plot.fn((t) => (t >= 0 && t <= tLand ? s(t) : NaN), css('--plot-curve'), 3);
+    plot.fn(() => h, css('--plot-alt'), 2, [7, 5]);
+    plot.dot(tTop, top, css('--plot-alt'), 4, true);
+    plot.dot(tLand, 0);
+    // حل −16t² + v0 t + s0 = h
+    const D = v0 * v0 - 64 * (h - s0);
+    let msg = '';
+    if (D < 0) msg = `المميز سالب (${fmt(D)})، إذن لا يصل الجسم إلى ارتفاع ${h} قدمًا أبدًا.`;
+    else {
+      const t1 = (v0 - Math.sqrt(D)) / 32, t2 = (v0 + Math.sqrt(D)) / 32;
+      const ts = [t1, t2].filter((t) => t >= 0);
+      ts.forEach((t) => plot.dot(t, h, css('--plot-hot'), 5));
+      msg =
+        ts.length === 2 && Math.abs(t1 - t2) > 1e-9
+          ? `يكون على ارتفاع ${h} قدمًا مرتين: صاعدًا عند ${tex(`$t \\approx ${fmt(t1)}$`)} ث، وهابطًا عند ${tex(`$t \\approx ${fmt(t2)}$`)} ث.`
+          : ts.length
+            ? `يكون على ارتفاع ${h} قدمًا مرة واحدة عند ${tex(`$t \\approx ${fmt(ts[ts.length - 1])}$`)} ث${D === 0 ? ' (وهي قمة المسار)' : ' (الحل الآخر سالب فنرفضه)'}.`
+            : 'لا يوجد زمن موجب يحقق ذلك.';
+    }
+    out.innerHTML =
+      `<p>${tex(`$s(t) = -16t^2 + ${v0}t${s0 ? ` + ${s0}` : ''}$`)}</p>` +
+      `<p>نحل ${tex(`$-16t^2 + ${v0}t + ${s0} = ${h}$`)} أي ${tex(`$16t^2 - ${v0}t + ${h - s0} = 0$`.replace('+ -', '- '))}: ${msg}</p>` +
+      `<p>أقصى ارتفاع ${tex(`$\\approx ${fmt(top)}$`)} قدمًا عند ${tex(`$t = ${fmt(tTop)}$`)} ث، ويصطدم بالأرض عند ${tex(`$t \\approx ${fmt(tLand)}$`)} ث.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

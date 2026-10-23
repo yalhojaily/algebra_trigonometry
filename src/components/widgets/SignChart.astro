@@ -1,0 +1,72 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-sign" title="جدول الإشارات على خط الأعداد" en="Sign chart / test-interval method">
+  <div class="controls">
+    <label>النوع
+      <select data-i="type">
+        <option value="quad">تربيعية (حاصل ضرب)</option>
+        <option value="rat">نسبية (كسر)</option>
+      </select>
+    </label>
+    <label><span class="ltr">p = <output data-o="p"></output></span><input type="range" min="-8" max="8" step="1" value="-2" data-i="p" /></label>
+    <label><span class="ltr">q = <output data-o="q"></output></span><input type="range" min="-8" max="8" step="1" value="3" data-i="q" /></label>
+    <div><span style="font-size:.95rem">العلاقة مع الصفر</span><br />
+      <div class="seg" role="group" aria-label="العلاقة" dir="ltr">
+        <button type="button" data-op="<" aria-pressed="false">&lt; 0</button>
+        <button type="button" data-op="<=" aria-pressed="true">≤ 0</button>
+        <button type="button" data-op=">" aria-pressed="false">&gt; 0</button>
+        <button type="button" data-op=">=" aria-pressed="false">≥ 0</button>
+      </div>
+    </div>
+  </div>
+  <canvas aria-label="خط الأعداد"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+
+<script>
+  import { Plot, onRedraw, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  import { solve, drawLine, runsTex, opTex, type Op } from '../../lib/numberline';
+  import { factor } from '../../lib/gen';
+
+  const root = document.getElementById('w-sign')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -10, xmax: 10, ymin: -1, ymax: 1 });
+  let op: Op = '<=';
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+
+  function draw() {
+    const type = root.querySelector<HTMLSelectElement>('[data-i="type"]')!.value;
+    const p = v('p'), q = v('q');
+    root.querySelector('[data-o="p"]')!.textContent = String(p);
+    root.querySelector('[data-o="q"]')!.textContent = String(q);
+    const f = type === 'quad' ? (x: number) => (x - p) * (x - q) : (x: number) => (x === q ? NaN : (x - p) / (x - q));
+    const sol = solve(f, [p, q], op);
+    plot.fit(0.2);
+    drawLine(plot, sol, { undefinedAt: type === 'rat' ? [q] : [], showSigns: true });
+    const expr = type === 'quad' ? `${factor(p)}${factor(q)}` : `\\dfrac{${factor(p).replace(/^\(|\)$/g, '')}}{${factor(q).replace(/^\(|\)$/g, '')}}`;
+    const tests = sol.regions
+      .filter((r) => r.kind === 'int')
+      .map((r: any) => {
+        const t = r.a === -Infinity ? r.b - 1 : r.b === Infinity ? r.a + 1 : (r.a + r.b) / 2;
+        const y = f(t);
+        return `${tex(`$x = ${fmt(t)}$`)} تعطي ${tex(`$${fmt(y, 3)}$`)} ${y > 0 ? '(موجب)' : y < 0 ? '(سالب)' : ''}`;
+      });
+    out.innerHTML =
+      `<p>المتباينة: ${tex(`$${expr} ${opTex[op]} 0$`)}</p>` +
+      `<p>الأعداد الحرجة: ${tex(`$x = ${p}$`)}${p !== q ? ` و ${tex(`$x = ${q}$`)}` : ''}${type === 'rat' ? ` (المقام صفر عند ${tex(`$x = ${q}$`)} فهي مستبعدة دائمًا، والنقطة حمراء)` : ''}.</p>` +
+      `<p>نقاط الاختبار: ${tests.join('، ')}</p>` +
+      `<p><strong>مجموعة الحل:</strong> ${tex(`$${runsTex(sol.runs)}$`)}</p>`;
+  }
+  root.querySelectorAll('input, select').forEach((i) => i.addEventListener('input', draw));
+  root.querySelectorAll<HTMLButtonElement>('[data-op]').forEach((b) =>
+    b.addEventListener('click', () => {
+      op = b.dataset.op as Op;
+      root.querySelectorAll('[data-op]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      draw();
+    }),
+  );
+  onRedraw(canvas, draw);
+</script>

@@ -1,0 +1,43 @@
+---
+// صناديق المحتوى: تعريف، قاعدة، خطأ شائع، فكرة، ملاحظة
+interface Props { kind: 'def' | 'rule' | 'mistake' | 'tip' | 'note'; title?: string; en?: string }
+const { kind, title, en } = Astro.props;
+const labels = { def: 'تعريف', rule: 'قاعدة', mistake: 'خطأ شائع', tip: 'فكرة', note: 'ملاحظة' };
+---
+<aside class={`box ${kind}`}>
+  <p class="label">
+    <span class="kind">{labels[kind]}</span>
+    {title && <span class="title">{title}</span>}
+    {en && <span class="en" lang="en" dir="ltr">{en}</span>}
+  </p>
+  <div class="content"><slot /></div>
+</aside>
+<style>
+  .box {
+    --c: var(--def);
+    --bg: var(--def-soft);
+    margin: 1.6rem 0;
+    padding: 0.9rem 1.2rem 0.6rem;
+    background: var(--bg);
+    border-inline-start: 4px solid var(--c);
+    border-radius: var(--radius-s);
+  }
+  .rule { --c: var(--rule); --bg: var(--rule-soft); }
+  .mistake { --c: var(--err); --bg: var(--err-soft); }
+  .tip { --c: var(--warn); --bg: var(--warn-soft); }
+  .note { --c: var(--muted); --bg: var(--surface); }
+  .label {
+    margin: 0 0 0.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-family: var(--font-head);
+  }
+  .kind { font-size: 0.8rem; font-weight: 700; color: var(--c); }
+  .title { font-weight: 700; }
+  .label .en { color: var(--muted); font-size: 0.85rem; }
+  .content :global(> :first-child) { margin-top: 0; }
+  .content :global(p) { margin: 0.5rem 0; }
+  .content :global(ul), .content :global(ol) { margin: 0.4rem 0; padding-inline-start: 1.4rem; }
+</style>

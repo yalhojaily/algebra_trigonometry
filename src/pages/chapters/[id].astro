@@ -1,0 +1,89 @@
+---
+import Base from '../../layouts/Base.astro';
+import { chapters, lessonSlug } from '../../data/curriculum';
+
+export function getStaticPaths() {
+  return chapters.map((ch) => ({ params: { id: ch.id }, props: { ch } }));
+}
+const { ch } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const ready = ch.status === 'ready';
+const idx = chapters.findIndex((c) => c.id === ch.id);
+const prev = chapters[idx - 1];
+const next = chapters[idx + 1];
+---
+<Base title={`الفصل ${ch.id}: ${ch.ar} | الجبر وعلم المثلثات`} description={ch.blurb}>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="مسار التنقل"><a href={base}>الفصول</a></nav>
+    <header class="head">
+      <span class="big" aria-hidden="true">{ch.id}</span>
+      <div>
+        <h1>{ch.ar} {!ready && <span class="tag-soon">قريبًا</span>}</h1>
+        <p class="en" lang="en" dir="ltr">{ch.en}</p>
+        <p class="blurb">{ch.blurb}</p>
+        {!ready && <p class="soon-note">هذا الفصل قيد الإعداد. يمكنك الاطلاع على موضوعاته أدناه، والبدء بالفصل الأول الجاهز الآن.</p>}
+      </div>
+    </header>
+
+    <ol class="sections">
+      {ch.sections.map((s) => (
+        <li data-progress-id={s.id} class={ready ? 'ready' : 'soon'}>
+          <span class="sid">{s.id}</span>
+          <div>
+            <h2>
+              {ready ? <a href={`${base}lessons/${lessonSlug(s.id)}/`}>{s.ar}</a> : s.ar}
+              {!ready && <span class="tag-soon">قريبًا</span>}
+            </h2>
+            <p class="en" lang="en" dir="ltr">{s.en}</p>
+            {s.topics.length > 0 && (
+              <ul>
+                {s.topics.map((t) => (
+                  <li>{t.ar} <span class="en" lang="en" dir="ltr">{t.en}</span></li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <nav class="pager" aria-label="الفصل السابق والتالي">
+      {prev ? <a href={`${base}chapters/${prev.id}/`}><small>الفصل السابق</small><span>{prev.id}: {prev.ar}</span></a> : <span />}
+      {next ? <a class="next" href={`${base}chapters/${next.id}/`}><small>الفصل التالي</small><span>{next.id}: {next.ar}</span></a> : <span />}
+    </nav>
+  </div>
+  <script>
+    import { paintProgress } from '../../lib/progress';
+    paintProgress();
+  </script>
+</Base>
+<style>
+  .wrap { max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem 0; }
+  .crumbs { font: 0.85rem var(--font-head); }
+  .crumbs a { color: var(--muted); text-decoration: none; }
+  .head { display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start; margin: 1rem 0 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--line); }
+  .big { font: 700 clamp(3.5rem, 10vw, 6rem)/0.9 var(--font-en); color: var(--accent); }
+  h1 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+  .head .en { margin: 0.2rem 0 0.6rem; color: var(--muted); }
+  .blurb { margin: 0; font-size: 1.15rem; }
+  .soon-note { margin: 0.8rem 0 0; padding: 0.6rem 0.9rem; background: var(--warn-soft); border-radius: var(--radius-s); font-size: 0.98rem; }
+  .sections { list-style: none; padding: 0; margin: 0; }
+  .sections > li { display: grid; grid-template-columns: 3.6rem 1fr; gap: 1rem; padding: 1.2rem 0; border-bottom: 1px solid var(--line); }
+  .sid { font: 700 1.35rem var(--font-en); color: var(--muted); direction: ltr; text-align: start; }
+  .ready .sid { color: var(--accent); }
+  .is-done .sid::after { content: ' ✓'; color: var(--ok); font-size: 1rem; }
+  h2 { font-size: 1.2rem; display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+  h2 a { color: var(--ink); text-decoration: none; }
+  h2 a:hover { color: var(--accent); }
+  .sections .en { margin: 0; color: var(--muted); font-size: 0.85rem; }
+  .sections ul { list-style: none; padding: 0; margin: 0.6rem 0 0; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .sections ul li { font-size: 0.85rem; padding: 0.1rem 0.65rem; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); }
+  .sections ul .en { display: inline; margin-inline-start: 0.2rem; font-size: 0.78rem; }
+  .soon h2 { color: var(--muted); }
+  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+  .pager a { display: flex; flex-direction: column; padding: 0.9rem 1.1rem; border: 1px solid var(--line); border-radius: var(--radius-m); text-decoration: none; color: var(--ink); background: var(--surface); }
+  .pager a:hover { border-color: var(--accent); }
+  .pager small { color: var(--muted); font-family: var(--font-head); }
+  .pager .next { text-align: end; }
+  @media (max-width: 600px) { .head { grid-template-columns: 1fr; gap: 0.5rem; } }
+</style>

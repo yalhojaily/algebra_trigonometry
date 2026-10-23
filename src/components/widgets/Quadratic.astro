@@ -1,0 +1,63 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-quad" title="المميز وعدد الحلول" en="The discriminant explorer">
+  <div class="controls">
+    <label><span class="ltr">a = <output data-o="a"></output></span><input type="range" min="-3" max="3" step="0.5" value="1" data-i="a" /></label>
+    <label><span class="ltr">b = <output data-o="b"></output></span><input type="range" min="-8" max="8" step="1" value="-2" data-i="b" /></label>
+    <label><span class="ltr">c = <output data-o="c"></output></span><input type="range" min="-10" max="10" step="1" value="-3" data-i="c" /></label>
+  </div>
+  <canvas aria-label="رسم الدالة التربيعية"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+
+  const root = document.getElementById('w-quad')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -8, xmax: 8, ymin: -10, ymax: 10 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const sgn = (n: number) => (n < 0 ? `- ${fmt(-n)}` : `+ ${fmt(n)}`);
+
+  function draw() {
+    let a = v('a');
+    const b = v('b'), c = v('c');
+    if (a === 0) a = 0.5;
+    for (const k of ['a', 'b', 'c']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(k === 'a' ? a : v(k));
+    plot.fit(0.62);
+    plot.clear();
+    plot.grid(1, 2);
+    plot.fn((x) => a * x * x + b * x + c, css('--plot-curve'), 3);
+    const D = b * b - 4 * a * c;
+    const h = -b / (2 * a);
+    plot.dot(h, a * h * h + b * h + c, css('--plot-alt'), 4, true);
+    const lead = a === 1 ? '' : a === -1 ? '-' : fmt(a);
+    const eq = `$${lead}x^2 ${sgn(b)}x ${sgn(c)} = 0$`;
+    let kind = '', sols = '';
+    if (D > 0) {
+      const r1 = (-b - Math.sqrt(D)) / (2 * a), r2 = (-b + Math.sqrt(D)) / (2 * a);
+      plot.dot(r1, 0);
+      plot.dot(r2, 0);
+      const perfect = Number.isInteger(Math.sqrt(D)) && Number.isInteger(a);
+      kind = `المميز موجب: المنحنى يقطع محور x في نقطتين، أي <strong>حلان حقيقيان</strong>${perfect ? ' نسبيان (المميز مربع كامل)' : ''}.`;
+      sols = tex(`$x = \\dfrac{${fmt(-b)} \\pm \\sqrt{${fmt(D)}}}{${fmt(2 * a)}} \\approx ${fmt(r1)},\\; ${fmt(r2)}$`);
+    } else if (D === 0) {
+      plot.dot(h, 0);
+      kind = 'المميز صفر: المنحنى يمس محور x في نقطة واحدة، أي <strong>حل حقيقي واحد مكرر</strong>.';
+      sols = tex(`$x = \\dfrac{${fmt(-b)}}{${fmt(2 * a)}} = ${fmt(h)}$`);
+    } else {
+      const im = Math.sqrt(-D) / (2 * a);
+      kind = 'المميز سالب: المنحنى لا يلمس محور x، أي <strong>حلان مركبان غير حقيقيين ومترافقان</strong>.';
+      sols = tex(`$x = \\dfrac{${fmt(-b)} \\pm i\\sqrt{${fmt(-D)}}}{${fmt(2 * a)}} \\approx ${fmt(h)} \\pm ${fmt(Math.abs(im))}i$`);
+    }
+    out.innerHTML =
+      `<p>${tex(eq)}</p>` +
+      `<p>${tex(`$b^2 - 4ac = (${fmt(b)})^2 - 4(${fmt(a)})(${fmt(c)}) = ${fmt(D)}$`)}</p>` +
+      `<p>${kind}</p><p>${sols}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

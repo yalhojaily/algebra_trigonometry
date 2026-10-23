@@ -2,6 +2,8 @@
 import Base from '../layouts/Base.astro';
 import { chapters, lessonSlug } from '../data/curriculum';
 const base = import.meta.env.BASE_URL;
+const area = (id: string) =>
+  ['5', '6', '7', '8'].includes(id) ? 'علم المثلثات' : id === '10' ? 'هندسة تحليلية' : id === 'A' ? 'ملاحق' : id === 'R' ? 'مراجعة' : 'جبر';
 const readyIds = chapters.filter((c) => c.status === 'ready').flatMap((c) => c.sections.map((s) => s.id));
 ---
 <Base title="الجبر الجامعي وعلم المثلثات | شرح عربي تفاعلي">
@@ -38,25 +40,51 @@ const readyIds = chapters.filter((c) => c.status === 'ready').flatMap((c) => c.s
   </section>
 
   <section class="map" aria-labelledby="map-h">
-    <h2 id="map-h">خريطة الكتاب</h2>
-    <p class="map-note">الفصول على محور واحد بترتيب الكتاب. الفصل الأول جاهز الآن، والبقية تُضاف تباعًا.</p>
-    <ol class="axis">
-      {chapters.map((ch) => (
-        <li class={`ch ${ch.status}`}>
-          <span class="tick" aria-hidden="true"></span>
-          <span class="cid" aria-hidden="true">{ch.id}</span>
-          <div class="cbody">
+    <div class="map-head">
+      <h2 id="map-h">فصول الكتاب</h2>
+      <p class="map-note">الفصل الأول جاهز الآن، وبقية الفصول تُضاف تباعًا.</p>
+    </div>
+    <ul class="cards">
+      {[...chapters.filter((c) => c.status === 'ready'), ...chapters.filter((c) => c.status !== 'ready')].map((ch) => {
+        const ids = ch.sections.map((s) => s.id);
+        return (
+          <li class={`card ${ch.status}`} data-progress-wrap={ch.status === 'ready' ? '' : undefined}>
+            <span class="num" aria-hidden="true">{ch.id}</span>
+            <p class="kind">
+              <span>{area(ch.id)}</span>
+              {ch.status === 'soon' ? <span class="tag-soon">قريبًا</span> : <span class="tag-ready">جاهز</span>}
+            </p>
             <h3>
-              <a href={`${base}chapters/${ch.id}/`}>{ch.ar}</a>
-              {ch.status === 'soon' && <span class="tag-soon">قريبًا</span>}
+              <a class="title" href={`${base}chapters/${ch.id}/`}>
+                <span class="sr">{ch.id === 'A' ? '' : `الفصل ${ch.id}: `}</span>{ch.ar}
+              </a>
             </h3>
             <p class="en" lang="en" dir="ltr">{ch.en}</p>
             <p class="blurb">{ch.blurb}</p>
-            <p class="count">{ch.sections.length} أقسام</p>
-          </div>
-        </li>
-      ))}
-    </ol>
+            {ch.status === 'ready' ? (
+              <>
+                <ol class="secs">
+                  {ch.sections.map((sec) => (
+                    <li data-progress-id={sec.id}>
+                      <a href={`${base}lessons/${lessonSlug(sec.id)}/`}>
+                        <span class="sid">{sec.id}</span>
+                        <span>{sec.ar}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+                <div class="foot">
+                  <span class="bar" data-progress-bar><i></i></span>
+                  <span>أنهيت <span data-progress-count={ids.join(',')}>0 من {ids.length}</span></span>
+                </div>
+              </>
+            ) : (
+              <p class="foot muted">{ch.sections.length} أقسام</p>
+            )}
+          </li>
+        );
+      })}
+    </ul>
   </section>
 
   <script>
@@ -96,65 +124,110 @@ const readyIds = chapters.filter((c) => c.status === 'ready').flatMap((c) => c.s
   .curve { stroke-dasharray: 520; stroke-dashoffset: 520; animation: draw 1.6s 0.2s ease-out forwards; }
   @keyframes draw { to { stroke-dashoffset: 0; } }
 
-  .map { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem 0; }
-  .map > h2 { margin-bottom: 0.3rem; }
-  .map-note { color: var(--muted); margin: 0 0 2rem; }
-  .axis { list-style: none; margin: 0; padding: 0; position: relative; }
-  .axis::before {
-    content: '';
-    position: absolute;
-    inset-block: 0.8rem;
-    inset-inline-start: 4.6rem;
-    border-inline-start: 2px solid var(--line);
-  }
-  .ch {
-    position: relative;
+  .map { max-width: 1240px; margin: 0 auto; padding: 2.5rem 1rem 0; }
+  .map-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem 2rem; margin-bottom: 1.4rem; }
+  .map-note { color: var(--muted); margin: 0; }
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: grid;
-    grid-template-columns: 4rem 1.2rem minmax(0, 1fr);
-    column-gap: 0;
-    padding: 0.9rem 0;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
   }
-  .cid {
-    grid-column: 1;
-    grid-row: 1;
-    font: 700 2rem/1.2 var(--font-en);
-    color: var(--muted);
-    text-align: center;
-    opacity: 0.55;
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 1.2rem 1.3rem 1.1rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    min-height: 15rem;
   }
-  .tick {
-    grid-column: 2;
-    grid-row: 1;
-    width: 14px;
-    height: 14px;
-    margin-top: 0.9rem;
-    margin-inline-start: 0.08rem;
-    border-radius: 50%;
-    background: var(--paper);
-    border: 2px solid var(--line);
-    z-index: 1;
+  .num {
+    position: absolute;
+    inset-inline-end: 0.9rem;
+    top: 0.2rem;
+    font: 700 4.2rem/1 var(--font-en);
+    color: var(--line);
+    pointer-events: none;
   }
-  .cbody { grid-column: 3; grid-row: 1; padding-inline-start: 1.2rem; }
-  .ch h3 { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; font-size: 1.25rem; }
-  .ch h3 a { color: var(--ink); text-decoration: none; }
-  .ch h3 a:hover { color: var(--accent); }
-  .ch .en { margin: 0; color: var(--muted); font-size: 0.9rem; }
-  .blurb { margin: 0.3rem 0 0; color: var(--muted); max-width: 60ch; }
-  .count { margin: 0.2rem 0 0; font-size: 0.85rem; color: var(--muted); font-family: var(--font-head); }
-  .ch.soon .cbody { opacity: 0.78; }
+  .kind { position: relative; display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.6rem; font: 600 0.78rem var(--font-head); color: var(--muted); }
+  .tag-ready { font: 600 0.75rem/1 var(--font-head); color: var(--ok); background: var(--ok-soft); padding: 0.35rem 0.6rem; border-radius: 99px; }
+  .card h3 { position: relative; font-size: 1.2rem; line-height: 1.55; padding-inline-end: 3.2rem; }
+  .title { color: var(--ink); text-decoration: none; }
+  .card .en { margin: 0.15rem 0 0; color: var(--muted); font-size: 0.82rem; }
+  .blurb { margin: 0.6rem 0 0; color: var(--muted); font-size: 0.98rem; line-height: 1.8; }
+  .foot { margin-top: auto; padding-top: 0.9rem; display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; color: var(--muted); font-family: var(--font-head); }
 
-  .ch.ready { padding: 1.4rem 0; }
-  .ch.ready .cid { color: var(--accent); opacity: 1; font-size: 3rem; }
-  .ch.ready .tick { background: var(--accent); border-color: var(--accent); width: 18px; height: 18px; margin-top: 1.3rem; box-shadow: 0 0 0 6px var(--accent-soft); }
-  .ch.ready h3 { font-size: 1.6rem; }
-  .ch.ready .blurb { color: var(--ink); }
+  /* البطاقات القادمة: البطاقة كلها رابط */
+  .card.soon .title::after { content: ''; position: absolute; inset: -10rem; }
+  .card.soon { background: color-mix(in srgb, var(--surface) 55%, var(--paper)); }
+  .card.soon:hover { border-color: var(--muted); }
+  .card.soon h3 { color: var(--muted); }
+
+  /* الفصل الجاهز: بطاقة عريضة */
+  .card.ready {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+    grid-template-rows: auto auto auto 1fr auto;
+    column-gap: 2.5rem;
+    padding: 1.6rem 1.8rem 1.4rem;
+    border: 2px solid var(--accent);
+    background:
+      linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 22px 22px,
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 22px 22px,
+      var(--surface);
+  }
+  .card.ready .num { color: var(--accent); }
+  .card.ready h3 { font-size: 1.9rem; max-width: none; }
+  .card.ready .title:hover { color: var(--accent); }
+  .card.ready .blurb { color: var(--ink); max-width: 46ch; }
+  .card.ready > :not(.secs):not(.num) { grid-column: 1; }
+  .card.ready .secs { grid-column: 2; grid-row: 1 / -1; align-self: center; margin: 0; }
+  .card.ready .num { inset-inline-end: 1rem; bottom: -1.4rem; top: auto; opacity: 0.08; font-size: 12rem; }
+  .card.ready .foot { grid-row: 5; }
+  .secs {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem 1rem;
+  }
+  .secs a {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: var(--radius-s);
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    background: color-mix(in srgb, var(--surface) 80%, transparent);
+  }
+  .secs a:hover { background: var(--accent-soft); }
+  .secs .sid { font: 600 0.8rem var(--font-en); color: var(--accent); min-width: 1.8rem; padding-top: 0.15rem; }
+  .secs .is-done .sid::after { content: ' ✓'; color: var(--ok); }
+  .foot .bar { flex: 1; max-width: 220px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
   @media (max-width: 820px) {
     .hero { grid-template-columns: 1fr; gap: 2rem; }
     .hero-plot { max-width: 340px; }
-    .axis::before { inset-inline-start: 3.55rem; }
-    .ch { grid-template-columns: 3rem 1.2rem minmax(0, 1fr); }
-    .cid { font-size: 1.5rem; }
-    .ch.ready .cid { font-size: 2.2rem; }
+  }
+  @media (max-width: 900px) {
+    .card.ready { grid-template-columns: 1fr; grid-template-rows: none; padding: 1.3rem; }
+    .card.ready .secs { grid-column: 1; grid-row: auto; margin-top: 1rem; }
+    .card.ready .foot { grid-row: auto; }
+    .card.ready .num { font-size: 7rem; }
+  }
+  @media (max-width: 560px) {
+    .secs { grid-template-columns: 1fr; }
+    .card { min-height: 0; }
+    .num { font-size: 3.2rem; }
   }
 </style>

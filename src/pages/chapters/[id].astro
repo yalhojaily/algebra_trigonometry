@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
 import { chapters, lessonSlug } from '../../data/curriculum';
 
 export function getStaticPaths() {
@@ -11,6 +12,8 @@ const ready = ch.status === 'ready';
 const idx = chapters.findIndex((c) => c.id === ch.id);
 const prev = chapters[idx - 1];
 const next = chapters[idx + 1];
+const lessons = await getCollection('lessons');
+const info = (id: string) => lessons.find((l) => l.data.section === id)?.data;
 ---
 <Base title={`الفصل ${ch.id}: ${ch.ar} | الجبر وعلم المثلثات`} description={ch.blurb}>
   <div class="wrap">
@@ -25,26 +28,33 @@ const next = chapters[idx + 1];
       </div>
     </header>
 
-    <ol class="sections">
-      {ch.sections.map((s) => (
-        <li data-progress-id={s.id} class={ready ? 'ready' : 'soon'}>
-          <span class="sid">{s.id}</span>
-          <div>
+    <ol class="cards">
+      {ch.sections.map((sec) => {
+        const d = info(sec.id);
+        const live = ready && d;
+        return (
+          <li class={`card ${live ? 'ready' : 'soon'}`} data-progress-id={sec.id}>
+            <p class="top">
+              <span class="sid">{sec.id}</span>
+              {live ? <span class="meta">{d.minutes} دقيقة</span> : <span class="tag-soon">قريبًا</span>}
+              <span class="done" aria-label="مكتمل">✓ أنهيته</span>
+            </p>
             <h2>
-              {ready ? <a href={`${base}lessons/${lessonSlug(s.id)}/`}>{s.ar}</a> : s.ar}
-              {!ready && <span class="tag-soon">قريبًا</span>}
+              {live ? <a class="title" href={`${base}lessons/${lessonSlug(sec.id)}/`}>{sec.ar}</a> : <span class="title">{sec.ar}</span>}
             </h2>
-            <p class="en" lang="en" dir="ltr">{s.en}</p>
-            {s.topics.length > 0 && (
-              <ul>
-                {s.topics.map((t) => (
-                  <li>{t.ar} <span class="en" lang="en" dir="ltr">{t.en}</span></li>
+            <p class="en" lang="en" dir="ltr">{sec.en}</p>
+            {live && <p class="summary">{d.summary}</p>}
+            {sec.topics.length > 0 && (
+              <ul class="topics" aria-label="الموضوعات">
+                {sec.topics.map((t) => (
+                  <li><span>{t.ar}</span> <span class="en" lang="en" dir="ltr">{t.en}</span></li>
                 ))}
               </ul>
             )}
-          </div>
-        </li>
-      ))}
+            {live && <span class="go" aria-hidden="true">ابدأ الدرس ‹</span>}
+          </li>
+        );
+      })}
     </ol>
 
     <nav class="pager" aria-label="الفصل السابق والتالي">
@@ -58,28 +68,53 @@ const next = chapters[idx + 1];
   </script>
 </Base>
 <style>
-  .wrap { max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem 0; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 1.5rem 1rem 0; }
   .crumbs { font: 0.85rem var(--font-head); }
   .crumbs a { color: var(--muted); text-decoration: none; }
+  .head > div { max-width: 60ch; }
   .head { display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: start; margin: 1rem 0 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--line); }
   .big { font: 700 clamp(3.5rem, 10vw, 6rem)/0.9 var(--font-en); color: var(--accent); }
   h1 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
   .head .en { margin: 0.2rem 0 0.6rem; color: var(--muted); }
   .blurb { margin: 0; font-size: 1.15rem; }
   .soon-note { margin: 0.8rem 0 0; padding: 0.6rem 0.9rem; background: var(--warn-soft); border-radius: var(--radius-s); font-size: 0.98rem; }
-  .sections { list-style: none; padding: 0; margin: 0; }
-  .sections > li { display: grid; grid-template-columns: 3.6rem 1fr; gap: 1rem; padding: 1.2rem 0; border-bottom: 1px solid var(--line); }
-  .sid { font: 700 1.35rem var(--font-en); color: var(--muted); direction: ltr; text-align: start; }
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1rem;
+  }
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 1.1rem 1.25rem 1.1rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+  }
+  .card.ready:hover { border-color: var(--accent); }
+  .card.ready:focus-within { border-color: var(--accent); }
+  .card.soon { background: color-mix(in srgb, var(--surface) 55%, var(--paper)); }
+  .top { display: flex; align-items: center; gap: 0.6rem; margin: 0 0 0.5rem; }
+  .sid { font: 700 1.6rem/1 var(--font-en); color: var(--muted); direction: ltr; margin-left: auto; }
   .ready .sid { color: var(--accent); }
-  .is-done .sid::after { content: ' ✓'; color: var(--ok); font-size: 1rem; }
-  h2 { font-size: 1.2rem; display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
-  h2 a { color: var(--ink); text-decoration: none; }
-  h2 a:hover { color: var(--accent); }
-  .sections .en { margin: 0; color: var(--muted); font-size: 0.85rem; }
-  .sections ul { list-style: none; padding: 0; margin: 0.6rem 0 0; display: flex; flex-wrap: wrap; gap: 0.35rem; }
-  .sections ul li { font-size: 0.85rem; padding: 0.1rem 0.65rem; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); }
-  .sections ul .en { display: inline; margin-inline-start: 0.2rem; font-size: 0.78rem; }
-  .soon h2 { color: var(--muted); }
+  .meta { font: 600 0.78rem var(--font-head); color: var(--muted); }
+  .done { display: none; font: 600 0.75rem/1 var(--font-head); color: var(--ok); background: var(--ok-soft); padding: 0.35rem 0.6rem; border-radius: 99px; }
+  .is-done .done { display: inline-block; }
+  .is-done { border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); }
+  h2 { font-size: 1.15rem; line-height: 1.6; }
+  .title { color: var(--ink); text-decoration: none; }
+  .ready .title::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-m); }
+  .soon .title { color: var(--muted); }
+  .card .en { margin: 0.1rem 0 0; color: var(--muted); font-size: 0.82rem; }
+  .summary { margin: 0.6rem 0 0; font-size: 0.97rem; line-height: 1.8; }
+  .topics { list-style: none; padding: 0.7rem 0 0; margin: 0.8rem 0 0; border-top: 1px dashed var(--line); display: grid; gap: 0.25rem; }
+  .topics li { font-size: 0.9rem; line-height: 1.45; }
+  .topics .en { display: block; margin: 0; font-size: 0.75rem; text-align: right; }
+  .go { margin-top: auto; padding-top: 0.9rem; font: 700 0.9rem var(--font-head); color: var(--accent); }
   .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
   .pager a { display: flex; flex-direction: column; padding: 0.9rem 1.1rem; border: 1px solid var(--line); border-radius: var(--radius-m); text-decoration: none; color: var(--ink); background: var(--surface); }
   .pager a:hover { border-color: var(--accent); }

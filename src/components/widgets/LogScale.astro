@@ -1,0 +1,68 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-ls" title="تغيير الأساس ومقياس pH" en="Change-of-base and a logarithmic scale">
+  <div class="controls">
+    <label>العدد <span class="ltr">x = <output data-o="x"></output></span><input type="range" min="-1" max="3" step="0.05" value="1.2" data-i="x" /></label>
+    <label>الأساس
+      <span class="seg" dir="ltr" data-i="b">
+        <button type="button" data-v="2" aria-pressed="true">2</button><button type="button" data-v="3">3</button><button type="button" data-v="5">5</button><button type="button" data-v="7">7</button>
+      </span>
+    </label>
+    <label>تركيز أيونات الهيدروجين <span class="ltr">[H⁺] = 10<sup><output data-o="h"></output></sup></span><input type="range" min="-14" max="-1" step="0.5" value="-7" data-i="h" /></label>
+  </div>
+  <div class="readout cob" aria-live="polite"></div>
+  <canvas aria-label="مقياس pH"></canvas>
+  <div class="readout ph" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-ls')!;
+  const canvas = root.querySelector('canvas')!;
+  const cob = root.querySelector<HTMLElement>('.cob')!;
+  const ph = root.querySelector<HTMLElement>('.ph')!;
+  const plot = new Plot(canvas, { xmin: -0.5, xmax: 14.5, ymin: -1, ymax: 1.6 });
+  let b = 2;
+  root.querySelectorAll<HTMLButtonElement>('[data-i="b"] button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      b = Number(btn.dataset.v);
+      root.querySelectorAll('[data-i="b"] button').forEach((o) => o.setAttribute('aria-pressed', String(o === btn)));
+      draw();
+    }),
+  );
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const x = +(10 ** v('x')).toPrecision(3);
+    const h = v('h');
+    root.querySelector('[data-o="x"]')!.textContent = String(x);
+    root.querySelector('[data-o="h"]')!.textContent = String(h);
+    const ln = Math.log(x), lg = Math.log10(x), lb = ln / Math.log(b);
+    cob.innerHTML =
+      `<p>${tex(`$\\log_{${b}} ${x} = \\dfrac{\\ln ${x}}{\\ln ${b}} = \\dfrac{${fmt(ln, 4)}}{${fmt(Math.log(b), 4)}} \\approx ${fmt(lb, 4)}$`)}</p>` +
+      `<p>${tex(`$\\log_{${b}} ${x} = \\dfrac{\\log ${x}}{\\log ${b}} = \\dfrac{${fmt(lg, 4)}}{${fmt(Math.log10(b), 4)}} \\approx ${fmt(lb, 4)}$`)} النتيجة نفسها بأي أساس نختاره للقسمة.</p>` +
+      `<p>تحقق: ${tex(`$${b}^{${fmt(lb, 4)}} \\approx ${fmt(b ** lb, 3)}$`)}</p>`;
+    const p = -h;
+    plot.fit(0.22);
+    plot.clear();
+    const { ctx } = plot;
+    for (let k = 0; k < 14; k++) {
+      const t = k / 13;
+      ctx.fillStyle = `hsl(${Math.round(t * 260)}, 60%, 50%)`;
+      ctx.fillRect(plot.X(k), plot.Y(1), plot.X(k + 1) - plot.X(k) + 0.5, plot.Y(0) - plot.Y(1));
+    }
+    ctx.fillStyle = css('--muted');
+    ctx.font = '12px "Noto Sans", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    for (let k = 0; k <= 14; k++) ctx.fillText(String(k), plot.X(k), plot.Y(0) + 3);
+    plot.seg(p, -0.1, p, 1.45, css('--ink'), 3);
+    plot.dot(p, 1.45, css('--ink'), 6);
+    const kind = p < 7 ? 'حمضي' : p > 7 ? 'قاعدي' : 'متعادل (مثل الماء النقي)';
+    ph.innerHTML =
+      `<p>${tex(`$\\text{pH} = -\\log[\\text{H}^+] = -\\log(10^{${h}}) = ${p}$`)}: المحلول <strong>${kind}</strong>.</p>` +
+      `<p>كل درجة على المقياس تعني <strong>عشرة أضعاف</strong> في التركيز: محلول pH له 3 أشد حموضة بـ 1000 مرة من محلول pH له 6. المقياس اللوغاريتمي يضغط مدى هائلًا (من ${tex('$10^{-14}$')} إلى ${tex('$1$')}) في أعداد من 0 إلى 14.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

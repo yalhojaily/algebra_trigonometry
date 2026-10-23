@@ -73,6 +73,8 @@ export type Problem =
       answer: C[];
       /** الترتيب مهم (إحداثيات نقطة أو مجموعة قيم بترتيب محدد) */
       ordered?: boolean;
+      /** تسامح مطلق للإجابات المقرّبة (مثل 0.005 لمنزلتين عشريتين) */
+      tol?: number;
       hint: string;
       solution: string[];
       placeholder?: string;
@@ -86,7 +88,7 @@ export type Problem =
       /** قيم موجبة فقط للمتغيرات (عند وجود جذور زوجية أو أسس كسرية) */
       positive?: boolean;
       /** شروط على شكل الإجابة */
-      require?: ('factored' | 'noRadicalDenominator' | 'noNegativeExponent' | 'expanded' | 'monomial')[];
+      require?: ('factored' | 'noRadicalDenominator' | 'noNegativeExponent' | 'expanded' | 'monomial' | 'logsExpanded' | 'logsCondensed')[];
       hint: string;
       solution: string[];
       placeholder?: string;

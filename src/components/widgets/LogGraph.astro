@@ -1,0 +1,55 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-log" title="اللوغاريتم: معكوس الأسية" en="y = log_b x  ⇔  bʸ = x">
+  <div class="controls">
+    <label>الأساس <span class="ltr">b = <output data-o="b"></output></span><input type="range" min="0.25" max="5" step="0.25" value="2" data-i="b" /></label>
+    <label>المدخل <span class="ltr">x = <output data-o="x"></output></span><input type="range" min="0.25" max="8" step="0.25" value="4" data-i="x" /></label>
+    <label class="chk"><input type="checkbox" data-i="m" checked /> اعرض <span class="ltr">bˣ</span> والمرآة</label>
+  </div>
+  <canvas aria-label="رسم الدالة اللوغاريتمية"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--plot-curve)"></i><span class="ltr">log_b x</span></span>
+    <span><i style="background:var(--plot-alt)"></i><span class="ltr">bˣ</span></span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-log')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -4, xmax: 9, ymin: -4, ymax: 5 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    let b = v('b');
+    if (b === 1) b = 1.25;
+    const x = v('x');
+    root.querySelector('[data-o="b"]')!.textContent = String(b);
+    root.querySelector('[data-o="x"]')!.textContent = String(x);
+    const m = root.querySelector<HTMLInputElement>('[data-i="m"]')!.checked;
+    const L = (u: number) => (u > 0 ? Math.log(u) / Math.log(b) : NaN);
+    plot.fit(0.6);
+    plot.clear();
+    plot.grid(1, 2);
+    if (m) {
+      plot.fn((u) => u, css('--muted'), 1.4, [6, 5]);
+      plot.fn((u) => b ** u, css('--plot-alt'), 2.2);
+      plot.dot(0, 1, css('--plot-alt'), 5);
+    }
+    plot.seg(0, -4, 0, 5, css('--plot-hot'), 1.4, [6, 5]);
+    plot.fn(L, css('--plot-curve'), 3);
+    plot.dot(1, 0, css('--plot-hot'), 6);
+    plot.dot(b, 1, css('--plot-curve'), 5);
+    const y = L(x);
+    plot.seg(x, 0, x, y, css('--plot-hot'), 1.5, [3, 3]);
+    plot.dot(x, y, css('--plot-hot'), 6);
+    out.innerHTML =
+      `<p>${tex(`$\\log_{${b}} ${x} = ${fmt(y, 4)}$`)} لأن ${tex(`$${b}^{${fmt(y, 4)}} \\approx ${x}$`)}. اللوغاريتم <strong>أسٌّ</strong>: الأس الذي نرفع إليه ${b} لنحصل على ${x}.</p>` +
+      `<p>نقاط ثابتة: ${tex('$(1, 0)$')} لأن ${tex(`$\\log_{${b}} 1 = 0$`)}، و ${tex(`$(${b}, 1)$`)} لأن ${tex(`$\\log_{${b}} ${b} = 1$`)}.</p>` +
+      `<p>المجال ${tex('$(0, \\infty)$')} (لا لوغاريتم لصفر أو سالب)، والمدى كل الأعداد، وخط التقارب الرأسي ${tex('$x = 0$')}. الدالة ${b > 1 ? 'متزايدة لأن b > 1' : 'متناقصة لأن 0 < b < 1'}.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

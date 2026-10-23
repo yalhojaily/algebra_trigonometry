@@ -1,0 +1,187 @@
+---
+section: "4.3"
+summary: "اللوغاريتم هو الأس: تعريفه كمعكوس للدالة الأسية، والتحويل بين الصيغتين اللوغاريتمية والأسية، والمنحنى والمجال، واللوغاريتمات العشرية والطبيعية، وخصائص الضرب والقسمة والقوة لفك العبارات وجمعها."
+minutes: 45
+prerequisites: ["4.1", "4.2"]
+terms:
+  - { ar: "لوغاريتم", en: "Logarithm", def: "y = log_b x تعني b^y = x: اللوغاريتم هو الأس الذي يُرفع إليه b ليعطي x." }
+  - { ar: "الدالة اللوغاريتمية", en: "Logarithmic Function", def: "f(x) = log_b x، وهي الدالة العكسية لـ bˣ، ومجالها (0, ∞)." }
+  - { ar: "اللوغاريتم العشري", en: "Common Logarithm", def: "اللوغاريتم للأساس 10، ويُكتب log x دون أساس." }
+  - { ar: "اللوغاريتم الطبيعي", en: "Natural Logarithm", def: "اللوغاريتم للأساس e، ويُكتب ln x." }
+  - { ar: "خاصية الضرب", en: "Product Property", def: "log_b(xy) = log_b x + log_b y." }
+  - { ar: "خاصية القسمة", en: "Quotient Property", def: "log_b(x/y) = log_b x − log_b y." }
+  - { ar: "خاصية القوة", en: "Power Property", def: "log_b(xⁿ) = n·log_b x." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import LogGraph from '../../components/widgets/LogGraph.astro';
+
+السؤال $2^{?} = 8$ سهل: الجواب 3. لكن $2^{?} = 10$؟ الجواب بين 3 و 4، ولا يمكن كتابته بالأعداد التي نعرفها. نحتاج اسمًا لهذا العدد: **لوغاريتم 10 للأساس 2**، ويُكتب $\log_2 10$. فاللوغاريتم ليس عملية غامضة؛ هو ببساطة **اسم الأس**.
+
+## تعريف اللوغاريتم <span class="en" lang="en">Definition of a Logarithm</span>
+
+الدالة الأسية $b^x$ واحد لواحد (الدرس السابق)، فلها معكوس. هذا المعكوس هو الدالة اللوغاريتمية.
+
+<Box kind="def" title="اللوغاريتم" en="Logarithm">
+إذا كان $b > 0$ و $b \ne 1$ و $x > 0$، فإن
+
+$$y = \log_b x \quad\iff\quad b^y = x$$
+
+ويُقرأ «<Term ar="لوغاريتم" en="logarithm" /> $x$ للأساس $b$». أي أن $\log_b x$ هو **الأس** الذي يُرفع إليه $b$ ليعطي $x$.
+</Box>
+
+احفظ الصورة: الأساس يبقى أساسًا في الصيغتين، واللوغاريتم ينتقل ليصبح الأس.
+
+$$\underbrace{\log_{\color{teal}{b}} x = \color{orange}{y}}_{\text{logarithmic form}} \qquad \underbrace{\color{teal}{b}^{\color{orange}{y}} = x}_{\text{exponential form}}$$
+
+<Example n="1" title="التحويل بين الصيغتين">
+حوّل: (أ) $\log_3 81 = 4$ إلى صيغة أسية. (ب) $5^{-2} = \tfrac{1}{25}$ إلى صيغة لوغاريتمية.
+
+<Solution>
+(أ) الأساس 3 والأس 4: $3^4 = 81$.
+
+(ب) الأساس 5 والأس $-2$ والناتج $\tfrac{1}{25}$: $\log_5 \tfrac{1}{25} = -2$.
+
+في الحالتين اللوغاريتم = الأس.
+</Solution>
+</Example>
+
+<Example n="2" title="حساب لوغاريتمات ذهنيًا">
+احسب: $\log_2 32$، $\log_4 \tfrac{1}{16}$، $\log_9 3$، $\log_7 1$.
+
+<Solution>
+$\log_2 32 = 5$ لأن $2^5 = 32$.
+
+$\log_4 \tfrac{1}{16} = -2$ لأن $4^{-2} = \tfrac{1}{16}$. و $\log_9 3 = \tfrac12$ لأن $9^{1/2} = \sqrt{9} = 3$.
+
+$\log_7 1 = 0$ لأن $7^0 = 1$.
+</Solution>
+</Example>
+
+<Box kind="rule" title="خصائص أساسية" en="Basic properties of logarithms">
+لأي أساس $b$:
+
+$$\log_b 1 = 0 \qquad \log_b b = 1 \qquad \log_b b^x = x \qquad b^{\log_b x} = x \ (x > 0)$$
+
+الأخيرتان تقولان إن $b^x$ و $\log_b x$ تلغي كل منهما الأخرى، لأنهما متعاكستان.
+</Box>
+
+<Example n="3" title="حل معادلة لوغاريتمية بسيطة">
+حل $\log_x \tfrac{8}{27} = 3$، ثم $\log_4 (2x - 1) = \tfrac{3}{2}$.
+
+<Solution>
+الأولى بالصيغة الأسية: $x^3 = \tfrac{8}{27}$ ← $x = \tfrac{2}{3}$ (والأساس موجب كما يجب).
+
+الثانية: $2x - 1 = 4^{3/2} = (\sqrt4)^3 = 8$
+
+$2x = 9$ ← $x = \tfrac{9}{2}$
+</Solution>
+</Example>
+
+## الدالة اللوغاريتمية ومنحناها <span class="en" lang="en">Logarithmic Functions and Their Graphs</span>
+
+<Box kind="def" title="الدالة اللوغاريتمية" en="Logarithmic Function">
+$f(x) = \log_b x$ هي الدالة العكسية لـ $g(x) = b^x$. لذلك يتبادل المجال والمدى، ومنحناها انعكاس منحنى $b^x$ حول $y = x$:
+
+- المجال $(0, \infty)$، والمدى $(-\infty, \infty)$.
+- يمر بـ $(1, 0)$ و $(b, 1)$.
+- خط التقارب **الرأسي** $x = 0$.
+- متزايدة إذا $b > 1$، ومتناقصة إذا $0 < b < 1$.
+</Box>
+
+<LogGraph />
+
+<Box kind="mistake" title="لا لوغاريتم لصفر أو لعدد سالب">
+$\log_2 (-8)$ غير معرّف: لا يوجد أس يجعل $2^y$ سالبًا. لذلك مجال $\log_b(\text{expression})$ هو حيث يكون ما بداخله **موجبًا تمامًا**.
+</Box>
+
+<Example n="4" title="مجال دالة لوغاريتمية">
+أوجد مجال $f(x) = \log_5 (3 - 2x)$.
+
+<Solution>
+نشترط $3 - 2x > 0$ ← $-2x > -3$
+
+نقسم على سالب فتنقلب المتباينة: $x < \tfrac{3}{2}$
+
+المجال $\left(-\infty, \tfrac32\right)$، وخط التقارب الرأسي $x = \tfrac32$.
+</Solution>
+</Example>
+
+## اللوغاريتم العشري والطبيعي <span class="en" lang="en">Common and Natural Logarithms</span>
+
+<Box kind="def" title="الأساسان الأكثر استعمالًا" en="Common and natural logarithms">
+- <Term ar="اللوغاريتم العشري" en="common logarithm" />: الأساس 10، ويُكتب $\log x$ دون أساس. مثل $\log 1000 = 3$.
+- <Term ar="اللوغاريتم الطبيعي" en="natural logarithm" />: الأساس $e$، ويُكتب $\ln x$. مثل $\ln e^5 = 5$ و $\ln 1 = 0$.
+
+وفي الآلة الحاسبة زرّان: `LOG` و `LN`.
+</Box>
+
+## خصائص اللوغاريتمات <span class="en" lang="en">Properties of Logarithms</span>
+
+قواعد الأسس تتحول إلى قواعد لوغاريتمات. فلأن $b^m \cdot b^n = b^{m+n}$ (الأسس تُجمع عند الضرب)، واللوغاريتم أس، فإن لوغاريتم حاصل الضرب هو مجموع اللوغاريتمين.
+
+<Box kind="rule" title="خصائص الضرب والقسمة والقوة" en="Product, Quotient, and Power Properties">
+إذا كان $x > 0$ و $y > 0$، و $n$ أي عدد حقيقي:
+
+$$\log_b (xy) = \log_b x + \log_b y$$
+
+$$\log_b \frac{x}{y} = \log_b x - \log_b y$$
+
+$$\log_b x^n = n \log_b x$$
+</Box>
+
+<details class="derive">
+<summary>لماذا تصح خاصية الضرب؟</summary>
+
+ضع $m = \log_b x$ و $n = \log_b y$، أي $x = b^m$ و $y = b^n$. عندئذ $xy = b^m b^n = b^{m+n}$، وبالتعريف $\log_b(xy) = m + n = \log_b x + \log_b y$.
+</details>
+
+<Box kind="mistake" title="أخطاء شائعة جدًا">
+- $\log_b(x + y) \ne \log_b x + \log_b y$. لا توجد قاعدة للوغاريتم المجموع.
+- $\dfrac{\log_b x}{\log_b y} \ne \log_b x - \log_b y$. قسمة لوغاريتمين ليست لوغاريتم القسمة.
+- $(\log_b x)^n \ne n\log_b x$. خاصية القوة للأس **داخل** اللوغاريتم فقط.
+</Box>
+
+<Example n="5" title="فك اللوغاريتم" >
+اكتب $\log_3 \left(\dfrac{x^4 \sqrt{y}}{z^2}\right)$ مجموعًا وفرقًا للوغاريتمات (المتغيرات موجبة).
+
+<Solution>
+القسمة أولًا: $= \log_3 (x^4\sqrt{y}) - \log_3 z^2$
+
+ثم الضرب: $= \log_3 x^4 + \log_3 y^{1/2} - \log_3 z^2$
+
+ثم القوة: $= 4\log_3 x + \tfrac12 \log_3 y - 2\log_3 z$
+</Solution>
+</Example>
+
+<Example n="6" title="جمع اللوغاريتمات في واحد">
+اكتب $2\ln x - 3\ln y + \ln(x + 1)$ لوغاريتمًا واحدًا.
+
+<Solution>
+المعاملات تدخل أسسًا: $= \ln x^2 - \ln y^3 + \ln(x + 1)$
+
+الجمع ضرب والطرح قسمة: $= \ln\dfrac{x^2(x + 1)}{y^3}$
+
+انتبه: $\ln(x + 1)$ تبقى كما هي داخل الضرب، ولا تُفك.
+</Solution>
+</Example>
+
+<Check
+  q="أي مما يأتي يساوي $\\log_2 24 - \\log_2 3$؟"
+  options={["$\\log_2 21$", "$3$", "$8$", "$\\dfrac{\\log_2 24}{\\log_2 3}$"]}
+  answer={1}
+  explain="الفرق لوغاريتم القسمة: $\\log_2 \\tfrac{24}{3} = \\log_2 8 = 3$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $\log_b x = y \iff b^y = x$: اللوغاريتم أس.
+- $\log_b x$ معكوس $b^x$: مجالها $(0, \infty)$، ومنحناها يمر بـ $(1, 0)$، وخط تقاربها $x = 0$.
+- $\log$ للأساس 10، و $\ln$ للأساس $e$.
+- الضرب ← جمع، والقسمة ← طرح، والقوة ← معامل. ولا قاعدة للوغاريتم المجموع.
+
+<Practice set="4.3" count={6} />

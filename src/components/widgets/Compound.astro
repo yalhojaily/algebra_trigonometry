@@ -1,0 +1,57 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-ci" title="الفائدة المركبة: كلما زاد عدد مرات التركيب" en="Compound interest and the number e">
+  <div class="controls">
+    <label>المبلغ الأصلي <span class="ltr">P = <output data-o="P"></output></span><input type="range" min="1000" max="20000" step="1000" value="10000" data-i="P" /></label>
+    <label>المعدل السنوي <span class="ltr">r = <output data-o="r"></output>%</span><input type="range" min="1" max="20" value="6" data-i="r" /></label>
+    <label>المدة <span class="ltr">t = <output data-o="t"></output></span> سنة<input type="range" min="1" max="30" value="10" data-i="t" /></label>
+  </div>
+  <canvas aria-label="نمو المبلغ مع الزمن"></canvas>
+  <div class="tbl" dir="ltr"></div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-ci')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const tbl = root.querySelector<HTMLElement>('.tbl')!;
+  const plot = new Plot(canvas, { xmin: -1, xmax: 31, ymin: -1, ymax: 10 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const rows: [string, string, number][] = [
+    ['سنويًا', 'n = 1', 1], ['نصف سنوي', 'n = 2', 2], ['ربع سنوي', 'n = 4', 4], ['شهريًا', 'n = 12', 12], ['يوميًا', 'n = 365', 365], ['مستمر', 'Pe^{rt}', Infinity],
+  ];
+  const money = (x: number) => x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  function draw() {
+    const P = v('P'), r = v('r') / 100, t = v('t');
+    for (const s of ['P', 'r', 't']) root.querySelector(`[data-o="${s}"]`)!.textContent = s === 'P' ? v(s).toLocaleString('en-US') : String(v(s));
+    const A = (n: number, T: number) => (n === Infinity ? P * Math.exp(r * T) : P * (1 + r / n) ** (n * T));
+    const top = A(Infinity, 30);
+    plot.view = { xmin: -4.5, xmax: 31, ymin: -top * 0.08, ymax: top * 1.08 };
+    plot.fit(0.5);
+    plot.clear();
+    const step = top > 200000 ? 50000 : top > 80000 ? 20000 : top > 40000 ? 10000 : 5000;
+    plot.grid(5, 1, step);
+    plot.fn((T) => (T >= 0 ? P * (1 + r * T) : NaN), css('--muted'), 2, [5, 4]);
+    plot.fn((T) => (T >= 0 ? A(1, Math.floor(T)) : NaN), css('--plot-alt'), 2);
+    plot.fn((T) => (T >= 0 ? A(Infinity, T) : NaN), css('--plot-curve'), 3);
+    plot.dot(t, A(Infinity, t), css('--plot-hot'), 6);
+    tbl.innerHTML = '<table><thead><tr><th>التركيب</th><th></th><th>A</th></tr></thead><tbody>' +
+      rows.map(([ar, en, n]) => `<tr${n === Infinity ? ' class="hl"' : ''}><td dir="rtl">${ar}</td><td>${tex(`$${en}$`)}</td><td>${money(A(n, t))}</td></tr>`).join('') + '</tbody></table>';
+    out.innerHTML =
+      `<p>${tex('$A = P\\left(1 + \\dfrac{r}{n}\\right)^{nt}$')}، ومع ${tex('$n \\to \\infty$')} يصير ${tex('$A = Pe^{rt}$')}.</p>` +
+      `<p>بعد ${t} سنة: الفرق بين التركيب السنوي والمستمر ${money(A(Infinity, t) - A(1, t))} فقط، أما الفرق عن الفائدة البسيطة (الخط المتقطع) فهو ${money(A(Infinity, t) - P * (1 + r * t))}.</p>` +
+      `<p>زيادة عدد مرات التركيب تزيد المبلغ لكن بحد أعلى، والحد هو ${tex('$Pe^{rt}$')}. من هنا يأتي العدد ${tex('$e \\approx 2.71828$')}.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>
+<style>
+  .tbl :global(table) { width: 100%; border-collapse: collapse; margin-top: 0.8rem; font-family: var(--font-en); font-size: 0.95rem; }
+  .tbl :global(th), .tbl :global(td) { padding: 0.3rem 0.6rem; border-bottom: 1px solid var(--line); text-align: left; }
+  .tbl :global(td[dir='rtl']) { font-family: var(--font-body); text-align: right; }
+  .tbl :global(th) { font-family: var(--font-head); color: var(--muted); font-weight: 600; }
+  .tbl :global(tr.hl td) { color: var(--accent); font-weight: 700; }
+</style>

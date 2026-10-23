@@ -60,9 +60,11 @@ export type Node =
   | { t: 'var'; v: string }
   | { t: 'neg'; a: Node }
   | { t: 'add' | 'sub' | 'mul' | 'div' | 'pow'; a: Node; b: Node }
-  | { t: 'sqrt'; a: Node };
+  | { t: 'sqrt'; a: Node }
+  | { t: 'fn'; f: 'ln' | 'log' | 'exp' | 'abs'; base?: number; a: Node }
+  | { t: 'const'; v: 'e' | 'pi' };
 
-type Tok = { t: 'num'; v: number } | { t: 'i' } | { t: 'var'; v: string } | { t: 'op'; v: string } | { t: 'fn' };
+type Tok = { t: 'num'; v: number } | { t: 'i' } | { t: 'var'; v: string } | { t: 'op'; v: string } | { t: 'fn'; f?: 'ln' | 'log' | 'exp' | 'abs'; base?: number } | { t: 'const'; v: 'e' | 'pi' };
 
 function tokenize(s: string): Tok[] {
   const out: Tok[] = [];
@@ -79,6 +81,23 @@ function tokenize(s: string): Tok[] {
     } else if (s.startsWith('sqrt', k)) {
       out.push({ t: 'fn' });
       k += 4;
+    } else if (s.startsWith('log_', k)) {
+      let j = k + 4;
+      while (j < s.length && /[0-9.]/.test(s[j])) j++;
+      const base = Number(s.slice(k + 4, j));
+      if (!(base > 0) || base === 1) throw new Error('أساس اللوغاريتم غير صالح');
+      out.push({ t: 'fn', f: 'log', base });
+      k = j;
+    } else if (s.startsWith('ln', k) || s.startsWith('log', k) || s.startsWith('exp', k) || s.startsWith('abs', k)) {
+      const f = (['ln', 'log', 'exp', 'abs'] as const).find((name) => s.startsWith(name, k))!;
+      out.push({ t: 'fn', f });
+      k += f.length;
+    } else if (s.startsWith('pi', k) || ch === 'π') {
+      out.push({ t: 'const', v: 'pi' });
+      k += ch === 'π' ? 1 : 2;
+    } else if (ch === 'e') {
+      out.push({ t: 'const', v: 'e' });
+      k++;
     } else if (ch === '√') {
       out.push({ t: 'fn' });
       k++;
@@ -96,8 +115,8 @@ function tokenize(s: string): Tok[] {
   const res: Tok[] = [];
   for (const cur of out) {
     const prev = res[res.length - 1];
-    const prevEnds = prev && (prev.t === 'num' || prev.t === 'i' || prev.t === 'var' || (prev.t === 'op' && prev.v === ')'));
-    const curStarts = cur.t === 'num' || cur.t === 'i' || cur.t === 'var' || cur.t === 'fn' || (cur.t === 'op' && cur.v === '(');
+    const prevEnds = prev && (prev.t === 'num' || prev.t === 'i' || prev.t === 'var' || prev.t === 'const' || (prev.t === 'op' && prev.v === ')'));
+    const curStarts = cur.t === 'num' || cur.t === 'i' || cur.t === 'var' || cur.t === 'fn' || cur.t === 'const' || (cur.t === 'op' && cur.v === '(');
     if (prevEnds && curStarts) res.push({ t: 'op', v: '*' });
     res.push(cur);
   }
@@ -141,7 +160,8 @@ export function parse(input: string): Node {
     if (tk.t === 'num') return { t: 'num', v: tk.v };
     if (tk.t === 'i') return { t: 'i' };
     if (tk.t === 'var') return { t: 'var', v: tk.v };
-    if (tk.t === 'fn') return { t: 'sqrt', a: power() };
+    if (tk.t === 'const') return { t: 'const', v: tk.v };
+    if (tk.t === 'fn') return tk.f ? { t: 'fn', f: tk.f, base: tk.base, a: power() } : { t: 'sqrt', a: power() };
     if (tk.t === 'op' && tk.v === '(') {
       const v = expr();
       if (!isOp(')')) throw new Error('قوس غير مغلق');
@@ -164,6 +184,15 @@ export function evalNode(n: Node, vars: Record<string, number> = {}): C {
       return c(vars[n.v]);
     case 'neg': return mul(c(-1), evalNode(n.a, vars));
     case 'sqrt': return sqrt(evalNode(n.a, vars));
+    case 'const': return c(n.v === 'e' ? Math.E : Math.PI);
+    case 'fn': {
+      const a = evalNode(n.a, vars);
+      if (n.f === 'abs') return c(Math.hypot(a.re, a.im));
+      if (n.f === 'exp') { const m = Math.exp(a.re); return c(m * Math.cos(a.im), m * Math.sin(a.im)); }
+      if (a.im !== 0 || a.re <= 0) throw new Error('لوغاريتم عدد غير موجب');
+      const ln = Math.log(a.re);
+      return c(n.f === 'ln' ? ln : ln / Math.log(n.base ?? 10));
+    }
     case 'add': return add(evalNode(n.a, vars), evalNode(n.b, vars));
     case 'sub': return sub(evalNode(n.a, vars), evalNode(n.b, vars));
     case 'mul': return mul(evalNode(n.a, vars), evalNode(n.b, vars));
@@ -184,6 +213,11 @@ export function toTex(n: Node): string {
     case 'var': return n.v;
     case 'neg': return '-' + (prec(n.a) <= 2 ? wrap(toTex(n.a)) : toTex(n.a));
     case 'sqrt': return `\\sqrt{${toTex(n.a)}}`;
+    case 'const': return n.v === 'e' ? 'e' : '\\pi';
+    case 'fn':
+      if (n.f === 'exp') return `e^{${toTex(n.a)}}`;
+      if (n.f === 'abs') return `\\left|${toTex(n.a)}\\right|`;
+      return `${n.f === 'ln' ? '\\ln' : n.base ? `\\log_{${n.base}}` : '\\log'}\\left(${toTex(n.a)}\\right)`;
     case 'add': return `${toTex(n.a)} + ${toTex(n.b)}`;
     case 'sub': return `${toTex(n.a)} - ${prec(n.b) <= 1 || n.b.t === 'neg' ? wrap(toTex(n.b)) : toTex(n.b)}`;
     case 'div': return `\\frac{${toTex(n.a)}}{${toTex(n.b)}}`;
@@ -259,6 +293,16 @@ export function isMonomial(n: Node): boolean {
   return nums <= 1;
 }
 
+function logNodes(n: Node): Node[] {
+  const own = n.t === 'fn' && (n.f === 'ln' || n.f === 'log') ? [n] : [];
+  const kids = [('a' in n ? n.a : null), ('b' in n ? (n as any).b : null)].filter(Boolean) as Node[];
+  return [...own, ...kids.flatMap(logNodes)];
+}
+/** كل لوغاريتم يأخذ متغيرًا واحدًا أو عددًا (خصائص اللوغاريتم مطبقة بالكامل) */
+export const isLogsExpanded = (n: Node) => logNodes(n).every((l) => 'a' in l && (l.a.t === 'var' || l.a.t === 'num' || l.a.t === 'const'));
+/** لوغاريتم واحد فقط */
+export const isLogsCondensed = (n: Node) => logNodes(n).length <= 1;
+
 const EMPTY = ['لايوجد', 'لاحل', 'none', 'nosolution', '∅', '{}', 'ø'];
 
 /** يحلل قائمة إجابات مفصولة بفواصل. يعيد [] إن كتب المستخدم «لا يوجد حل». */
@@ -271,22 +315,22 @@ export function parseList(input: string): C[] {
     .map((part) => evaluate(part));
 }
 
-const close = (a: C, b: C) => {
-  const tol = 1e-6 * Math.max(1, Math.hypot(b.re, b.im));
+const close = (a: C, b: C, abs?: number) => {
+  const tol = abs ?? 1e-6 * Math.max(1, Math.hypot(b.re, b.im));
   return Math.abs(a.re - b.re) < tol && Math.abs(a.im - b.im) < tol;
 };
 
 /** مقارنة مجموعتين من الحلول بغض النظر عن الترتيب */
-export function sameSet(given: C[], expected: C[]) {
+export function sameSet(given: C[], expected: C[], tol?: number) {
   const uniq = (xs: C[]) => xs.filter((x, k) => xs.findIndex((y) => close(x, y)) === k);
   const g = uniq(given);
   const e = uniq(expected);
-  return g.length === e.length && e.every((x) => g.some((y) => close(x, y)));
+  return g.length === e.length && e.every((x) => g.some((y) => close(x, y, tol)));
 }
 
 /** مقارنة مرتبة، مثل إحداثيات نقطة (x, y) */
-export function sameList(given: C[], expected: C[]) {
-  return given.length === expected.length && expected.every((e, k) => close(given[k], e));
+export function sameList(given: C[], expected: C[], tol?: number) {
+  return given.length === expected.length && expected.every((e, k) => close(given[k], e, tol));
 }
 
 /** يزيل الأقواس الخارجية من نقطة مكتوبة (3, -2) */

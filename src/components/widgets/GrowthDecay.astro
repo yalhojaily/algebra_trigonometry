@@ -1,0 +1,51 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-gd" title="النمو والاضمحلال الأسي" en="A(t) = A₀·eᵏᵗ">
+  <div class="controls">
+    <label>الكمية الابتدائية <span class="ltr">A₀ = <output data-o="a"></output></span><input type="range" min="10" max="100" step="10" value="40" data-i="a" /></label>
+    <label>المعدل <span class="ltr">k = <output data-o="k"></output></span><input type="range" min="-0.5" max="0.5" step="0.02" value="0.14" data-i="k" /></label>
+  </div>
+  <canvas aria-label="منحنى النمو أو الاضمحلال"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-gd')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -1, xmax: 20, ymin: -15, ymax: 220 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const A0 = v('a'), k = +v('k').toFixed(2);
+    root.querySelector('[data-o="a"]')!.textContent = String(A0);
+    root.querySelector('[data-o="k"]')!.textContent = String(k);
+    const A = (t: number) => (t >= 0 ? A0 * Math.exp(k * t) : NaN);
+    plot.fit(0.55);
+    plot.clear();
+    plot.grid(2, 1, 20);
+    plot.fn(A, css('--plot-curve'), 3);
+    plot.dot(0, A0, css('--plot-hot'), 6);
+    let msg = '';
+    if (k === 0) msg = `${tex('$k = 0$')}: لا نمو ولا اضمحلال، الكمية ثابتة.`;
+    else {
+      const T = Math.log(2) / Math.abs(k);
+      const lev = k > 0 ? 2 : 0.5;
+      for (let j = 1; j <= 4 && j * T <= 20; j++) {
+        const y = A0 * lev ** j;
+        if (y > 220) break;
+        plot.seg(j * T, 0, j * T, y, css('--plot-alt'), 1.4, [4, 3]);
+        plot.dot(j * T, y, css('--plot-alt'), 5);
+      }
+      msg = k > 0
+        ? `${tex('$k > 0$')}: <strong>نمو</strong>. زمن التضاعف ${tex(`$T = \\dfrac{\\ln 2}{k} = \\dfrac{${fmt(Math.log(2), 4)}}{${k}} \\approx ${fmt(T, 2)}$`)}: كل ${fmt(T, 2)} وحدة زمن تتضاعف الكمية (النقاط الزرقاء).`
+        : `${tex('$k < 0$')}: <strong>اضمحلال</strong>. عمر النصف ${tex(`$T = \\dfrac{\\ln 2}{|k|} = \\dfrac{${fmt(Math.log(2), 4)}}{${Math.abs(k)}} \\approx ${fmt(T, 2)}$`)}: كل ${fmt(T, 2)} وحدة زمن تنقص الكمية إلى النصف.`;
+    }
+    out.innerHTML =
+      `<p>${tex(`$A(t) = ${A0}e^{${k}t}$`)}، و ${tex(`$A(10) \\approx ${fmt(A(10), 2)}$`)}.</p><p>${msg}</p>` +
+      `<p>لاحظ أن زمن التضاعف (أو عمر النصف) لا يعتمد على الكمية الابتدائية ${tex('$A_0$')}: غيّرها وسترى أن النقاط الزرقاء لا تتحرك أفقيًا.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

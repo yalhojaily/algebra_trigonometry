@@ -1,0 +1,46 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-exp" title="الدالة الأسية: أثر الأساس" en="f(x) = bˣ">
+  <div class="controls">
+    <label>الأساس <span class="ltr">b = <output data-o="b"></output></span><input type="range" min="0.2" max="4" step="0.1" value="2" data-i="b" /></label>
+    <label>إزاحة أفقية <span class="ltr">h = <output data-o="h"></output></span><input type="range" min="-3" max="3" value="0" data-i="h" /></label>
+    <label>إزاحة رأسية <span class="ltr">k = <output data-o="k"></output></span><input type="range" min="-3" max="3" value="0" data-i="k" /></label>
+    <label class="chk"><input type="checkbox" data-i="e" /> قارن مع <span class="ltr">eˣ</span></label>
+  </div>
+  <canvas aria-label="رسم الدالة الأسية"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-exp')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -6, xmax: 6, ymin: -4, ymax: 8 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const b = v('b'), h = v('h'), k = v('k');
+    for (const s of ['b', 'h', 'k']) root.querySelector(`[data-o="${s}"]`)!.textContent = String(v(s));
+    const e = root.querySelector<HTMLInputElement>('[data-i="e"]')!.checked;
+    plot.fit(0.6);
+    plot.clear();
+    plot.grid(1, 2);
+    plot.seg(-6, k, 6, k, css('--plot-hot'), 1.6, [6, 5]);
+    if (e) plot.fn((x) => Math.exp(x), css('--plot-alt'), 2, [4, 3]);
+    plot.fn((x) => b ** (x - h) + k, css('--plot-curve'), 3);
+    plot.dot(h, 1 + k, css('--plot-hot'), 6);
+    plot.dot(h + 1, b + k, css('--plot-curve'), 5);
+    if (e) plot.label(1.9, Math.E ** 1.9, 'eˣ', css('--plot-alt'));
+    const behav = Math.abs(b - 1) < 1e-9
+      ? `${tex('$b = 1$')} مستبعد: ${tex('$1^x = 1$')} ثابتة وليست أسية.`
+      : b > 1 ? `${tex('$b > 1$')}: الدالة <strong>متزايدة</strong> (نمو أسي)، وكلما كبر ${tex('$b$')} صعد المنحنى أسرع.`
+      : `${tex('$0 < b < 1$')}: الدالة <strong>متناقصة</strong> (اضمحلال أسي)، وهي انعكاس ${tex(`$(${fmt(1 / b, 3)})^x$`)} حول المحور ${tex('$y$')}.`;
+    const ft = `f(x) = ${b}^{${h === 0 ? 'x' : `x ${h > 0 ? '-' : '+'} ${Math.abs(h)}`}}${k === 0 ? '' : ` ${k > 0 ? '+' : '-'} ${Math.abs(k)}`}`;
+    out.innerHTML =
+      `<p>${tex(`$${ft}$`)}</p><p>${behav}</p>` +
+      `<p>يمر بـ ${tex(`$(${h}, ${1 + k})$`)} (لأن ${tex('$b^0 = 1$')}) وبـ ${tex(`$(${h + 1}, ${fmt(b + k)})$`)}. خط التقارب الأفقي ${tex(`$y = ${k}$`)}، والمجال ${tex('$(-\\infty, \\infty)$')}، والمدى ${tex(`$(${k}, \\infty)$`)}.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

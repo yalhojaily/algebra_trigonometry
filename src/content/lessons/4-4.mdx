@@ -1,0 +1,146 @@
+---
+section: "4.4"
+summary: "حساب اللوغاريتمات عمليًا: الآلة الحاسبة للأساسين 10 و e، وقانون تغيير الأساس لأي أساس آخر، وتقدير اللوغاريتم بين عددين صحيحين، والمقاييس اللوغاريتمية مثل pH وريختر والديسيبل."
+minutes: 30
+prerequisites: ["4.3"]
+terms:
+  - { ar: "قانون تغيير الأساس", en: "Change-of-Base Formula", def: "log_b x = log_a x / log_a b لأي أساس a، وعادةً a = 10 أو a = e." }
+  - { ar: "مقياس لوغاريتمي", en: "Logarithmic Scale", def: "مقياس كل وحدة فيه تمثل ضرب الكمية في عدد ثابت (غالبًا 10) لا إضافة مقدار ثابت." }
+  - { ar: "الرقم الهيدروجيني", en: "pH", def: "pH = −log[H⁺]، ويقيس حموضة المحلول: أقل من 7 حمضي، و7 متعادل، وأكبر من 7 قاعدي." }
+  - { ar: "مقياس ريختر", en: "Richter Scale", def: "M = log(A/A₀): مقياس لوغاريتمي لقوة الزلازل." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import LogScale from '../../components/widgets/LogScale.astro';
+
+في الآلة الحاسبة زرّان للوغاريتم فقط: `LOG` للأساس 10 و `LN` للأساس $e$. فكيف نحسب $\log_7 50$؟ الجواب قانون صغير يحوّل أي أساس إلى أساس تعرفه الآلة. ثم نرى لماذا يحب العلماء اللوغاريتمات: لأنها تحوّل أعدادًا من $0.00000001$ إلى $100000000$ إلى مقياس مريح من 0 إلى 16.
+
+## الحساب بالآلة الحاسبة <span class="en" lang="en">Evaluating with a Calculator</span>
+
+<Example n="1" title="لوغاريتمات عشرية وطبيعية">
+احسب مقرّبًا إلى أربع منازل: $\log 52$، $\ln 0.3$، $\log 0.001$.
+
+<Solution>
+$\log 52 \approx 1.7160$. معقول: $10^1 = 10 < 52 < 100 = 10^2$، فهو بين 1 و 2.
+
+$\ln 0.3 \approx -1.2040$. سالب لأن $0.3 < 1$: نحتاج أسًا سالبًا لنحصل على عدد أصغر من 1.
+
+$\log 0.001 = \log 10^{-3} = -3$ تمامًا، ولا حاجة للآلة.
+</Solution>
+</Example>
+
+<Box kind="tip" title="قدّر قبل أن تحسب">
+لتقدير $\log_b x$ ابحث عن قوتين متتاليتين لـ $b$ يقع $x$ بينهما. مثلًا $2^5 = 32 < 50 < 64 = 2^6$، إذن $\log_2 50$ بين 5 و 6. هذا التقدير يكشف أخطاء الآلة الحاسبة فورًا.
+</Box>
+
+## قانون تغيير الأساس <span class="en" lang="en">Change-of-Base Formula</span>
+
+<Box kind="rule" title="تغيير الأساس" en="Change-of-Base Formula">
+لأي أساسين موجبين $a, b \ne 1$ و $x > 0$:
+
+$$\log_b x = \frac{\log_a x}{\log_a b}$$
+
+وعمليًا: $\displaystyle \log_b x = \frac{\log x}{\log b} = \frac{\ln x}{\ln b}$
+</Box>
+
+<details class="derive">
+<summary>من أين جاء القانون؟</summary>
+
+ضع $y = \log_b x$، أي $b^y = x$. خذ $\log_a$ للطرفين: $\log_a b^y = \log_a x$. وبخاصية القوة: $y \log_a b = \log_a x$، ومنه $y = \dfrac{\log_a x}{\log_a b}$.
+</details>
+
+<Example n="2" title="تطبيق القانون">
+احسب $\log_7 50$ مقرّبًا إلى أربع منازل.
+
+<Solution>
+$\log_7 50 = \dfrac{\ln 50}{\ln 7} = \dfrac{3.9120}{1.9459}$
+
+$\approx 2.0104$
+
+تحقق: $7^2 = 49$ قريب جدًا من 50، فالناتج أكبر من 2 بقليل. وبالأساس 10: $\dfrac{\log 50}{\log 7} = \dfrac{1.6990}{0.8451} \approx 2.0104$، النتيجة نفسها.
+</Solution>
+</Example>
+
+<Box kind="mistake" title="البسط للعدد والمقام للأساس">
+$\log_7 50 = \dfrac{\ln 50}{\ln 7}$، وليس $\dfrac{\ln 7}{\ln 50}$، وليس $\ln 50 - \ln 7$. تذكّر أن الأساس «تحت» في الرمز $\log_{7}$، وكذلك يبقى تحت في الكسر.
+</Box>
+
+<Example n="3" title="رسم لوغاريتم بأساس غير شائع">
+كيف ترسم $y = \log_3 x$ بآلة رسم لا تعرف إلا $\log$ و $\ln$؟
+
+<Solution>
+اكتبها $y = \dfrac{\ln x}{\ln 3}$.
+
+$\dfrac{1}{\ln 3} \approx 0.910$ ثابت، فالمنحنى هو منحنى $\ln x$ مضغوطًا رأسيًا بهذا المعامل.
+
+ومنه نرى أن **كل منحنيات اللوغاريتم صورة واحدة** بمقاييس رأسية مختلفة.
+</Solution>
+</Example>
+
+## المقاييس اللوغاريتمية <span class="en" lang="en">Logarithmic Scales</span>
+
+عندما تمتد كمية على مدى هائل نقيس **لوغاريتمها** بدلًا منها. فكل زيادة بمقدار 1 في المقياس تعني **ضرب** الكمية في 10.
+
+<Box kind="def" title="ثلاثة مقاييس مشهورة" en="Common logarithmic scales">
+- **الرقم الهيدروجيني**: $\text{pH} = -\log[\text{H}^+]$، حيث $[\text{H}^+]$ تركيز أيونات الهيدروجين بالمول لكل لتر.
+- **مقياس ريختر للزلازل**: $M = \log\dfrac{A}{A_0}$، حيث $A$ سعة الموجة الزلزالية و $A_0$ سعة مرجعية صغيرة جدًا.
+- **شدة الصوت بالديسيبل**: $D = 10\log\dfrac{I}{I_0}$.
+</Box>
+
+<LogScale />
+
+<Example n="4" title="حساب pH">
+عصير ليمون تركيز أيونات الهيدروجين فيه $5.0 \times 10^{-3}$. أوجد الـ pH.
+
+<Solution>
+$\text{pH} = -\log(5.0 \times 10^{-3}) = -(\log 5 + \log 10^{-3})$
+
+$= -(0.699 - 3) = 2.301$
+
+$\approx 2.3$: حمضي جدًا.
+</Solution>
+</Example>
+
+<Example n="5" title="من pH إلى التركيز">
+pH ماء البحر نحو 8.2. ما تركيز أيونات الهيدروجين؟
+
+<Solution>
+$-\log[\text{H}^+] = 8.2$ ← $\log[\text{H}^+] = -8.2$
+
+بالصيغة الأسية: $[\text{H}^+] = 10^{-8.2}$
+
+$\approx 6.3 \times 10^{-9}$ مول/لتر.
+</Solution>
+</Example>
+
+<Example n="6" title="مقارنة زلزالين">
+زلزال بقوة 7.1 وآخر بقوة 5.1. كم مرة سعة الأول مقارنة بالثاني؟
+
+<Solution>
+$A_1 = A_0 \cdot 10^{7.1}$ و $A_2 = A_0 \cdot 10^{5.1}$
+
+$\dfrac{A_1}{A_2} = 10^{7.1 - 5.1} = 10^2$
+
+$= 100$ مرة. فرق درجتين فقط على المقياس يعني مئة ضعف.
+</Solution>
+</Example>
+
+<Check
+  q="محلول pH له 4 ومحلول آخر pH له 6. أيهما أكثر حموضة، وبكم مرة؟"
+  options={["الثاني، بمرتين", "الأول، بمرتين", "الأول، بـ 100 مرة", "الثاني، بـ 100 مرة"]}
+  answer={2}
+  explain="pH الأقل أكثر حموضة. والفرق درجتان: $10^{-4} \\div 10^{-6} = 10^2 = 100$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- الآلة الحاسبة تعطي $\log$ (الأساس 10) و $\ln$ (الأساس $e$).
+- لأي أساس آخر: $\log_b x = \dfrac{\ln x}{\ln b} = \dfrac{\log x}{\log b}$.
+- قدّر دائمًا بين قوتين متتاليتين للأساس.
+- في المقاييس اللوغاريتمية (pH، ريختر، ديسيبل) كل درجة تعني ضرب الكمية في 10.
+
+<Practice set="4.4" count={6} />

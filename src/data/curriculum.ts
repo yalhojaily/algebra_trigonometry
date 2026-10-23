@@ -89,7 +89,7 @@ export const chapters: Chapter[] = [
     id: '4',
     ar: 'الدوال العكسية والأسية واللوغاريتمية',
     en: 'Inverse, Exponential, and Logarithmic Functions',
-    status: 'soon',
+    status: 'ready',
     blurb: 'الدوال العكسية، النمو الأسي، اللوغاريتمات وخصائصها، والمعادلات الأسية.',
     sections: [
       { id: '4.1', ar: 'الدوال العكسية', en: 'Inverse Functions', topics: [t('الدوال المتباينة', 'One-to-One Functions'), t('الدوال العكسية', 'Inverse Functions'), t('معادلات الدوال العكسية', 'Equations of Inverses'), t('تطبيق في التشفير', 'An Application to Cryptography')] },

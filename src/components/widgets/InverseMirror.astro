@@ -1,0 +1,72 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-inv" title="الدالة ومعكوسها: مرآة المستقيم y = x" en="A function and its inverse">
+  <div class="controls">
+    <label>الدالة
+      <select data-i="f" dir="ltr">
+        <option value="lin">f(x) = 2x + 1</option>
+        <option value="cub">f(x) = x³</option>
+        <option value="sq">f(x) = x², x ≥ 0</option>
+        <option value="sqbad">f(x) = x² (all x)</option>
+        <option value="exp">f(x) = 2ˣ</option>
+      </select>
+    </label>
+    <label>النقطة <span class="ltr">a = <output data-o="a"></output></span><input type="range" min="-2" max="2" step="0.25" value="1" data-i="a" /></label>
+  </div>
+  <canvas aria-label="رسم الدالة ومعكوسها والمستقيم y = x"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--plot-curve)"></i>f</span>
+    <span><i style="background:var(--plot-alt)"></i><span class="ltr">f⁻¹</span></span>
+    <span><i style="background:var(--muted)"></i><span class="ltr">y = x</span></span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-inv')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -6, xmax: 6, ymin: -5, ymax: 5 });
+  type D = { f: (x: number) => number; g?: (x: number) => number; ft: string; gt: string; dom?: [number, number] };
+  const F: Record<string, D> = {
+    lin: { f: (x) => 2 * x + 1, g: (x) => (x - 1) / 2, ft: 'f(x) = 2x + 1', gt: 'f^{-1}(x) = \\dfrac{x - 1}{2}' },
+    cub: { f: (x) => x ** 3, g: (x) => Math.cbrt(x), ft: 'f(x) = x^3', gt: 'f^{-1}(x) = \\sqrt[3]{x}' },
+    sq: { f: (x) => (x >= 0 ? x * x : NaN), g: (x) => (x >= 0 ? Math.sqrt(x) : NaN), ft: 'f(x) = x^2,\\ x \\ge 0', gt: 'f^{-1}(x) = \\sqrt{x}', dom: [0, 9] },
+    sqbad: { f: (x) => x * x, ft: 'f(x) = x^2', gt: '' },
+    exp: { f: (x) => 2 ** x, g: (x) => (x > 0 ? Math.log2(x) : NaN), ft: 'f(x) = 2^x', gt: 'f^{-1}(x) = \\log_2 x' },
+  };
+  const sel = root.querySelector<HTMLSelectElement>('[data-i="f"]')!;
+  const inp = root.querySelector<HTMLInputElement>('[data-i="a"]')!;
+  function draw() {
+    const d = F[sel.value];
+    let a = Number(inp.value);
+    if (d.dom && a < d.dom[0]) a = d.dom[0];
+    root.querySelector('[data-o="a"]')!.textContent = String(a);
+    plot.fit(0.62);
+    plot.clear();
+    plot.grid(1, 2);
+    plot.fn((x) => x, css('--muted'), 1.6, [6, 5]);
+    plot.fn(d.f, css('--plot-curve'), 3);
+    const b = d.f(a);
+    plot.dot(a, b, css('--plot-curve'), 6);
+    if (d.g) {
+      plot.fn(d.g, css('--plot-alt'), 3);
+      plot.dot(b, a, css('--plot-alt'), 6);
+      plot.seg(a, b, b, a, css('--plot-hot'), 1.6, [3, 4]);
+      out.innerHTML =
+        `<p>${tex(`$${d.ft}$`)} ومعكوسها ${tex(`$${d.gt}$`)}.</p>` +
+        `<p>النقطة ${tex(`$(${fmt(a)}, ${fmt(b)})$`)} على ${tex('$f$')} تقابلها ${tex(`$(${fmt(b)}, ${fmt(a)})$`)} على ${tex('$f^{-1}$')}: تبادل الإحداثيين هو انعكاس حول ${tex('$y = x$')}، والقطعة الواصلة بينهما عمودية عليه.</p>` +
+        `<p>${tex(`$f^{-1}(f(${fmt(a)})) = f^{-1}(${fmt(b)}) = ${fmt(a)}$`)}: المعكوس «يُرجع» ما فعلته الدالة.</p>`;
+    } else {
+      plot.dot(-a, b, css('--plot-hot'), 6);
+      plot.seg(-6, b, 6, b, css('--plot-hot'), 1.8, [6, 4]);
+      out.innerHTML =
+        `<p>${tex('$f(x) = x^2$')} على كل الأعداد <strong>ليست واحدًا لواحد</strong>: المستقيم الأفقي ${tex(`$y = ${fmt(b)}$`)} يقطع المنحنى عند ${tex(`$x = ${fmt(a)}$`)} و ${tex(`$x = ${fmt(-a)}$`)}.</p>` +
+        `<p>فلو عكسنا لما عرفنا أيهما نُرجع، ولذلك لا معكوس لها إلا بعد تقييد المجال (جرّب الخيار ${tex('$x \\ge 0$')}).</p>`;
+    }
+  }
+  root.querySelectorAll('input, select').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

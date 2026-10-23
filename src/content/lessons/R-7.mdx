@@ -1,0 +1,205 @@
+---
+section: "R.7"
+summary: "رمز الجذر وصلته بالأسس النسبية، ومتى نحتاج القيمة المطلقة، وشروط الجذر المبسّط، وجمع الجذور وضربها، وإنطاق المقام بالضرب في الجذر أو المرافق."
+minutes: 35
+prerequisites: ["R.6"]
+terms:
+  - { ar: "رمز الجذر", en: "Radical Sign", def: "الرمز ⁿ√ حيث n دليل الجذر، والمقدار تحته يسمى ما تحت الجذر." }
+  - { ar: "دليل الجذر", en: "Index", def: "العدد n في ⁿ√a. إذا لم يُكتب فهو 2 (جذر تربيعي)." }
+  - { ar: "ما تحت الجذر", en: "Radicand", def: "المقدار المكتوب تحت رمز الجذر." }
+  - { ar: "جذر مبسّط", en: "Simplified Radical", def: "جذر لا يحتوي عوامل قوتها n أو أكثر، ولا كسورًا تحته، ولا جذرًا في المقام، ودليله أصغر ما يمكن." }
+  - { ar: "جذور متشابهة", en: "Like Radicals", def: "جذور لها الدليل نفسه وما تحت الجذر نفسه، مثل 3√2 و −5√2." }
+  - { ar: "إنطاق المقام", en: "Rationalizing the Denominator", def: "إزالة الجذر من المقام بضرب البسط والمقام في مقدار مناسب." }
+  - { ar: "المرافق", en: "Conjugate", def: "مرافق a + √b هو a − √b، وحاصل ضربهما a² − b خالٍ من الجذر." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import RadicalSimplify from '../../components/widgets/RadicalSimplify.astro';
+
+رمز الجذر $\sqrt{\ }$ ليس مفهومًا جديدًا، بل طريقة أخرى لكتابة الأس الكسري الذي تعلمته في الدرس السابق. ولماذا نحتاج طريقتين؟ لأن بعض الحسابات أوضح بالأسس، وبعضها، مثل التبسيط وإنطاق المقام، أوضح بالجذور. هذا آخر دروس المراجعة، وبعده تبدأ حل المعادلات.
+
+## رمز الجذر <span class="en" lang="en">Radical Notation</span>
+
+<Box kind="def" title="الجذر النوني" en="Radical Notation">
+إذا كان $a^{1/n}$ عددًا حقيقيًا فإن
+
+$$\sqrt[n]{a} = a^{1/n} \qquad\text{and}\qquad \sqrt[n]{a^m} = \left(\sqrt[n]{a}\right)^m = a^{m/n}$$
+
+$n$ **الدليل** <span class="en" lang="en">(Index)</span>، و $a$ **ما تحت الجذر** <span class="en" lang="en">(Radicand)</span>. وإذا لم يُكتب الدليل فهو 2.
+</Box>
+
+<Example n="1" title="من الأسس إلى الجذور والعكس">
+(أ) احسب $\sqrt[4]{16}$ و $\sqrt[5]{-32}$ و $\sqrt[3]{1000}$  (ب) اكتب $x^{2/3}$ و $(3y)^{-1/2}$ بالجذور  (ج) اكتب $\sqrt[4]{t^3}$ بالأسس
+
+<Solution>
+**(أ)** $\sqrt[4]{16} = 2$ و $\sqrt[5]{-32} = -2$ و $\sqrt[3]{1000} = 10$
+
+**(ب)** $x^{2/3} = \sqrt[3]{x^2} = \left(\sqrt[3]{x}\right)^2$ و $(3y)^{-1/2} = \dfrac{1}{\sqrt{3y}}$
+
+**(ج)** $\sqrt[4]{t^3} = t^{3/4}$
+</Solution>
+</Example>
+
+### متى تظهر القيمة المطلقة؟
+
+ما قيمة $\sqrt{x^2}$؟ لو كان $x = 5$ فهي $5$. لكن لو كان $x = -5$ فهي $\sqrt{25} = 5$ أيضًا، وليست $-5$. الجذر الزوجي الرئيس لا يكون سالبًا.
+
+<Box kind="rule" title="الجذر والقيمة المطلقة" en="Evaluating ⁿ√(aⁿ)">
+$$\sqrt[n]{a^n} = \begin{cases} |a| & \text{if } n \text{ is even} \\ a & \text{if } n \text{ is odd} \end{cases}$$
+
+مثلًا $\sqrt{(-9)^2} = |-9| = 9$ و $\sqrt[4]{x^4} = |x|$، لكن $\sqrt[3]{(-2)^3} = -2$.
+</Box>
+
+<Box kind="note" title="افتراض المتغيرات الموجبة">
+في كثير من التمارين يقال «افترض أن كل المتغيرات تمثل أعدادًا موجبة». عندها $|x| = x$ ولا نحتاج القيمة المطلقة. بقية هذا الدرس تفترض ذلك ما لم يُذكر غيره.
+</Box>
+
+### قواعد الجذور
+
+<Box kind="rule" title="قواعد الجذور" en="Rules for Radicals">
+لأي عددين حقيقيين $a$ و $b$ يكون جذراهما النونيان حقيقيين:
+
+$$\sqrt[n]{ab} = \sqrt[n]{a}\cdot\sqrt[n]{b} \qquad \sqrt[n]{\frac{a}{b}} = \frac{\sqrt[n]{a}}{\sqrt[n]{b}}\ (b \ne 0) \qquad \sqrt[m]{\sqrt[n]{a}} = \sqrt[mn]{a}$$
+</Box>
+
+<Box kind="mistake" title="الجذر لا يوزع على الجمع">
+$\sqrt{9 + 16} = \sqrt{25} = 5$، بينما $\sqrt{9} + \sqrt{16} = 7$. لذلك $\sqrt{a + b} \ne \sqrt{a} + \sqrt{b}$. القواعد أعلاه للضرب والقسمة فقط.
+</Box>
+
+## الجذور المبسّطة <span class="en" lang="en">Simplified Radicals</span>
+
+<Box kind="def" title="شروط الجذر المبسّط" en="Simplified Radical">
+يكون الجذر مبسّطًا إذا تحققت أربعة شروط:
+
+1. لا يوجد تحت الجذر عامل قوته تساوي الدليل أو أكبر (مثلًا لا مربع كامل تحت $\sqrt{\ }$).
+2. لا يوجد كسر تحت الجذر.
+3. لا يوجد جذر في المقام.
+4. الدليل أصغر ما يمكن.
+</Box>
+
+الطريقة للشرط الأول: حلل ما تحت الجذر إلى عوامل أولية. كل **زوج** من العوامل المتساوية (في الجذر التربيعي) يخرج عاملًا واحدًا.
+
+<RadicalSimplify />
+
+<Example n="2" title="التبسيط">
+بسّط (أ) $\sqrt{175}$  (ب) $-3\sqrt[5]{32}$  (ج) $\sqrt[3]{81x^5y^7z^6}$
+
+<Solution>
+**(أ)** $175 = 25 \cdot 7$: $\sqrt{25 \cdot 7} = 5\sqrt{7}$
+
+**(ب)** $\sqrt[5]{32} = 2$: $-3 \cdot 2 = -6$
+
+**(ج)** نبحث عن مكعبات: $81 = 27 \cdot 3$ و $x^5 = x^3 \cdot x^2$ و $y^7 = y^6 \cdot y$ و $z^6 = (z^2)^3$:
+
+$\sqrt[3]{27x^3y^6z^6 \cdot 3x^2y} = 3xy^2z^2\sqrt[3]{3x^2y}$
+</Solution>
+</Example>
+
+<Example n="3" title="تصغير الدليل">
+بسّط $\sqrt[6]{3^2}$ و $\sqrt[9]{x^6}$.
+
+<Solution>
+بالأسس: $\sqrt[6]{3^2} = 3^{2/6} = 3^{1/3} = \sqrt[3]{3}$
+
+$\sqrt[9]{x^6} = x^{6/9} = x^{2/3} = \sqrt[3]{x^2}$
+
+اختصار الأس الكسري هو نفسه تصغير الدليل.
+</Solution>
+</Example>
+
+## العمليات على الجذور <span class="en" lang="en">Operations with Radicals</span>
+
+**الجمع والطرح:** نجمع <Term ar="الجذور المتشابهة" en="Like Radicals" /> فقط، أي التي لها الدليل نفسه وما تحت الجذر نفسه، كما نجمع الحدود المتشابهة: $3\sqrt{2} + 5\sqrt{2} = 8\sqrt{2}$. وأحيانًا لا تظهر الجذور متشابهة إلا **بعد التبسيط**.
+
+<Example n="4" title="الجمع بعد التبسيط">
+بسّط (أ) $7\sqrt{2} - 8\sqrt{18} + 4\sqrt{72}$  (ب) $3x\sqrt[3]{x^2y} + 2\sqrt[3]{8x^5y}$
+
+<Solution>
+**(أ)** $\sqrt{18} = 3\sqrt{2}$ و $\sqrt{72} = 6\sqrt{2}$:
+
+$7\sqrt{2} - 24\sqrt{2} + 24\sqrt{2} = 7\sqrt{2}$
+
+**(ب)** $\sqrt[3]{8x^5y} = \sqrt[3]{8x^3 \cdot x^2y} = 2x\sqrt[3]{x^2y}$:
+
+$3x\sqrt[3]{x^2y} + 4x\sqrt[3]{x^2y} = 7x\sqrt[3]{x^2y}$
+</Solution>
+</Example>
+
+<Box kind="mistake" title="جمع ما تحت الجذور">
+$\sqrt{2} + \sqrt{3} \ne \sqrt{5}$. هذان جذران غير متشابهين، والمقدار $\sqrt{2} + \sqrt{3}$ مبسّط ولا يُجمع أكثر.
+</Box>
+
+**الضرب:** كضرب كثيرات الحدود تمامًا، مع $\sqrt{a}\cdot\sqrt{a} = a$.
+
+<Example n="5" title="ضرب الجذور">
+اضرب (أ) $(\sqrt{2} + 3)(\sqrt{8} - 5)$  (ب) $(\sqrt{7} - \sqrt{10})(\sqrt{7} + \sqrt{10})$
+
+<Solution>
+**(أ)** FOIL: $\sqrt{16} - 5\sqrt{2} + 3\sqrt{8} - 15 = 4 - 5\sqrt{2} + 6\sqrt{2} - 15 = -11 + \sqrt{2}$
+
+**(ب)** مجموع في فرق: $(\sqrt{7})^2 - (\sqrt{10})^2 = 7 - 10 = -3$. لاحظ أن الجذور اختفت.
+</Solution>
+</Example>
+
+## إنطاق المقام <span class="en" lang="en">Rationalizing Denominators</span>
+
+الشرط الثالث للتبسيط يمنع الجذر في المقام. نتخلص منه بضرب البسط والمقام في المقدار نفسه، فلا تتغير القيمة لأننا نضرب في 1.
+
+<Box kind="rule" title="طريقتان لإنطاق المقام" en="Rationalizing">
+- **مقام من حد واحد** $\sqrt{b}$: اضرب في $\dfrac{\sqrt{b}}{\sqrt{b}}$. وللجذر التكعيبي $\sqrt[3]{b}$ اضرب فيما يكمّل ما تحته إلى مكعب كامل.
+- **مقام من حدين** $a + \sqrt{b}$: اضرب في **المرافق** $\dfrac{a - \sqrt{b}}{a - \sqrt{b}}$، لأن $(a + \sqrt{b})(a - \sqrt{b}) = a^2 - b$ بلا جذر.
+</Box>
+
+<Example n="6" title="مقام من حد واحد">
+أنطق المقام: (أ) $\dfrac{4}{\sqrt{3}}$  (ب) $\sqrt{\dfrac{5}{8}}$  (ج) $\sqrt[3]{\dfrac{5}{2}}$
+
+<Solution>
+**(أ)** $\dfrac{4}{\sqrt{3}}\cdot\dfrac{\sqrt{3}}{\sqrt{3}} = \dfrac{4\sqrt{3}}{3}$
+
+**(ب)** $\dfrac{\sqrt{5}}{\sqrt{8}} = \dfrac{\sqrt{5}}{2\sqrt{2}}\cdot\dfrac{\sqrt{2}}{\sqrt{2}} = \dfrac{\sqrt{10}}{4}$
+
+**(ج)** نحتاج مكعبًا في المقام. $2 \cdot 2^2 = 8 = 2^3$، فنضرب في $\sqrt[3]{4}$:
+
+$\dfrac{\sqrt[3]{5}}{\sqrt[3]{2}}\cdot\dfrac{\sqrt[3]{4}}{\sqrt[3]{4}} = \dfrac{\sqrt[3]{20}}{\sqrt[3]{8}} = \dfrac{\sqrt[3]{20}}{2}$
+</Solution>
+</Example>
+
+<Example n="7" title="مقام من حدين (المرافق)">
+أنطق المقام: $\dfrac{1}{1 - \sqrt{2}}$ و $\dfrac{5}{\sqrt{6} + \sqrt{3}}$
+
+<Solution>
+**الأول:** المرافق $1 + \sqrt{2}$:
+
+$$\frac{1 + \sqrt{2}}{(1 - \sqrt{2})(1 + \sqrt{2})} = \frac{1 + \sqrt{2}}{1 - 2} = -1 - \sqrt{2}$$
+
+**الثاني:** المرافق $\sqrt{6} - \sqrt{3}$:
+
+$$\frac{5(\sqrt{6} - \sqrt{3})}{6 - 3} = \frac{5(\sqrt{6} - \sqrt{3})}{3}$$
+</Solution>
+</Example>
+
+<Box kind="mistake" title="الضرب في الجذر وحده مع مقام من حدين">
+ضرب $\dfrac{1}{1 - \sqrt{2}}$ في $\dfrac{\sqrt{2}}{\sqrt{2}}$ يعطي مقامًا $\sqrt{2} - 2$، والجذر ما زال موجودًا. مع الحدين نحتاج **المرافق** حتى يختفي الحد الأوسط.
+</Box>
+
+<Check
+  q="ما مرافق $3 - \\sqrt{5}$، وما حاصل ضربه فيه؟"
+  options={["$3 + \\sqrt{5}$ والناتج $4$", "$-3 + \\sqrt{5}$ والناتج $4$", "$3 + \\sqrt{5}$ والناتج $14$", "$\\sqrt{5}$ والناتج $3\\sqrt{5} - 5$"]}
+  answer={0}
+  explain="المرافق يغيّر الإشارة بين الحدين فقط: $3 + \\sqrt{5}$. والناتج $3^2 - (\\sqrt{5})^2 = 9 - 5 = 4$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $\sqrt[n]{a^m} = a^{m/n}$: الجذر والأس الكسري وجهان لشيء واحد.
+- $\sqrt[n]{a^n} = |a|$ إذا كان $n$ زوجيًا.
+- الجذر يوزع على الضرب والقسمة، لا على الجمع.
+- التبسيط: أخرج القوى الكاملة، ولا كسر تحت الجذر، ولا جذر في المقام، وأصغر دليل.
+- اجمع الجذور المتشابهة فقط، وغالبًا بعد التبسيط.
+- إنطاق المقام: اضرب في الجذر (حد واحد) أو في المرافق (حدان).
+
+<Practice set="R.7" count={6} />

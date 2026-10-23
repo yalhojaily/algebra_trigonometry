@@ -1,0 +1,102 @@
+---
+import Frame from './Frame.astro';
+import { tex } from '../../lib/tex';
+---
+<Frame id="w-venn" title="شكل فن والعمليات على المجموعات" en="Venn diagram">
+  <p class="vintro">
+    <span set:html={tex("$U = \\{1, 2, \\ldots, 12\\}$")} />، و <span set:html={tex("$A$")} /> الأعداد الزوجية، و <span set:html={tex("$B$")} /> مضاعفات 3. اختر عملية:
+  </p>
+  <div class="seg ops" role="group" aria-label="العملية" dir="ltr">
+    <button type="button" data-op="union" aria-pressed="true">A ∪ B</button>
+    <button type="button" data-op="inter" aria-pressed="false">A ∩ B</button>
+    <button type="button" data-op="ac" aria-pressed="false">A′</button>
+    <button type="button" data-op="aminus" aria-pressed="false">A ∩ B′</button>
+    <button type="button" data-op="none" aria-pressed="false">(A ∪ B)′</button>
+  </div>
+  <svg viewBox="0 0 520 300" class="venn" role="img" aria-label="شكل فن لمجموعتين" direction="ltr">
+    <defs>
+      <clipPath id="ca"><circle cx="200" cy="150" r="110" /></clipPath>
+      <clipPath id="cb"><circle cx="320" cy="150" r="110" /></clipPath>
+      <mask id="mna"><rect width="520" height="300" fill="#fff" /><circle cx="200" cy="150" r="110" fill="#000" /></mask>
+      <mask id="mnb"><rect width="520" height="300" fill="#fff" /><circle cx="320" cy="150" r="110" fill="#000" /></mask>
+    </defs>
+    <rect x="6" y="6" width="508" height="288" rx="12" class="u" />
+    <g class="shade">
+      <g data-r="a"><circle cx="200" cy="150" r="110" mask="url(#mnb)" /></g>
+      <g data-r="b"><circle cx="320" cy="150" r="110" mask="url(#mna)" /></g>
+      <g data-r="ab"><circle cx="320" cy="150" r="110" clip-path="url(#ca)" /></g>
+      <g data-r="out"><rect x="6" y="6" width="508" height="288" rx="12" mask="url(#mna)" style="mask:none" /></g>
+    </g>
+    <g data-r="out-mask"></g>
+    <circle cx="200" cy="150" r="110" class="ring" />
+    <circle cx="320" cy="150" r="110" class="ring" />
+    <text x="110" y="40" class="lab">A</text>
+    <text x="400" y="40" class="lab">B</text>
+    <text x="26" y="34" class="lab small">U</text>
+    <g class="els"></g>
+  </svg>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+
+<script>
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-venn')!;
+  const svg = root.querySelector('svg')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const U = Array.from({ length: 12 }, (_, k) => k + 1);
+  const inA = (x: number) => x % 2 === 0, inB = (x: number) => x % 3 === 0;
+  const region = (x: number) => (inA(x) && inB(x) ? 'ab' : inA(x) ? 'a' : inB(x) ? 'b' : 'out');
+  // مواقع العناصر داخل كل منطقة
+  const spots: Record<string, [number, number][]> = {
+    a: [[130, 110], [160, 160], [120, 200], [175, 230], [150, 75], [110, 150]],
+    ab: [[260, 125], [260, 185]],
+    b: [[380, 115], [360, 200], [400, 160]],
+    out: [[40, 70], [40, 140], [40, 210], [480, 70], [480, 140], [480, 210], [260, 30], [260, 275]],
+  };
+  const used: Record<string, number> = { a: 0, ab: 0, b: 0, out: 0 };
+  const els = svg.querySelector('.els')!;
+  els.innerHTML = U.map((x) => {
+    const r = region(x);
+    const [cx, cy] = spots[r][used[r]++];
+    return `<text x="${cx}" y="${cy}" class="el" data-x="${x}" text-anchor="middle" dominant-baseline="middle">${x}</text>`;
+  }).join('');
+  // منطقة «خارج الدائرتين» تُرسم بقناعين
+  const outG = svg.querySelector('[data-r="out"]')!;
+  outG.innerHTML = `<g mask="url(#mna)"><rect x="6" y="6" width="508" height="288" rx="12" mask="url(#mnb)" /></g>`;
+
+  const OPS: Record<string, { tex: string; regs: string[]; pred: (x: number) => boolean; say: string }> = {
+    union: { tex: 'A \\cup B', regs: ['a', 'b', 'ab'], pred: (x) => inA(x) || inB(x), say: 'الاتحاد: كل ما في A أو في B أو فيهما معًا.' },
+    inter: { tex: 'A \\cap B', regs: ['ab'], pred: (x) => inA(x) && inB(x), say: 'التقاطع: المنطقة المشتركة فقط، أي الأعداد الزوجية التي هي مضاعفات 3 (مضاعفات 6).' },
+    ac: { tex: "A'", regs: ['b', 'out'], pred: (x) => !inA(x), say: 'المتممة: كل عناصر U التي ليست في A، أي الأعداد الفردية.' },
+    aminus: { tex: "A \\cap B'", regs: ['a'], pred: (x) => inA(x) && !inB(x), say: 'عناصر A التي ليست في B.' },
+    none: { tex: "(A \\cup B)'", regs: ['out'], pred: (x) => !inA(x) && !inB(x), say: 'ما ليس في أي من المجموعتين. لاحظ أنه يساوي A′ ∩ B′ (قانون دي مورغان).' },
+  };
+  function draw(op: string) {
+    const o = OPS[op];
+    svg.querySelectorAll<SVGGElement>('.shade > g').forEach((g) => g.classList.toggle('on', o.regs.includes(g.dataset.r!)));
+    svg.querySelectorAll<SVGTextElement>('.el').forEach((t) => t.classList.toggle('in', o.pred(Number(t.dataset.x))));
+    const res = U.filter(o.pred);
+    out.innerHTML = `<p>${tex(`$${o.tex} = \\{${res.join(', ')}\\}$`)}</p><p>${o.say}</p>`;
+  }
+  root.querySelectorAll<HTMLButtonElement>('[data-op]').forEach((b) =>
+    b.addEventListener('click', () => {
+      root.querySelectorAll('[data-op]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      draw(b.dataset.op!);
+    }),
+  );
+  draw('union');
+</script>
+
+<style>
+  .vintro { margin: 0 0 0.6rem; }
+  .ops { flex-wrap: wrap; margin-bottom: 0.8rem; }
+  .venn { width: 100%; max-width: 560px; display: block; margin: 0 auto; }
+  .u { fill: var(--paper); stroke: var(--muted); stroke-width: 1.5; }
+  .ring { fill: none; stroke: var(--ink); stroke-width: 2; }
+  .shade :global(g) { fill: var(--accent); opacity: 0; transition: opacity 0.2s; }
+  .shade :global(g.on) { opacity: 0.28; }
+  .lab { font: 700 22px 'Noto Sans', sans-serif; fill: var(--ink); }
+  .lab.small { font-size: 16px; fill: var(--muted); }
+  .venn :global(.el) { font: 600 16px 'Noto Sans', sans-serif; fill: var(--muted); }
+  .venn :global(.el.in) { fill: var(--ink); font-weight: 800; }
+</style>

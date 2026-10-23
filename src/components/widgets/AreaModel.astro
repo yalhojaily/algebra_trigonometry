@@ -1,0 +1,62 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-area" title="ضرب ثنائيي حد كمساحة مستطيل" en="Area model for (ax + b)(cx + d)">
+  <div class="controls">
+    <label><span class="ltr">a = <output data-o="a"></output></span><input type="range" min="1" max="3" value="2" data-i="a" /></label>
+    <label><span class="ltr">b = <output data-o="b"></output></span><input type="range" min="1" max="6" value="3" data-i="b" /></label>
+    <label><span class="ltr">c = <output data-o="c"></output></span><input type="range" min="1" max="3" value="1" data-i="c" /></label>
+    <label><span class="ltr">d = <output data-o="d"></output></span><input type="range" min="1" max="6" value="4" data-i="d" /></label>
+  </div>
+  <svg class="area" viewBox="0 0 520 330" role="img" aria-label="مستطيل مقسم إلى أربع مساحات" direction="ltr"></svg>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+
+<script>
+  import { tex } from '../../lib/tex';
+  import { poly } from '../../lib/gen';
+  const root = document.getElementById('w-area')!;
+  const svg = root.querySelector('svg')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const X = 70; // طول x على الرسم (مجهول، نرسمه طويلًا)
+  const U = 18; // طول الوحدة
+  function draw() {
+    const a = v('a'), b = v('b'), c = v('c'), d = v('d');
+    for (const k of ['a', 'b', 'c', 'd']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    const W1 = a * X, W2 = b * U, H1 = c * X, H2 = d * U;
+    const W = W1 + W2, H = H1 + H2;
+    const s = Math.min(430 / W, 270 / H);
+    const ox = 70, oy = 30;
+    const rect = (x: number, y: number, w: number, h: number, cls: string, label: string) =>
+      `<rect x="${ox + x * s}" y="${oy + y * s}" width="${w * s}" height="${h * s}" class="${cls}"/>` +
+      `<text x="${ox + (x + w / 2) * s}" y="${oy + (y + h / 2) * s}" class="t">${label}</text>`;
+    const m = (k: number, v: string) => (k === 1 ? v : `${k}${v}`);
+    svg.innerHTML =
+      rect(0, 0, W1, H1, 'q1', m(a * c, 'x²')) +
+      rect(W1, 0, W2, H1, 'q2', m(b * c, 'x')) +
+      rect(0, H1, W1, H2, 'q3', m(a * d, 'x')) +
+      rect(W1, H1, W2, H2, 'q4', String(b * d)) +
+      `<text x="${ox + (W1 / 2) * s}" y="${oy - 10}" class="side">${m(a, 'x')}</text>` +
+      `<text x="${ox + (W1 + W2 / 2) * s}" y="${oy - 10}" class="side">${b}</text>` +
+      `<text x="${ox - 12}" y="${oy + (H1 / 2) * s}" class="side" text-anchor="end">${m(c, 'x')}</text>` +
+      `<text x="${ox - 12}" y="${oy + (H1 + H2 / 2) * s}" class="side" text-anchor="end">${d}</text>`;
+    const r = [a * c, a * d + b * c, b * d];
+    out.innerHTML =
+      `<p>${tex(`$(${poly([a, b])})(${poly([c, d])}) = ${poly([a * c, 0, 0])} + ${poly([a * d, 0])} + ${poly([b * c, 0])} + ${b * d}$`)}</p>` +
+      `<p>المستطيلان المتوسطان (${tex(`$${poly([a * d, 0])}$`)} و ${tex(`$${poly([b * c, 0])}$`)}) من النوع نفسه فنجمعهما: ${tex(`$${poly(r)}$`)}</p>` +
+      `<p>هذه هي خطوات <span class="en" lang="en">FOIL</span> نفسها: كل جزء من الضلع الأول يُضرب في كل جزء من الضلع الثاني.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  draw();
+</script>
+
+<style>
+  .area { width: 100%; max-width: 560px; display: block; margin: 0 auto; }
+  .area :global(rect) { stroke: var(--surface); stroke-width: 2; }
+  .area :global(.q1) { fill: color-mix(in srgb, var(--accent) 55%, var(--surface)); }
+  .area :global(.q2), .area :global(.q3) { fill: color-mix(in srgb, var(--def) 35%, var(--surface)); }
+  .area :global(.q4) { fill: color-mix(in srgb, var(--warn) 40%, var(--surface)); }
+  .area :global(.t) { font: 700 17px 'Noto Sans', sans-serif; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+  .area :global(.side) { font: 600 15px 'Noto Sans', sans-serif; fill: var(--muted); text-anchor: middle; dominant-baseline: middle; }
+</style>

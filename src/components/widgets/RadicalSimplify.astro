@@ -1,0 +1,47 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-rad" title="تبسيط الجذر بالأزواج" en="Simplifying √n">
+  <div class="controls">
+    <label><span class="ltr">n = <output data-o="n"></output></span><input type="range" min="2" max="300" value="72" data-i="n" /></label>
+  </div>
+  <div class="primes" dir="ltr" aria-hidden="true"></div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-rad')!;
+  const box = root.querySelector<HTMLElement>('.primes')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  function factorize(n: number) {
+    const f: number[] = [];
+    for (let p = 2; p * p <= n; p++) while (n % p === 0) { f.push(p); n /= p; }
+    if (n > 1) f.push(n);
+    return f;
+  }
+  function draw() {
+    const n = Number(root.querySelector<HTMLInputElement>('[data-i="n"]')!.value);
+    root.querySelector('[data-o="n"]')!.textContent = String(n);
+    const f = factorize(n);
+    let outside = 1, inside = 1;
+    const groups: string[] = [];
+    for (let k = 0; k < f.length; ) {
+      if (f[k + 1] === f[k]) { outside *= f[k]; groups.push(`<span class="pair">${f[k]} · ${f[k]}</span>`); k += 2; }
+      else { inside *= f[k]; groups.push(`<span class="single">${f[k]}</span>`); k += 1; }
+    }
+    box.innerHTML = `<span class="lbl">${n} =</span> ` + groups.join('<span class="dot">·</span>');
+    const res = inside === 1 ? String(outside) : outside === 1 ? `\\sqrt{${n}}` : `${outside}\\sqrt{${inside}}`;
+    out.innerHTML =
+      `<p>كل <strong>زوج</strong> من العوامل المتساوية يخرج من الجذر عاملًا واحدًا، والعوامل المنفردة تبقى بداخله.</p>` +
+      `<p>${tex(`$\\sqrt{${n}} = ${res}$`)}${outside === 1 && inside !== 1 ? ' (لا يوجد مربع كامل يقسمه غير 1، فهو مبسّط أصلًا)' : ''}${inside === 1 ? ' (مربع كامل)' : ''}</p>`;
+  }
+  root.querySelector('input')!.addEventListener('input', draw);
+  draw();
+</script>
+<style>
+  .primes { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; justify-content: center; padding: 0.8rem; font: 600 1.15rem var(--font-en); }
+  .primes :global(.lbl) { color: var(--muted); }
+  .primes :global(.pair) { padding: 0.2rem 0.6rem; border-radius: 8px; background: var(--accent-soft); color: var(--accent); border: 1.5px solid var(--accent); }
+  .primes :global(.single) { padding: 0.2rem 0.6rem; border-radius: 8px; border: 1.5px dashed var(--line); }
+  .primes :global(.dot) { color: var(--muted); }
+</style>

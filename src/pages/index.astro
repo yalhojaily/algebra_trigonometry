@@ -15,7 +15,7 @@ const readyIds = chapters.filter((c) => c.status === 'ready').flatMap((c) => c.s
         وتمارين جديدة في كل مرة تُصحَّح فورًا. المصطلحات مكتوبة بالعربية والإنجليزية معًا لتقرأ الكتاب الأصلي بسهولة.
       </p>
       <div class="cta" data-progress-wrap>
-        <a class="btn primary" href={`${base}lessons/${lessonSlug(readyIds[0])}/`} data-continue={readyIds.join(',')}>ابدأ الفصل الأول</a>
+        <a class="btn primary" href={`${base}lessons/${lessonSlug(readyIds[0])}/`} data-continue={readyIds.join(',')}>ابدأ من الدرس الأول</a>
         <a class="btn" href={`${base}glossary/`}>قائمة المصطلحات</a>
         <span class="prog">
           <span class="bar" data-progress-bar><i></i></span>
@@ -42,7 +42,7 @@ const readyIds = chapters.filter((c) => c.status === 'ready').flatMap((c) => c.s
   <section class="map" aria-labelledby="map-h">
     <div class="map-head">
       <h2 id="map-h">فصول الكتاب</h2>
-      <p class="map-note">الفصل الأول جاهز الآن، وبقية الفصول تُضاف تباعًا.</p>
+      <p class="map-note">الفصلان R و 1 جاهزان الآن، وبقية الفصول تُضاف تباعًا.</p>
     </div>
     <ul class="cards">
       {[...chapters.filter((c) => c.status === 'ready'), ...chapters.filter((c) => c.status !== 'ready')].map((ch) => {
@@ -99,7 +99,7 @@ const readyIds = chapters.filter((c) => c.status === 'ready').flatMap((c) => c.s
       if (done > 0 && nextId) {
         a.href = a.href.replace(/lessons\/[^/]+\/$/, `lessons/${nextId.replace('.', '-')}/`);
         a.textContent = `تابع من ${nextId}`;
-      } else if (done === ids.length) a.textContent = 'راجع الفصل الأول';
+      } else if (done === ids.length) a.textContent = 'راجع الدروس';
     }
   </script>
 </Base>

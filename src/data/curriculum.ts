@@ -24,7 +24,7 @@ export const chapters: Chapter[] = [
     id: 'R',
     ar: 'مراجعة المفاهيم الأساسية',
     en: 'Review of Basic Concepts',
-    status: 'soon',
+    status: 'ready',
     blurb: 'المجموعات والأعداد الحقيقية وكثيرات الحدود والمقادير النسبية والجذرية.',
     sections: [
       { id: 'R.1', ar: 'المجموعات', en: 'Sets', topics: [t('تعريفات أساسية', 'Basic Definitions'), t('العمليات على المجموعات', 'Operations on Sets')] },

@@ -1,0 +1,48 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-exp" title="معنى الأس الكسري والسالب" en="b^(m/n) = (ⁿ√b)^m">
+  <div class="controls">
+    <label>الأساس <span class="ltr">b = <output data-o="b"></output></span>
+      <select data-i="b" dir="ltr"><option>4</option><option selected>8</option><option>9</option><option>16</option><option>27</option><option>32</option><option>64</option><option>81</option></select>
+    </label>
+    <label><span class="ltr">m = <output data-o="m"></output></span><input type="range" min="-3" max="3" value="2" data-i="m" /></label>
+    <label><span class="ltr">n = <output data-o="n"></output></span><input type="range" min="1" max="6" value="3" data-i="n" /></label>
+  </div>
+  <canvas aria-label="رسم الدالة الأسية والنقطة المختارة"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  import { frac, gcd } from '../../lib/gen';
+  const root = document.getElementById('w-exp')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -2.2, xmax: 2.2, ymin: -0.5, ymax: 10 });
+  const val = (k: string) => Number(root.querySelector<HTMLInputElement | HTMLSelectElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const b = val('b'), m = val('m'), n = val('n');
+    for (const k of ['b', 'm', 'n']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(val(k));
+    const e = m / n, y = Math.pow(b, e), r = Math.pow(b, 1 / n);
+    const nice = Math.abs(r - Math.round(r)) < 1e-9;
+    plot.view = { xmin: -2.2, xmax: 2.2, ymin: -0.08 * Math.max(10, y * 1.2), ymax: Math.max(10, y * 1.2) };
+    plot.fit(0.55);
+    plot.clear();
+    plot.grid(0.5, 2, plot.view.ymax > 40 ? 20 : plot.view.ymax > 20 ? 5 : 1);
+    plot.fn((x) => Math.pow(b, x), css('--plot-curve'), 3);
+    plot.dot(e, y);
+    const g = gcd(m, n) || 1;
+    const steps: string[] = [];
+    if (m === 0) steps.push(`$${b}^{0} = 1$ (أي عدد غير صفري أسه صفر يساوي 1)`);
+    else {
+      steps.push(`$${b}^{${frac(m, n)}}$` + (g > 1 ? ` (الأس ${tex(`$\\tfrac{${m}}{${n}}$`)} يُختصر)` : ''));
+      if (m < 0) steps.push(`الأس سالب، فنأخذ المقلوب: $\\dfrac{1}{${b}^{${frac(-m, n)}}}$`);
+      steps.push(`$${b}^{1/${n}} = \\sqrt[${n}]{${b}} ${nice ? '=' : '\\approx'} ${fmt(r, 4)}$`);
+      steps.push(`$\\left(${fmt(r, 4)}\\right)^{${Math.abs(m)}} ${nice ? '=' : '\\approx'} ${fmt(Math.pow(r, Math.abs(m)), 4)}$` + (m < 0 ? `، ثم المقلوب ${tex(`$\\approx ${fmt(y, 4)}$`)}` : ''));
+    }
+    out.innerHTML = steps.map((s) => `<p>${tex(s)}</p>`).join('') + `<p>النقطة على المنحنى ${tex(`$y = ${b}^x$`)} عند ${tex(`$x = ${fmt(e, 3)}$`)}.</p>`;
+  }
+  root.querySelectorAll('input, select').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

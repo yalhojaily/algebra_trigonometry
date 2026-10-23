@@ -1,0 +1,96 @@
+---
+import Frame from './Frame.astro';
+const chips = [
+  { t: '7', k: 'nat' }, { t: '0', k: 'whole' }, { t: '−8', k: 'int' }, { t: '3/4', k: 'rat' },
+  { t: '0.333…', k: 'rat' }, { t: '√16', k: 'nat' }, { t: '−√9', k: 'int' }, { t: '√2', k: 'irr' }, { t: 'π', k: 'irr' }, { t: '1.25', k: 'rat' },
+];
+---
+<Frame id="w-sets" title="عائلات الأعداد الحقيقية" en="Sets of real numbers">
+  <p class="hint">اختر عددًا لترى كل المجموعات التي ينتمي إليها:</p>
+  <div class="chips" dir="ltr">
+    {chips.map((c, i) => <button type="button" class="chip" data-k={c.k} aria-pressed={i === 0 ? 'true' : 'false'}>{c.t}</button>)}
+  </div>
+  <div class="boxes" dir="rtl">
+    <div class="b real" data-s="real">
+      <span class="name">الأعداد الحقيقية <span class="en" lang="en">Real ℝ</span></span>
+      <div class="row">
+        <div class="b rat" data-s="rat">
+          <span class="name">النسبية <span class="en" lang="en">Rational ℚ</span></span>
+          <div class="b int" data-s="int">
+            <span class="name">الصحيحة <span class="en" lang="en">Integers ℤ</span></span>
+            <div class="b whole" data-s="whole">
+              <span class="name">الكلية <span class="en" lang="en">Whole</span></span>
+              <div class="b nat" data-s="nat">
+                <span class="name">الطبيعية <span class="en" lang="en">Natural ℕ</span></span>
+                <span class="ex ltr">1, 2, 3, …</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="b irr" data-s="irr">
+          <span class="name">غير النسبية <span class="en" lang="en">Irrational</span></span>
+          <span class="ex ltr">√2, π, e</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+
+<script>
+  const root = document.getElementById('w-sets')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const chain: Record<string, string[]> = {
+    nat: ['nat', 'whole', 'int', 'rat', 'real'],
+    whole: ['whole', 'int', 'rat', 'real'],
+    int: ['int', 'rat', 'real'],
+    rat: ['rat', 'real'],
+    irr: ['irr', 'real'],
+  };
+  const names: Record<string, string> = { nat: 'طبيعي', whole: 'كلي', int: 'صحيح', rat: 'نسبي', irr: 'غير نسبي', real: 'حقيقي' };
+  const why: Record<string, string> = {
+    nat: 'من أعداد العد.',
+    whole: 'الصفر أول الأعداد الكلية، وليس عددًا طبيعيًا.',
+    int: 'عدد صحيح سالب.',
+    rat: 'يمكن كتابته كسرًا p/q، وعشريه منتهٍ أو دوري.',
+    irr: 'عشريه لا ينتهي ولا يتكرر، فلا يُكتب كسرًا.',
+  };
+  function pick(b: HTMLButtonElement) {
+    root.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', String(c === b)));
+    const k = b.dataset.k!;
+    root.querySelectorAll<HTMLElement>('.b').forEach((box) => box.classList.toggle('on', chain[k].includes(box.dataset.s!)));
+    out.innerHTML = `<p><strong class="ltr">${b.textContent}</strong>: ${why[k]} إذن هو ${chain[k].map((s) => names[s]).join('، ')}.</p>`;
+  }
+  root.querySelectorAll<HTMLButtonElement>('.chip').forEach((b) => b.addEventListener('click', () => pick(b)));
+  pick(root.querySelector<HTMLButtonElement>('.chip')!);
+</script>
+
+<style>
+  .hint { margin: 0 0 0.5rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; justify-content: flex-end; }
+  .chip {
+    font: 600 1rem var(--font-en);
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 99px;
+    cursor: pointer;
+  }
+  .chip[aria-pressed='true'] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .b {
+    border: 1.5px dashed var(--line);
+    border-radius: 10px;
+    padding: 0.5rem 0.7rem 0.7rem;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .b.on { border-style: solid; border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .b .b { margin-top: 0.4rem; }
+  .row { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr); gap: 0.6rem; }
+  .row > .b { margin-top: 0.4rem; }
+  .name { display: block; font: 600 0.88rem var(--font-head); }
+  .name .en { color: var(--muted); font-weight: 400; margin-inline-start: 0.3rem; }
+  .b.on > .name { color: var(--accent); }
+  .ex { display: block; font-size: 0.85rem; color: var(--muted); margin-top: 0.2rem; }
+  @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+</style>

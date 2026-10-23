@@ -1,0 +1,60 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-factor" title="البحث عن عددين لتحليل ثلاثي الحدود" en="Factoring x² + bx + c">
+  <div class="controls">
+    <label><span class="ltr">b = <output data-o="b"></output></span><input type="range" min="-15" max="15" value="-2" data-i="b" /></label>
+    <label><span class="ltr">c = <output data-o="c"></output></span><input type="range" min="-40" max="40" value="-15" data-i="c" /></label>
+  </div>
+  <div class="readout top" aria-live="polite"></div>
+  <table class="pairs" dir="ltr">
+    <thead><tr><th>m · n = c</th><th>m + n</th><th></th></tr></thead>
+    <tbody></tbody>
+  </table>
+</Frame>
+
+<script>
+  import { tex } from '../../lib/tex';
+  import { poly, factor } from '../../lib/gen';
+  const root = document.getElementById('w-factor')!;
+  const top = root.querySelector<HTMLElement>('.top')!;
+  const body = root.querySelector('tbody')!;
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const b = v('b'), c = v('c');
+    root.querySelector('[data-o="b"]')!.textContent = String(b);
+    root.querySelector('[data-o="c"]')!.textContent = String(c);
+    const pairs: [number, number][] = [];
+    if (c === 0) pairs.push([0, b]);
+    else
+      for (let m = 1; m <= Math.abs(c); m++) {
+        if (c % m) continue;
+        const n = c / m;
+        if (m > Math.abs(n)) break;
+        pairs.push([m, n]);
+        pairs.push([-m, -n]);
+      }
+    let hit: [number, number] | null = null;
+    body.innerHTML = pairs
+      .map(([m, n]) => {
+        const ok = m + n === b;
+        if (ok && !hit) hit = [m, n];
+        return `<tr class="${ok ? 'ok' : ''}"><td>${m} · ${n < 0 ? `(${n})` : n}</td><td>${m + n}</td><td>${ok ? '✓' : ''}</td></tr>`;
+      })
+      .join('');
+    const eq = `$${poly([1, b, c])}$`;
+    top.innerHTML = hit
+      ? `<p>${tex(eq)}: نبحث عن عددين ضربهما ${tex(`$${c}$`)} ومجموعهما ${tex(`$${b}$`)}. وجدناهما: ${tex(`$${hit[0]}$`)} و ${tex(`$${hit[1]}$`)}.</p><p>${tex(`$${poly([1, b, c])} = ${factor(-hit[0])}${factor(-hit[1])}$`)}</p>`
+      : `<p>${tex(eq)}: لا يوجد زوج من الأعداد الصحيحة ضربه ${tex(`$${c}$`)} ومجموعه ${tex(`$${b}$`)}. هذا المقدار <strong>أولي</strong> <span class="en" lang="en">(Prime)</span> على الأعداد الصحيحة.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  draw();
+</script>
+
+<style>
+  .top { margin: 0 0 0.8rem; }
+  .pairs { border-collapse: collapse; width: 100%; max-width: 360px; margin: 0 auto; font: 1rem var(--font-en); }
+  .pairs th, .pairs td { border-bottom: 1px solid var(--line); padding: 0.3rem 0.6rem; text-align: center; }
+  .pairs th { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+  .pairs :global(tr.ok) { background: var(--ok-soft); color: var(--ok); font-weight: 700; }
+</style>

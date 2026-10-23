@@ -76,6 +76,20 @@ export type Problem =
       placeholder?: string;
     }
   | {
+      kind: 'expr';
+      prompt: string;
+      /** الإجابة المتوقعة بصيغة المحلل، مثل "x^2-4x+4" */
+      answer: string;
+      vars: string[];
+      /** قيم موجبة فقط للمتغيرات (عند وجود جذور زوجية أو أسس كسرية) */
+      positive?: boolean;
+      /** شروط على شكل الإجابة */
+      require?: ('factored' | 'noRadicalDenominator' | 'noNegativeExponent' | 'expanded' | 'monomial')[];
+      hint: string;
+      solution: string[];
+      placeholder?: string;
+    }
+  | {
       kind: 'choice';
       prompt: string;
       choices: string[];
@@ -89,4 +103,14 @@ export function choice(prompt: string, right: string, wrong: string[], hint: str
   const uniq = [...new Set(wrong.filter((w) => w !== right))].slice(0, 3);
   const all = shuffle([right, ...uniq]);
   return { kind: 'choice', prompt, choices: all, correct: all.indexOf(right), hint, solution };
+}
+
+/** كثير حدود بصيغة يقرؤها المحلل (بدون أقواس TeX) */
+export const polyP = (coefs: number[], v = 'x') => poly(coefs, v).replace(/\{(-?\d+)\}/g, '$1').replace(/\s+/g, '');
+
+/** ضرب كثيري حدود (معاملات من الأعلى إلى الأدنى) */
+export function pmul(a: number[], b: number[]): number[] {
+  const r = new Array(a.length + b.length - 1).fill(0);
+  a.forEach((x, i) => b.forEach((y, j) => (r[i + j] += x * y)));
+  return r;
 }

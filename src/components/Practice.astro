@@ -17,6 +17,10 @@ const { set, count = 5 } = Astro.props;
         الجذور: <code>sqrt(5)</code> أو <code>2√3</code>. عند وجود أكثر من حل افصل بينها بفاصلة: <code>4, -1</code> (الترتيب لا يهم).
         إن لم يوجد حل اكتب <code>لا يوجد</code>.
       </p>
+      <p>
+        التعابير الجبرية: <code>3x^2 - 5x + 2</code> و <code>(x+1)(x-4)</code> و <code>x^(1/2)</code> و <code>(2x)/(x-1)</code>.
+        يظهر تحت الحقل كيف فهم الموقع ما كتبته، فتأكد منه قبل التحقق.
+      </p>
     </details>
   </header>
   <ol class="items" data-items></ol>
@@ -25,11 +29,21 @@ const { set, count = 5 } = Astro.props;
 
 <script>
   import { ch1 } from '../lib/practice/ch1';
+  import { chR } from '../lib/practice/chR';
   import { tex } from '../lib/tex';
-  import { parseList, sameSet } from '../lib/answer';
+  import katex from 'katex';
+  import { parseList, sameSet, parse, toTex, equivalent, isFactored, hasRadicalDenominator, hasNegativeExponent, isExpanded, isMonomial } from '../lib/answer';
   import type { Problem } from '../lib/gen';
 
-  const banks: Record<string, (() => Problem)[]> = { ...ch1 };
+  const banks: Record<string, (() => Problem)[]> = { ...chR, ...ch1 };
+  const REQ_MSG = {
+    factored: 'الإجابة صحيحة القيمة لكنها غير محللة. اكتبها كحاصل ضرب عوامل.',
+    noRadicalDenominator: 'الإجابة صحيحة القيمة، لكن ما زال في المقام جذر. أنطق المقام.',
+    noNegativeExponent: 'الإجابة صحيحة القيمة، لكن اكتبها بأسس موجبة فقط.',
+    expanded: 'الإجابة صحيحة القيمة، لكن المطلوب كتابتها مفكوكة بلا أقواس (وبلا قسمة على متغير).',
+    monomial: 'الإجابة صحيحة القيمة، لكن بسّطها إلى حد واحد: معامل واحد وكل متغير مرة واحدة.',
+  } as const;
+  const REQ_CHECK = { expanded: isExpanded, monomial: isMonomial, factored: isFactored, noRadicalDenominator: (n: any) => !hasRadicalDenominator(n), noNegativeExponent: (n: any) => !hasNegativeExponent(n) };
 
   function render(sec: HTMLElement) {
     const gens = banks[sec.dataset.set!];
@@ -55,12 +69,12 @@ const { set, count = 5 } = Astro.props;
       li.className = 'item';
       const uid = `${sec.dataset.set}-${n}-${Math.random().toString(36).slice(2, 7)}`;
       let body = `<div class="q">${tex(p.prompt)}</div>`;
-      if (p.kind === 'values') {
+      if (p.kind === 'values' || p.kind === 'expr') {
         body += `<form class="ans" novalidate>
           <label class="sr" for="${uid}">إجابتك</label>
           <input id="${uid}" type="text" dir="auto" autocomplete="off" spellcheck="false" placeholder="${p.placeholder ?? 'اكتب الإجابة'}" />
           <button class="btn primary small" type="submit">تحقّق</button>
-        </form>`;
+        </form>${p.kind === 'expr' ? '<p class="preview" aria-live="polite"></p>' : ''}`;
       } else {
         body += `<div class="choices" role="radiogroup">${p.choices
           .map((ch, k) => `<button type="button" class="choice" data-k="${k}">${tex(ch)}</button>`)
@@ -89,7 +103,33 @@ const { set, count = 5 } = Astro.props;
         }
       };
 
-      if (p.kind === 'values') {
+      if (p.kind === 'expr') {
+        const form = li.querySelector('form')!;
+        const input = form.querySelector('input')!;
+        const prev = li.querySelector<HTMLElement>('.preview')!;
+        const expected = parse(p.answer);
+        input.addEventListener('input', () => {
+          if (!input.value.trim()) { prev.innerHTML = ''; return; }
+          try {
+            prev.innerHTML = 'قرأتُها: ' + katex.renderToString(toTex(parse(input.value)), { throwOnError: false });
+          } catch (err) {
+            prev.textContent = (err as Error).message;
+          }
+        });
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          if (!input.value.trim()) return mark(false, 'اكتب إجابة أولًا.');
+          try {
+            const given = parse(input.value);
+            if (!equivalent(given, expected, p.vars, p.positive)) return mark(false, 'غير صحيح، حاول مرة أخرى أو اطلب تلميحًا.');
+            const miss = (p.require ?? []).find((r) => !REQ_CHECK[r](given));
+            if (miss) return mark(false, REQ_MSG[miss]);
+            mark(true, 'صحيح ✓');
+          } catch (err) {
+            mark(false, `لم أفهم الإجابة: ${(err as Error).message}`);
+          }
+        });
+      } else if (p.kind === 'values') {
         const form = li.querySelector('form')!;
         const input = form.querySelector('input')!;
         form.addEventListener('submit', (e) => {
@@ -181,6 +221,7 @@ const { set, count = 5 } = Astro.props;
   :global(.practice .q) { margin-bottom: 0.6rem; }
   :global(.practice .ans) { display: flex; gap: 0.5rem; flex-wrap: wrap; }
   :global(.practice .ans input) { flex: 1 1 14rem; min-width: 0; }
+  :global(.practice .preview) { margin: 0.4rem 0 0; font-size: 0.95rem; color: var(--muted); min-height: 1.5em; }
   :global(.practice .choices) { display: grid; gap: 0.5rem; }
   :global(.practice .choice) {
     text-align: start;

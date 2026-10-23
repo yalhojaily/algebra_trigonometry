@@ -1,0 +1,39 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-hole" title="الاختصار والقيمة المستبعدة" en="Lowest terms keep the restriction">
+  <div class="controls">
+    <label><span class="ltr">a = <output data-o="a"></output></span><input type="range" min="-4" max="4" value="2" data-i="a" /></label>
+  </div>
+  <canvas aria-label="رسم المقدار النسبي ونقطة الثقب"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-hole')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -7, xmax: 7, ymin: -6, ymax: 8 });
+  const sg = (k: number) => (k < 0 ? `+ ${-k}` : `- ${k}`);
+  function draw() {
+    const a = Number(root.querySelector<HTMLInputElement>('[data-i="a"]')!.value);
+    root.querySelector('[data-o="a"]')!.textContent = String(a);
+    plot.fit(0.55);
+    plot.clear();
+    plot.grid(1, 2);
+    plot.fn((x) => (Math.abs(x - a) < 1e-9 ? NaN : x + a), css('--plot-curve'), 3);
+    plot.dot(a, 2 * a, css('--plot-hot'), 6, true);
+    const num = a === 0 ? 'x^2' : `x^2 - ${a * a}`;
+    const den = a === 0 ? 'x' : `x ${sg(a)}`;
+    if (a === 0) {
+      out.innerHTML = `<p>${tex('$\\dfrac{x^2}{x} = x$')}، بشرط ${tex('$x \\ne 0$')}. الرسم هو المستقيم ${tex('$y = x$')} مع ثقب عند الأصل.</p>`;
+      return;
+    }
+    out.innerHTML =
+      `<p>${tex(`$\\dfrac{${num}}{${den}} = \\dfrac{(${den})(x ${sg(-a)})}{${den}} = x ${sg(-a)}$`  )}، بشرط ${tex(`$x \\ne ${a}$`)}.</p>` +
+      `<p>الرسم هو المستقيم ${tex(`$y = x ${sg(-a)}$`)} نفسه، لكن فيه <strong>ثقب</strong> عند ${tex(`$x = ${a}$`)} لأن المقدار الأصلي غير معرّف هناك. الاختصار لا يلغي القيمة المستبعدة.</p>`;
+  }
+  root.querySelector('input')!.addEventListener('input', draw);
+  onRedraw(canvas, draw);
+</script>

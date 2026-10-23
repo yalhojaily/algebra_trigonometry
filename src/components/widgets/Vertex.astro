@@ -1,0 +1,48 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-vertex" title="رأس القطع المكافئ وصيغته القياسية" en="f(x) = ax² + bx + c = a(x − h)² + k">
+  <div class="controls">
+    <label><span class="ltr">a = <output data-o="a"></output></span><input type="range" min="-2" max="2" step="0.5" value="-1" data-i="a" /></label>
+    <label><span class="ltr">b = <output data-o="b"></output></span><input type="range" min="-8" max="8" value="4" data-i="b" /></label>
+    <label><span class="ltr">c = <output data-o="c"></output></span><input type="range" min="-8" max="8" value="1" data-i="c" /></label>
+  </div>
+  <canvas aria-label="قطع مكافئ ورأسه ومحور تماثله"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-vertex')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -8, xmax: 8, ymin: -9, ymax: 9 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const sg = (n: number) => (n < 0 ? `- ${fmt(-n)}` : `+ ${fmt(n)}`);
+  function draw() {
+    let a = v('a');
+    if (a === 0) a = 0.5;
+    const b = v('b'), c = v('c');
+    for (const k of ['a', 'b', 'c']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(k === 'a' ? a : v(k));
+    const h = -b / (2 * a), k = a * h * h + b * h + c;
+    plot.fit(0.62);
+    plot.clear();
+    plot.grid(1, 2);
+    plot.seg(h, -20, h, 20, css('--plot-alt'), 1.5, [6, 5]);
+    plot.fn((x) => a * x * x + b * x + c, css('--plot-curve'), 3);
+    plot.dot(h, k, css('--plot-hot'), 6);
+    plot.dot(0, c, css('--ink'), 4);
+    const D = b * b - 4 * a * c;
+    const xs = D > 0 ? [(-b - Math.sqrt(D)) / (2 * a), (-b + Math.sqrt(D)) / (2 * a)] : D === 0 ? [h] : [];
+    xs.forEach((x) => plot.dot(x, 0, css('--plot-alt'), 4, true));
+    const lead = a === 1 ? '' : a === -1 ? '-' : fmt(a);
+    out.innerHTML =
+      `<p>${tex(`$f(x) = ${lead}x^2 ${sg(b)}x ${sg(c)}$`)}</p>` +
+      `<p><strong>الرأس</strong> من قانون الرأس: ${tex(`$h = -\\dfrac{b}{2a} = -\\dfrac{${b}}{2(${fmt(a)})} = ${fmt(h)}$`)} و ${tex(`$k = f(${fmt(h)}) = ${fmt(k)}$`)}، أي ${tex(`$(${fmt(h)}, ${fmt(k)})$`)}.</p>` +
+      `<p><strong>الصيغة القياسية:</strong> ${tex(`$f(x) = ${lead}(x ${sg(-h)})^2 ${sg(k)}$`)}، ومحور التماثل ${tex(`$x = ${fmt(h)}$`)} (الخط المتقطع).</p>` +
+      `<p>${a > 0 ? 'a موجب: القطع مفتوح للأعلى، والرأس <strong>نقطة صغرى</strong>' : 'a سالب: القطع مفتوح للأسفل، والرأس <strong>نقطة عظمى</strong>'}، فالمدى ${tex(a > 0 ? `$[${fmt(k)}, \\infty)$` : `$(-\\infty, ${fmt(k)}]$`)}.` +
+      ` المقطع الصادي ${tex(`$(0, ${c})$`)}، و${xs.length ? `المقاطع السينية ${xs.map((x) => tex(`$${fmt(x)}$`)).join(' و ')}` : 'لا مقاطع سينية (المميز سالب)'}.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

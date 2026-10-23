@@ -1,0 +1,66 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-syn" title="القسمة التركيبية ونظرية الباقي" en="Synthetic division and the remainder theorem">
+  <div class="controls">
+    <label><span class="ltr">a₃ = <output data-o="a3"></output></span><input type="range" min="-3" max="3" value="1" data-i="a3" /></label>
+    <label><span class="ltr">a₂ = <output data-o="a2"></output></span><input type="range" min="-8" max="8" value="-4" data-i="a2" /></label>
+    <label><span class="ltr">a₁ = <output data-o="a1"></output></span><input type="range" min="-12" max="12" value="1" data-i="a1" /></label>
+    <label><span class="ltr">a₀ = <output data-o="a0"></output></span><input type="range" min="-12" max="12" value="6" data-i="a0" /></label>
+    <label>نقسم على <span class="ltr">x − k</span>، <span class="ltr">k = <output data-o="k"></output></span><input type="range" min="-4" max="4" value="2" data-i="k" /></label>
+  </div>
+  <div class="syn" dir="ltr" aria-label="جدول القسمة التركيبية"></div>
+  <canvas aria-label="رسم كثير الحدود والنقطة (k, f(k))"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  import { poly } from '../../lib/gen';
+  const root = document.getElementById('w-syn')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const table = root.querySelector<HTMLElement>('.syn')!;
+  const plot = new Plot(canvas, { xmin: -5, xmax: 5, ymin: -20, ymax: 20 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    for (const n of ['a3', 'a2', 'a1', 'a0', 'k']) root.querySelector(`[data-o="${n}"]`)!.textContent = String(v(n));
+    let A = [v('a3'), v('a2'), v('a1'), v('a0')];
+    while (A.length > 1 && A[0] === 0) A = A.slice(1);
+    const k = v('k');
+    const mid: number[] = [], bot: number[] = [];
+    A.forEach((a, i) => {
+      const m = i === 0 ? 0 : bot[i - 1] * k;
+      mid.push(m);
+      bot.push(a + m);
+    });
+    const r = bot[bot.length - 1];
+    const q = bot.slice(0, -1);
+    table.innerHTML =
+      `<table><tr><td class="k">${k}</td>${A.map((a) => `<td>${a}</td>`).join('')}</tr>` +
+      `<tr><td></td>${mid.map((m, i) => `<td class="mid">${i === 0 ? '' : m}</td>`).join('')}</tr>` +
+      `<tr class="bot"><td></td>${bot.map((b, i) => `<td class="${i === bot.length - 1 ? 'rem' : ''}">${b}</td>`).join('')}</tr></table>`;
+    const f = (x: number) => A.reduce((s, a) => s * x + a, 0);
+    plot.fit(0.5);
+    plot.clear();
+    plot.grid(1, 1, 5);
+    plot.fn(f, css('--plot-curve'), 3);
+    plot.dot(k, f(k), r === 0 ? css('--ok') : css('--plot-hot'), 6);
+    out.innerHTML =
+      `<p>كل عمود: <strong>أنزل</strong> المعامل، ثم <strong>اضرب</strong> في ${tex(`$k = ${k}$`)} وضع الناتج تحت المعامل التالي، ثم <strong>اجمع</strong>.</p>` +
+      `<p>خارج القسمة ${tex(`$${q.length ? poly(q) : '0'}$`)} (درجته أقل بواحد) والباقي ${tex(`$${r}$`)}.</p>` +
+      `<p><strong>نظرية الباقي:</strong> الباقي يساوي ${tex(`$f(${k}) = ${f(k)}$`)}، وهو ارتفاع النقطة على الرسم عند ${tex(`$x = ${k}$`)}.${r === 0 ? ` الباقي صفر، فـ ${tex(`$${k}$`)} <strong>صفر</strong> للدالة و ${tex(`$x ${k < 0 ? '+' : '-'} ${Math.abs(k)}$`)} عامل منها.` : ''}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>
+<style>
+  .syn { display: flex; justify-content: center; margin: 0 0 0.8rem; }
+  .syn :global(table) { border-collapse: collapse; font: 600 1.1rem var(--font-en); }
+  .syn :global(td) { min-width: 3rem; padding: 0.3rem 0.6rem; text-align: center; }
+  .syn :global(td.k) { border-right: 2px solid var(--ink); color: var(--accent); }
+  .syn :global(td.mid) { color: var(--muted); }
+  .syn :global(tr.bot td) { border-top: 2px solid var(--ink); }
+  .syn :global(tr.bot td:first-child) { border-top: 0; }
+  .syn :global(td.rem) { color: var(--plot-hot); outline: 2px solid var(--plot-hot); outline-offset: -4px; border-radius: 4px; }
+</style>

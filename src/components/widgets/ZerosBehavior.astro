@@ -1,0 +1,62 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-zb" title="الأصفار وتعددها والسلوك الطرفي" en="Zeros, multiplicity and end behavior">
+  <div class="controls">
+    <label>الصفر الأول <span class="ltr">r₁ = <output data-o="r1"></output></span><input type="range" min="-4" max="4" value="-2" data-i="r1" /></label>
+    <label>تعدده <span class="ltr"><output data-o="m1"></output></span><input type="range" min="1" max="3" value="1" data-i="m1" /></label>
+    <label>الصفر الثاني <span class="ltr">r₂ = <output data-o="r2"></output></span><input type="range" min="-4" max="4" value="1" data-i="r2" /></label>
+    <label>تعدده <span class="ltr"><output data-o="m2"></output></span><input type="range" min="1" max="3" value="2" data-i="m2" /></label>
+    <label>الصفر الثالث <span class="ltr">r₃ = <output data-o="r3"></output></span><input type="range" min="-4" max="4" value="3" data-i="r3" /></label>
+    <label>تعدده (0 = بلا) <span class="ltr"><output data-o="m3"></output></span><input type="range" min="0" max="3" value="1" data-i="m3" /></label>
+    <label class="chk"><input type="checkbox" data-i="neg" /> معامل رئيس سالب</label>
+  </div>
+  <canvas aria-label="رسم كثير الحدود"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-zb')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -5, xmax: 5, ymin: -12, ymax: 12 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const fac = (r: number, m: number) => (m === 0 ? '' : `${r === 0 ? 'x' : `(x ${r > 0 ? '-' : '+'} ${Math.abs(r)})`}${m > 1 ? `^{${m}}` : ''}`);
+  function draw() {
+    for (const n of ['r1', 'm1', 'r2', 'm2', 'r3', 'm3']) root.querySelector(`[data-o="${n}"]`)!.textContent = String(v(n));
+    const neg = root.querySelector<HTMLInputElement>('[data-i="neg"]')!.checked;
+    // دمج الأصفار المتكررة
+    const map = new Map<number, number>();
+    [[v('r1'), v('m1')], [v('r2'), v('m2')], [v('r3'), v('m3')]].forEach(([r, m]) => m && map.set(r, (map.get(r) ?? 0) + m));
+    const zs = [...map.entries()].sort((a, b) => a[0] - b[0]);
+    const n = zs.reduce((s, [, m]) => s + m, 0);
+    const a = neg ? -1 : 1;
+    const f = (x: number) => a * zs.reduce((p, [r, m]) => p * (x - r) ** m, 1);
+    // مقياس رأسي مناسب
+    // مقياس رأسي حسب ما بين الأصفار حتى تظهر التفاصيل قربها
+    const lo = zs[0][0] - (zs.length === 1 ? 1.5 : 0), hi = zs[zs.length - 1][0] + (zs.length === 1 ? 1.5 : 0);
+    let M = 1;
+    for (let x = lo; x <= hi; x += 0.02) M = Math.max(M, Math.abs(f(x)));
+    const ymax = Math.min(Math.max(4, M * 1.8), 400);
+    plot.view = { xmin: -5, xmax: 5, ymin: -ymax, ymax };
+    plot.fit(0.55);
+    plot.clear();
+    plot.grid(1, 1, Math.pow(10, Math.floor(Math.log10(ymax / 2))));
+    plot.fn(f, css('--plot-curve'), 3);
+    zs.forEach(([r, m]) => plot.dot(r, 0, m === 1 ? css('--plot-hot') : m === 2 ? css('--plot-alt') : css('--ok'), 6));
+    const beh = (m: number) => (m % 2 === 1 ? (m === 1 ? 'يقطع المحور (يعبره)' : 'يعبر المحور مع تسطّح') : 'يلمس المحور ويرتد');
+    const left = (n % 2 === 0) === (a > 0) ? '\\uparrow' : '\\downarrow';
+    const right = a > 0 ? '\\uparrow' : '\\downarrow';
+    out.innerHTML =
+      `<p>${tex(`$f(x) = ${neg ? '-' : ''}${zs.map(([r, m]) => fac(r, m)).join('')}$`)}، الدرجة ${tex(`$n = ${n}$`)}.</p>` +
+      `<ul>${zs.map(([r, m]) => `<li>${tex(`$x = ${r}$`)} تعدده ${m}: الرسم ${beh(m)}.</li>`).join('')}</ul>` +
+      `<p><strong>السلوك الطرفي:</strong> الدرجة ${n % 2 === 0 ? 'زوجية' : 'فردية'} والمعامل الرئيس ${a > 0 ? 'موجب' : 'سالب'}، فطرفا الرسم: يسارًا ${tex(`$${left}$`)} ويمينًا ${tex(`$${right}$`)}. وعدد نقاط التحول لا يزيد على ${tex(`$n - 1 = ${n - 1}$`)}.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>
+<style>
+  .chk { display: flex !important; align-items: center; gap: 0.4rem; }
+  .readout :global(ul) { margin: 0.2rem 0; padding-inline-start: 1.3rem; }
+</style>

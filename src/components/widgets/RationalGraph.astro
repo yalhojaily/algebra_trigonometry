@@ -1,0 +1,91 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-rat" title="خطوط التقارب للدالة النسبية" en="Asymptotes of rational functions">
+  <div class="controls">
+    <label>الصيغة
+      <select data-i="t" dir="ltr">
+        <option value="eq">f(x) = a(x − z) / (x − p)</option>
+        <option value="lt">f(x) = a / ((x − p)(x − z))</option>
+        <option value="gt">f(x) = (x² − z) / (x − p)</option>
+      </select>
+    </label>
+    <label><span class="ltr">a = <output data-o="a"></output></span><input type="range" min="-3" max="3" value="2" data-i="a" /></label>
+    <label><span class="ltr">p = <output data-o="p"></output></span><input type="range" min="-4" max="4" value="1" data-i="p" /></label>
+    <label><span class="ltr">z = <output data-o="z"></output></span><input type="range" min="-4" max="4" value="-2" data-i="z" /></label>
+  </div>
+  <canvas aria-label="رسم الدالة النسبية وخطوط تقاربها"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--plot-curve)"></i>الدالة</span>
+    <span><i style="background:var(--plot-hot)"></i>خط تقارب رأسي</span>
+    <span><i style="background:var(--plot-alt)"></i>خط تقارب أفقي أو مائل</span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-rat')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -8, xmax: 8, ymin: -8, ymax: 8 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const lin = (r: number) => (r === 0 ? 'x' : `x ${r > 0 ? '-' : '+'} ${Math.abs(r)}`);
+  function draw() {
+    const t = root.querySelector<HTMLSelectElement>('[data-i="t"]')!.value;
+    let a = v('a'); if (a === 0) a = 1;
+    const p = v('p'), z = v('z');
+    root.querySelector('[data-o="a"]')!.textContent = String(a);
+    root.querySelector('[data-o="p"]')!.textContent = String(p);
+    root.querySelector('[data-o="z"]')!.textContent = String(z);
+    plot.fit(0.62);
+    plot.clear();
+    plot.grid(1, 2);
+    let f: (x: number) => number, html = '';
+    const VA: number[] = [];
+    const hole = (x: number) => plot.dot(x, f(x + 1e-6), css('--plot-curve'), 5, true);
+    if (t === 'eq') {
+      f = (x) => (a * (x - z)) / (x - p);
+      if (z === p) {
+        plot.fn((x) => (Math.abs(x - p) < 1e-9 ? NaN : a), css('--plot-curve'), 3);
+        hole(p);
+        html = `<p>البسط والمقام فيهما العامل نفسه ${tex(`$(${lin(p)})$`)}، فيُختصر: الرسم المستقيم ${tex(`$y = ${a}$`)} مع <strong>ثقب</strong> عند ${tex(`$x = ${p}$`)}، ولا خط تقارب رأسي.</p>`;
+        out.innerHTML = html; return;
+      }
+      VA.push(p);
+      plot.fn(() => a, css('--plot-alt'), 2, [7, 5]);
+      html =
+        `<p>${tex(`$f(x) = \\dfrac{${a}(${lin(z)})}{${lin(p)}}$`)}</p>` +
+        `<p><strong>رأسي:</strong> ${tex(`$x = ${p}$`)} (صفر المقام). <strong>أفقي:</strong> درجتا البسط والمقام متساويتان (1)، فخط التقارب ${tex(`$y = \\dfrac{${a}}{1} = ${a}$`)}، نسبة المعاملين الرئيسين.</p>` +
+        `<p>المقطع السيني ${tex(`$x = ${z}$`)} (صفر البسط)، ${p === 0 ? 'ولا مقطع صادي لأن x = 0 خط تقارب رأسي' : `والمقطع الصادي ${tex(`$f(0) = ${fmt((a * z) / p)}$`)}`}.</p>`;
+    } else if (t === 'lt') {
+      f = (x) => a / ((x - p) * (x - z));
+      VA.push(p); if (z !== p) VA.push(z);
+      plot.fn(() => 0, css('--plot-alt'), 2, [7, 5]);
+      html =
+        `<p>${tex(`$f(x) = \\dfrac{${a}}{(${lin(p)})(${lin(z)})}$`)}</p>` +
+        `<p><strong>رأسي:</strong> ${VA.map((x) => tex(`$x = ${x}$`)).join(' و ')}. <strong>أفقي:</strong> درجة البسط (0) أقل من درجة المقام (2)، فخط التقارب ${tex('$y = 0$')}: الكسر يقترب من الصفر كلما كبر ${tex('$|x|$')}.</p>` +
+        `<p>لا مقاطع سينية لأن البسط ${a} لا يساوي صفرًا أبدًا.${z === p ? ' والمقام مربع، فالدالة لا تغير إشارتها حول خط التقارب.' : ''}</p>`;
+    } else {
+      f = (x) => (x * x - z) / (x - p);
+      const r = p * p - z;
+      if (r === 0) {
+        plot.fn((x) => (Math.abs(x - p) < 1e-9 ? NaN : x + p), css('--plot-curve'), 3);
+        hole(p);
+        out.innerHTML = `<p>${tex(`$x^2 - ${z} = (x - ${p})(x + ${p})$`)}، فيُختصر العامل: الرسم المستقيم ${tex(`$y = x + ${p}$`)} مع ثقب عند ${tex(`$x = ${p}$`)}.</p>`;
+        return;
+      }
+      VA.push(p);
+      plot.fn((x) => x + p, css('--plot-alt'), 2, [7, 5]);
+      html =
+        `<p>${tex(`$f(x) = \\dfrac{x^2 ${z > 0 ? '-' : '+'} ${Math.abs(z)}}{${lin(p)}}$`)}</p>` +
+        `<p>درجة البسط تزيد على درجة المقام بواحد، فلا خط تقارب أفقي بل <strong>مائل</strong>. بالقسمة: ${tex(`$f(x) = x ${p < 0 ? '-' : '+'} ${Math.abs(p)} + \\dfrac{${r}}{${lin(p)}}$`)}.</p>` +
+        `<p>الكسر الأخير يقترب من الصفر عندما يكبر ${tex('$|x|$')}، فخط التقارب المائل ${tex(`$y = x ${p < 0 ? '-' : '+'} ${Math.abs(p)}$`)}، والرأسي ${tex(`$x = ${p}$`)}.</p>`;
+    }
+    VA.forEach((x) => plot.seg(x, -20, x, 20, css('--plot-hot'), 2, [7, 5]));
+    plot.fn((x) => (VA.some((va) => Math.abs(x - va) < 0.02) ? NaN : f(x)), css('--plot-curve'), 3);
+    out.innerHTML = html;
+  }
+  root.querySelectorAll('input, select').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

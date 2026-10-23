@@ -1,0 +1,66 @@
+---
+import Frame from './Frame.astro';
+const presets = [
+  ['6,-5,-2,1', '6x³ − 5x² − 2x + 1'],
+  ['2,-3,-11,6', '2x³ − 3x² − 11x + 6'],
+  ['1,-2,-5,6', 'x³ − 2x² − 5x + 6'],
+  ['3,-4,-1,2', '3x³ − 4x² − x + 2'],
+  ['1,0,-7,6', 'x³ − 7x + 6'],
+  ['2,1,-4,-3', '2x³ + x² − 4x − 3'],
+];
+---
+<Frame id="w-rz" title="نظرية الأصفار النسبية" en="Rational Zeros Theorem">
+  <div class="controls">
+    <label>كثير الحدود
+      <select data-i="p" dir="ltr">{presets.map(([v, t]) => <option value={v}>{t}</option>)}</select>
+    </label>
+  </div>
+  <div class="cands" dir="ltr" aria-live="polite"></div>
+  <canvas aria-label="رسم كثير الحدود وأصفاره"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  import { poly, frac } from '../../lib/gen';
+  const root = document.getElementById('w-rz')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const box = root.querySelector<HTMLElement>('.cands')!;
+  const plot = new Plot(canvas, { xmin: -4.5, xmax: 4.5, ymin: -12, ymax: 12 });
+  const divs = (n: number) => { const r: number[] = []; for (let d = 1; d <= Math.abs(n); d++) if (n % d === 0) r.push(d); return r; };
+  function draw() {
+    const A = root.querySelector<HTMLSelectElement>('[data-i="p"]')!.value.split(',').map(Number);
+    const f = (x: number) => A.reduce((s, a) => s * x + a, 0);
+    const P = divs(A[A.length - 1]), Q = divs(A[0]);
+    const cands: [number, number][] = [];
+    for (const p of P) for (const q of Q) for (const s of [1, -1]) {
+      const val = (s * p) / q;
+      if (!cands.some(([n, d]) => Math.abs(n / d - val) < 1e-9)) cands.push([s * p, q]);
+    }
+    cands.sort((x, y) => x[0] / x[1] - y[0] / y[1]);
+    const zeros = cands.filter(([n, d]) => Math.abs(f(n / d)) < 1e-9);
+    box.innerHTML = cands
+      .map(([n, d]) => {
+        const z = Math.abs(f(n / d)) < 1e-9;
+        return `<span class="c${z ? ' z' : ''}">${tex(`$${frac(n, d)}$`)}</span>`;
+      })
+      .join('');
+    plot.fit(0.5);
+    plot.clear();
+    plot.grid(0.5, 2, 4);
+    plot.fn(f, css('--plot-curve'), 3);
+    zeros.forEach(([n, d]) => plot.dot(n / d, 0, css('--ok'), 6));
+    out.innerHTML =
+      `<p>${tex(`$f(x) = ${poly(A)}$`)}. الحد الثابت ${tex(`$${A[A.length - 1]}$`)} وعوامله ${tex(`$p \\in \\{\\pm ${P.join(', \\pm ')}\\}$`)}، والمعامل الرئيس ${tex(`$${A[0]}$`)} وعوامله ${tex(`$q \\in \\{\\pm ${Q.join(', \\pm ')}\\}$`)}.</p>` +
+      `<p>كل صفر نسبي يجب أن يكون على الصورة ${tex('$\\dfrac{p}{q}$')}، فيكون عدد المرشحين ${cands.length}. بالتعويض (أو القسمة التركيبية) نجد أن الأصفار هي المظللة بالأخضر: ${zeros.map(([n, d]) => tex(`$${frac(n, d)}$`)).join('، ')}.</p>` +
+      `<p>النظرية لا تعطي الأصفار، بل تقلّص البحث إلى قائمة محدودة. والرسم يساعد على اختيار المرشح الذي نجربه أولًا.</p>`;
+  }
+  root.querySelector('select')!.addEventListener('input', draw);
+  onRedraw(canvas, draw);
+</script>
+<style>
+  .cands { display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: center; margin-bottom: 0.8rem; }
+  .cands :global(.c) { padding: 0.15rem 0.55rem; border-radius: 99px; border: 1px solid var(--line); background: var(--paper); }
+  .cands :global(.c.z) { background: var(--ok-soft); border-color: var(--ok); }
+</style>

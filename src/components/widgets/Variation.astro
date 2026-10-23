@@ -1,0 +1,50 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-var" title="التغير الطردي والعكسي" en="Direct and inverse variation">
+  <div class="controls">
+    <label>النوع
+      <select data-i="t">
+        <option value="d">طردي: y = k xⁿ</option>
+        <option value="i">عكسي: y = k / xⁿ</option>
+      </select>
+    </label>
+    <label>ثابت التغير <span class="ltr">k = <output data-o="k"></output></span><input type="range" min="0.5" max="4" step="0.5" value="2" data-i="k" /></label>
+    <label>القوة <span class="ltr">n = <output data-o="n"></output></span><input type="range" min="1" max="3" value="1" data-i="n" /></label>
+    <label>المدخل <span class="ltr">x = <output data-o="x"></output></span><input type="range" min="0.5" max="4" step="0.5" value="1" data-i="x" /></label>
+  </div>
+  <canvas aria-label="رسم علاقة التغير"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-var')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -0.3, xmax: 8.5, ymin: -1, ymax: 16 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const t = root.querySelector<HTMLSelectElement>('[data-i="t"]')!.value;
+    const k = v('k'), n = v('n'), x = v('x');
+    for (const s of ['k', 'n', 'x']) root.querySelector(`[data-o="${s}"]`)!.textContent = String(v(s));
+    const f = (u: number) => (t === 'd' ? k * u ** n : k / u ** n);
+    const y1 = f(x), y2 = f(2 * x);
+    plot.fit(0.55);
+    plot.clear();
+    plot.grid(1, 1, 2);
+    plot.fn((u) => (u > 0 ? f(u) : NaN), css('--plot-curve'), 3);
+    plot.dot(x, y1, css('--plot-hot'), 6);
+    plot.dot(2 * x, y2, css('--plot-alt'), 6);
+    plot.seg(x, 0, x, Math.min(y1, 16), css('--plot-hot'), 1.5, [4, 3]);
+    plot.seg(2 * x, 0, 2 * x, Math.min(y2, 16), css('--plot-alt'), 1.5, [4, 3]);
+    const ratio = y2 / y1;
+    const eq = t === 'd' ? `y = ${k}x${n > 1 ? `^{${n}}` : ''}` : `y = \\dfrac{${k}}{x${n > 1 ? `^{${n}}` : ''}}`;
+    out.innerHTML =
+      `<p>${tex(`$${eq}$`)}: عند ${tex(`$x = ${x}$`)} يكون ${tex(`$y = ${fmt(y1, 3)}$`)}، وعند مضاعفة المدخل ${tex(`$x = ${2 * x}$`)} يكون ${tex(`$y = ${fmt(y2, 3)}$`)}.</p>` +
+      `<p>مضاعفة ${tex('$x$')} ${t === 'd' ? 'ضربت' : 'قسمت'} ${tex('$y$')} ${t === 'd' ? 'في' : 'على'} ${tex(`$2^{${n}} = ${2 ** n}$`)} (النسبة ${tex(`$\\tfrac{y_2}{y_1} = ${fmt(ratio, 4)}$`)}).</p>` +
+      `<p>${t === 'd' ? 'في التغير الطردي يكبر y مع كبر x، والنسبة ' + tex(`$\\tfrac{y}{x^{${n}}} = ${k}$`) + ' ثابتة.' : 'في التغير العكسي يصغر y كلما كبر x، وحاصل الضرب ' + tex(`$x^{${n}} y = ${k}$`) + ' ثابت.'}</p>`;
+  }
+  root.querySelectorAll('input, select').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

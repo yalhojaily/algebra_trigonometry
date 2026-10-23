@@ -31,12 +31,13 @@ const { set, count = 5 } = Astro.props;
   import { ch1 } from '../lib/practice/ch1';
   import { chR } from '../lib/practice/chR';
   import { ch2 } from '../lib/practice/ch2';
+  import { ch3 } from '../lib/practice/ch3';
   import { tex } from '../lib/tex';
   import katex from 'katex';
   import { parseList, sameSet, sameList, stripPoint, parse, toTex, equivalent, isFactored, hasRadicalDenominator, hasNegativeExponent, isExpanded, isMonomial } from '../lib/answer';
   import type { Problem } from '../lib/gen';
 
-  const banks: Record<string, (() => Problem)[]> = { ...chR, ...ch1, ...ch2 };
+  const banks: Record<string, (() => Problem)[]> = { ...chR, ...ch1, ...ch2, ...ch3 };
   const REQ_MSG = {
     factored: 'الإجابة صحيحة القيمة لكنها غير محللة. اكتبها كحاصل ضرب عوامل.',
     noRadicalDenominator: 'الإجابة صحيحة القيمة، لكن ما زال في المقام جذر. أنطق المقام.',

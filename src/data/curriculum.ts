@@ -74,7 +74,7 @@ export const chapters: Chapter[] = [
     id: '3',
     ar: 'الدوال كثيرة الحدود والنسبية',
     en: 'Polynomial and Rational Functions',
-    status: 'soon',
+    status: 'ready',
     blurb: 'الدوال التربيعية والقسمة التركيبية وأصفار كثيرات الحدود والدوال النسبية والتغير.',
     sections: [
       { id: '3.1', ar: 'الدوال التربيعية ونماذجها', en: 'Quadratic Functions and Models', topics: [t('دوال كثيرات الحدود', 'Polynomial Functions'), t('الدوال التربيعية', 'Quadratic Functions'), t('تقنيات الرسم', 'Graphing Techniques'), t('إكمال المربع', 'Completing the Square'), t('قانون الرأس', 'The Vertex Formula'), t('النماذج التربيعية', 'Quadratic Models')] },

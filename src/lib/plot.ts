@@ -95,6 +95,37 @@ export class Plot {
     ctx.stroke();
     ctx.setLineDash([]);
   }
+  seg(x1: number, y1: number, x2: number, y2: number, color = css('--muted'), width = 2, dash: number[] = []) {
+    const { ctx } = this;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.setLineDash(dash);
+    ctx.beginPath();
+    ctx.moveTo(this.X(x1), this.Y(y1));
+    ctx.lineTo(this.X(x2), this.Y(y2));
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  /** منحنى وسيطي x(t), y(t) */
+  param(fx: (t: number) => number, fy: (t: number) => number, t0: number, t1: number, color = css('--plot-curve'), width = 2.6, dash: number[] = []) {
+    const { ctx } = this;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.setLineDash(dash);
+    ctx.beginPath();
+    const n = 400;
+    let pen = false;
+    for (let k = 0; k <= n; k++) {
+      const t = t0 + ((t1 - t0) * k) / n;
+      const x = fx(t), y = fy(t);
+      if (!Number.isFinite(x) || !Number.isFinite(y)) { pen = false; continue; }
+      if (pen) ctx.lineTo(this.X(x), this.Y(y));
+      else ctx.moveTo(this.X(x), this.Y(y));
+      pen = true;
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
   dot(x: number, y: number, color = css('--plot-hot'), r = 5, hollow = false) {
     const { ctx } = this;
     ctx.beginPath();

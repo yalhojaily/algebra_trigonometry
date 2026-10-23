@@ -284,6 +284,14 @@ export function sameSet(given: C[], expected: C[]) {
   return g.length === e.length && e.every((x) => g.some((y) => close(x, y)));
 }
 
+/** مقارنة مرتبة، مثل إحداثيات نقطة (x, y) */
+export function sameList(given: C[], expected: C[]) {
+  return given.length === expected.length && expected.every((e, k) => close(given[k], e));
+}
+
+/** يزيل الأقواس الخارجية من نقطة مكتوبة (3, -2) */
+export const stripPoint = (s: string) => s.trim().replace(/^\(\s*([^()]*(?:\([^()]*\)[^()]*)*)\s*\)$/, '$1');
+
 /** تكافؤ تعبيرين جبريين بالتعويض في نقاط عشوائية */
 export function equivalent(given: Node, expected: Node, vars: string[], positive = false): boolean {
   let ok = 0;

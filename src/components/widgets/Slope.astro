@@ -1,0 +1,52 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-slope" title="الميل: الارتفاع على المسافة الأفقية" en="Slope = rise / run">
+  <div class="controls">
+    <label>الارتفاع <span class="ltr">rise = <output data-o="rise"></output></span><input type="range" min="-6" max="6" value="3" data-i="rise" /></label>
+    <label>المسافة الأفقية <span class="ltr">run = <output data-o="run"></output></span><input type="range" min="1" max="6" value="2" data-i="run" /></label>
+    <label>المقطع <span class="ltr">b = <output data-o="b"></output></span><input type="range" min="-5" max="5" value="-1" data-i="b" /></label>
+  </div>
+  <canvas aria-label="مستقيم ومثلث الميل"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  import { frac, gcd } from '../../lib/gen';
+  const root = document.getElementById('w-slope')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -8, xmax: 8, ymin: -8, ymax: 8 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const rise = v('rise'), run = v('run'), b = v('b');
+    for (const k of ['rise', 'run', 'b']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    const m = rise / run;
+    plot.fit(0.62);
+    plot.clear();
+    plot.grid(1, 2);
+    plot.fn((x) => m * x + b, css('--plot-curve'), 3);
+    plot.seg(0, b, run, b, css('--plot-alt'), 3);
+    plot.seg(run, b, run, b + rise, css('--plot-hot'), 3);
+    plot.dot(0, b, css('--ink'), 5);
+    plot.dot(run, b + rise, css('--ink'), 5);
+    plot.label(run / 2, b, `run = ${run}`, css('--plot-alt'), 'center');
+    plot.label(run + 0.2, b + rise / 2, `rise = ${rise}`, css('--plot-hot'));
+    const mt = frac(rise, run);
+    const g = gcd(rise, run) || 1;
+    let A = -rise / g, B = run / g, C = (b * run) / g;
+    if (A < 0) { A = -A; B = -B; C = -C; }
+    const mx = m === 0 ? '' : mt === '1' ? 'x' : mt === '-1' ? '-x' : `${mt}x`;
+    const bs = b === 0 ? (m === 0 ? '0' : '') : m === 0 ? `${b}` : b < 0 ? ` - ${-b}` : ` + ${b}`;
+    const coef = (k: number, v: string, first: boolean) => (k === 0 ? '' : `${k < 0 ? (first ? '-' : ' - ') : first ? '' : ' + '}${Math.abs(k) === 1 ? '' : Math.abs(k)}${v}`);
+    const std = `${coef(A, 'x', true)}${coef(B, 'y', A === 0)} = ${C}`;
+    const kind = m > 0 ? 'موجب: المستقيم يصعد من اليسار إلى اليمين، فالدالة <strong>متزايدة</strong>.' : m < 0 ? 'سالب: المستقيم ينزل من اليسار إلى اليمين، فالدالة <strong>متناقصة</strong>.' : 'صفر: المستقيم أفقي، فالدالة <strong>ثابتة</strong>.';
+    out.innerHTML =
+      `<p>${tex(`$m = \\dfrac{\\text{rise}}{\\text{run}} = \\dfrac{${rise}}{${run}} = ${mt}$`)}. الميل ${kind}</p>` +
+      `<p>المعادلة: ${tex(`$y = ${mx}${bs}$`)}، والمقطع الصادي ${tex(`$(0, ${b})$`)}.</p>` +
+      `<p>كل زيادة في ${tex('$x$')} بمقدار ${run} تغيّر ${tex('$y$')} بمقدار ${rise}، وهذا معنى «معدل التغير الثابت». الصيغة القياسية: ${tex(`$${std}$`)}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

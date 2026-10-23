@@ -57,7 +57,7 @@ export const chapters: Chapter[] = [
     id: '2',
     ar: 'الرسوم البيانية والدوال',
     en: 'Graphs and Functions',
-    status: 'soon',
+    status: 'ready',
     blurb: 'المستوى الإحداثي والدوائر والدوال الخطية وتقنيات الرسم وتركيب الدوال.',
     sections: [
       { id: '2.1', ar: 'الإحداثيات المتعامدة والرسوم', en: 'Rectangular Coordinates and Graphs', topics: [t('الأزواج المرتبة', 'Ordered Pairs'), t('نظام الإحداثيات المتعامدة', 'The Rectangular Coordinate System'), t('قانون المسافة', 'The Distance Formula'), t('قانون نقطة المنتصف', 'The Midpoint Formula'), t('معادلات بمتغيرين', 'Equations in Two Variables')] },

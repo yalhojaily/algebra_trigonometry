@@ -1,0 +1,56 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-vlt" title="اختبار الخط الرأسي" en="Vertical line test">
+  <div class="controls">
+    <label>العلاقة
+      <select data-i="rel" dir="ltr">
+        <option value="sq">y = x²</option>
+        <option value="circ">x² + y² = 16</option>
+        <option value="side">x = y²</option>
+        <option value="cub">y = x³ − 3x</option>
+        <option value="abs">y = |x|</option>
+        <option value="absy">x = |y|</option>
+      </select>
+    </label>
+    <label>موضع الخط <span class="ltr">x = <output data-o="c"></output></span><input type="range" min="-6" max="6" step="0.25" value="2" data-i="c" /></label>
+  </div>
+  <canvas aria-label="رسم العلاقة وخط رأسي متحرك"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-vlt')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -7, xmax: 7, ymin: -5.5, ymax: 5.5 });
+  type Rel = { fx: (t: number) => number; fy: (t: number) => number; t: [number, number]; hits: (c: number) => number[]; fn: boolean; why: string };
+  const R: Record<string, Rel> = {
+    sq: { fx: (t) => t, fy: (t) => t * t, t: [-3, 3], hits: (c) => [c * c], fn: true, why: 'لكل x قيمة واحدة فقط لـ y هي x².' },
+    circ: { fx: (t) => 4 * Math.cos(t), fy: (t) => 4 * Math.sin(t), t: [0, 2 * Math.PI], hits: (c) => (Math.abs(c) < 4 ? [Math.sqrt(16 - c * c), -Math.sqrt(16 - c * c)] : Math.abs(c) === 4 ? [0] : []), fn: false, why: 'لكل x بين −4 و 4 قيمتان لـ y (أعلى الدائرة وأسفلها).' },
+    side: { fx: (t) => t * t, fy: (t) => t, t: [-3, 3], hits: (c) => (c > 0 ? [Math.sqrt(c), -Math.sqrt(c)] : c === 0 ? [0] : []), fn: false, why: 'لكل x موجب قيمتان: y = √x و y = −√x.' },
+    cub: { fx: (t) => t, fy: (t) => t ** 3 - 3 * t, t: [-2.6, 2.6], hits: (c) => [c ** 3 - 3 * c], fn: true, why: 'المنحنى يصعد وينزل، لكن لكل x قيمة واحدة لـ y. الاختبار رأسي لا أفقي.' },
+    abs: { fx: (t) => t, fy: (t) => Math.abs(t), t: [-6, 6], hits: (c) => [Math.abs(c)], fn: true, why: 'لكل x قيمة واحدة |x|.' },
+    absy: { fx: (t) => Math.abs(t), fy: (t) => t, t: [-6, 6], hits: (c) => (c > 0 ? [c, -c] : c === 0 ? [0] : []), fn: false, why: 'لكل x موجب نقطتان: (x, x) و (x, −x).' },
+  };
+  function draw() {
+    const rel = R[root.querySelector<HTMLSelectElement>('[data-i="rel"]')!.value];
+    const c = Number(root.querySelector<HTMLInputElement>('[data-i="c"]')!.value);
+    root.querySelector('[data-o="c"]')!.textContent = String(c);
+    plot.fit(0.62);
+    plot.clear();
+    plot.grid(1, 2);
+    plot.param(rel.fx, rel.fy, rel.t[0], rel.t[1], css('--plot-curve'), 3);
+    const ys = rel.hits(c).filter((y) => Math.abs(y) <= 5.5);
+    const many = ys.length > 1;
+    plot.seg(c, -6, c, 6, many ? css('--err') : css('--plot-alt'), 2.5, [7, 5]);
+    ys.forEach((y) => plot.dot(c, y, many ? css('--err') : css('--plot-hot'), 6));
+    out.innerHTML =
+      `<p>الخط ${tex(`$x = ${fmt(c)}$`)} يقطع المنحنى في <strong>${ys.length}</strong> ${ys.length === 1 ? 'نقطة' : 'نقاط'}${many ? '، فهذه القيمة لـ x لها أكثر من y.' : '.'}</p>` +
+      `<p>${rel.fn ? '<strong style="color:var(--ok)">دالة</strong>' : '<strong style="color:var(--err)">ليست دالة</strong>'}: ${rel.why}</p>` +
+      `<p>حرّك الخط في كل الاتجاهات: العلاقة دالة إذا لم يقطعها أي خط رأسي في أكثر من نقطة.</p>`;
+  }
+  root.querySelectorAll('input, select').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

@@ -1,0 +1,44 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-dq" title="خارج قسمة الفرق كميل للقاطع" en="Difference quotient [f(x + h) − f(x)] / h">
+  <div class="controls">
+    <label><span class="ltr">x = <output data-o="x"></output></span><input type="range" min="-2" max="2" step="0.25" value="0.5" data-i="x" /></label>
+    <label><span class="ltr">h = <output data-o="h"></output></span><input type="range" min="0.05" max="2.5" step="0.05" value="1.5" data-i="h" /></label>
+  </div>
+  <canvas aria-label="منحنى y = x² ومستقيم قاطع"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-dq')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -3.5, xmax: 4.5, ymin: -1, ymax: 9 });
+  const f = (x: number) => x * x;
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const x = v('x'), h = v('h');
+    root.querySelector('[data-o="x"]')!.textContent = String(x);
+    root.querySelector('[data-o="h"]')!.textContent = String(h);
+    const m = (f(x + h) - f(x)) / h;
+    plot.fit(0.62);
+    plot.clear();
+    plot.grid(1, 2);
+    plot.fn(f, css('--plot-curve'), 3);
+    plot.fn((t) => f(x) + m * (t - x), css('--plot-alt'), 2.5);
+    plot.fn((t) => f(x) + 2 * x * (t - x), css('--muted'), 1.5, [5, 5]);
+    plot.seg(x, f(x), x + h, f(x), css('--plot-hot'), 2, [4, 3]);
+    plot.seg(x + h, f(x), x + h, f(x + h), css('--plot-hot'), 2, [4, 3]);
+    plot.dot(x, f(x), css('--ink'));
+    plot.dot(x + h, f(x + h), css('--ink'));
+    out.innerHTML =
+      `<p>${tex(`$f(x) = x^2$`)}: النقطتان ${tex(`$(${fmt(x)}, ${fmt(f(x))})$`)} و ${tex(`$(${fmt(x + h)}, ${fmt(f(x + h))})$`)}.</p>` +
+      `<p>${tex(`$\\dfrac{f(x + h) - f(x)}{h} = \\dfrac{${fmt(f(x + h), 3)} - ${fmt(f(x), 3)}}{${fmt(h)}} = ${fmt(m, 3)}$`)}، وهو ميل القاطع (الخط الأزرق).</p>` +
+      `<p>جبريًا: ${tex('$\\dfrac{(x + h)^2 - x^2}{h} = \\dfrac{2xh + h^2}{h} = 2x + h$')}، أي ${tex(`$2(${fmt(x)}) + ${fmt(h)} = ${fmt(2 * x + h, 3)}$`)}.</p>` +
+      `<p>صغّر ${tex('$h$')} وراقب القاطع يقترب من الخط المتقطع (المماس، ميله ${tex(`$2x = ${fmt(2 * x)}$`)}). هذه الفكرة هي أساس التفاضل.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

@@ -1,0 +1,41 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-circle" title="معادلة الدائرة" en="Center-radius and general form">
+  <div class="controls">
+    <label><span class="ltr">h = <output data-o="h"></output></span><input type="range" min="-5" max="5" value="2" data-i="h" /></label>
+    <label><span class="ltr">k = <output data-o="k"></output></span><input type="range" min="-4" max="4" value="-1" data-i="k" /></label>
+    <label><span class="ltr">r = <output data-o="r"></output></span><input type="range" min="1" max="6" value="3" data-i="r" /></label>
+  </div>
+  <canvas aria-label="دائرة ومركزها ونصف قطرها"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-circle')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -12, xmax: 12, ymin: -8, ymax: 8 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const sq = (name: string, c: number) => (c === 0 ? `${name}^2` : `(${name} ${c > 0 ? '-' : '+'} ${Math.abs(c)})^2`);
+  const term = (k: number, s: string) => (k === 0 ? '' : ` ${k < 0 ? '-' : '+'} ${Math.abs(k) === 1 ? '' : Math.abs(k)}${s}`);
+  function draw() {
+    const h = v('h'), k = v('k'), r = v('r');
+    for (const n of ['h', 'k', 'r']) root.querySelector(`[data-o="${n}"]`)!.textContent = String(v(n));
+    plot.fit(0.62);
+    plot.clear();
+    plot.grid(1, 2);
+    plot.param((t) => h + r * Math.cos(t), (t) => k + r * Math.sin(t), 0, 2 * Math.PI, css('--plot-curve'), 3);
+    plot.seg(h, k, h + r, k, css('--plot-alt'), 2.5);
+    plot.dot(h, k, css('--plot-hot'), 5);
+    plot.label(h + r / 2, k, 'r', css('--plot-alt'));
+    const D = -2 * h, E = -2 * k, F = h * h + k * k - r * r;
+    out.innerHTML =
+      `<p>كل نقطة ${tex('$(x, y)$')} على الدائرة تبعد ${tex(`$r = ${r}$`)} عن المركز ${tex(`$(${h}, ${k})$`)}. بقانون المسافة نحصل على:</p>` +
+      `<p><strong>صيغة المركز ونصف القطر:</strong> ${tex(`$${sq('x', h)} + ${sq('y', k)} = ${r * r}$`)}</p>` +
+      `<p><strong>الصيغة العامة</strong> (بعد فك الأقواس): ${tex(`$x^2 + y^2${term(D, 'x')}${term(E, 'y')}${F === 0 ? '' : ` ${F < 0 ? '-' : '+'} ${Math.abs(F)}`} = 0$`)}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

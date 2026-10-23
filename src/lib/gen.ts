@@ -71,6 +71,8 @@ export type Problem =
       kind: 'values';
       prompt: string;
       answer: C[];
+      /** الترتيب مهم (إحداثيات نقطة أو مجموعة قيم بترتيب محدد) */
+      ordered?: boolean;
       hint: string;
       solution: string[];
       placeholder?: string;
@@ -113,4 +115,18 @@ export function pmul(a: number[], b: number[]): number[] {
   const r = new Array(a.length + b.length - 1).fill(0);
   a.forEach((x, i) => b.forEach((y, j) => (r[i + j] += x * y)));
   return r;
+}
+
+/** تبسيط √n إلى k√m بصيغة TeX */
+export function simpRoot(n: number): string {
+  if (n === 0) return '0';
+  let k = 1, m = n;
+  for (let p = 2; p * p <= m; p++) while (m % (p * p) === 0) { m /= p * p; k *= p; }
+  if (m === 1) return String(k);
+  return `${k === 1 ? '' : k}\\sqrt{${m}}`;
+}
+/** الصيغة نفسها بلغة المحلل */
+export function simpRootP(n: number): string {
+  const t = simpRoot(n);
+  return t.replace(/\\sqrt\{(\d+)\}/, 'sqrt($1)');
 }

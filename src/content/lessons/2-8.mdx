@@ -1,0 +1,199 @@
+---
+section: "2.8"
+summary: "الدوال كأشياء نجمعها ونطرحها ونضربها ونقسمها، وخارج قسمة الفرق الذي يمهد للتفاضل، وتركيب الدوال f(g(x)) ومجاله، وتفكيك دالة إلى تركيب دالتين."
+minutes: 35
+prerequisites: ["2.3", "R.5"]
+terms:
+  - { ar: "مجموع دالتين", en: "Sum", def: "(f + g)(x) = f(x) + g(x)." }
+  - { ar: "فرق دالتين", en: "Difference", def: "(f − g)(x) = f(x) − g(x)." }
+  - { ar: "حاصل ضرب دالتين", en: "Product", def: "(fg)(x) = f(x) · g(x)." }
+  - { ar: "خارج قسمة دالتين", en: "Quotient", def: "(f/g)(x) = f(x)/g(x) بشرط g(x) ≠ 0." }
+  - { ar: "خارج قسمة الفرق", en: "Difference Quotient", def: "[f(x + h) − f(x)]/h حيث h ≠ 0، وهو ميل القاطع بين x و x + h." }
+  - { ar: "تركيب الدوال", en: "Composition of Functions", def: "(f ∘ g)(x) = f(g(x)): نطبق g أولًا ثم f على الناتج." }
+  - { ar: "الدالة الداخلية", en: "Inner Function", def: "في f(g(x)) الدالة g التي تُطبق أولًا." }
+  - { ar: "الدالة الخارجية", en: "Outer Function", def: "في f(g(x)) الدالة f التي تُطبق على ناتج g." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import Composition from '../../components/widgets/Composition.astro';
+import DiffQuotient from '../../components/widgets/DiffQuotient.astro';
+
+حتى الآن تعاملنا مع كل دالة وحدها. هنا نبني دوالًا جديدة من دوال معروفة. إذا كانت $R(x)$ الإيراد و $C(x)$ التكلفة، فالربح $R(x) - C(x)$ **فرق دالتين**. وإذا كان سعر الصرف يحوّل الدولار إلى ريال، والضريبة تُحسب على المبلغ بالريال، فالمبلغ النهائي **تركيب دالتين**. ويختم الدرس بخارج قسمة الفرق، أول خطوة نحو التفاضل.
+
+## العمليات الحسابية على الدوال <span class="en" lang="en">Arithmetic Operations on Functions</span>
+
+<Box kind="def" title="العمليات على الدوال" en="Operations on Functions">
+لدالتين $f$ و $g$:
+
+$$(f + g)(x) = f(x) + g(x) \qquad (f - g)(x) = f(x) - g(x)$$
+
+$$(fg)(x) = f(x)\cdot g(x) \qquad \left(\frac{f}{g}\right)(x) = \frac{f(x)}{g(x)},\ g(x) \ne 0$$
+
+**المجال:** الأعداد المشتركة بين مجالي $f$ و $g$، وفي القسمة نستبعد أيضًا ما يجعل $g(x) = 0$.
+</Box>
+
+<Example n="1" title="عند قيمة محددة">
+لتكن $f(x) = x^2 + 1$ و $g(x) = 3x + 5$. أوجد $(f + g)(1)$ و $(f - g)(-3)$ و $(fg)(5)$ و $\left(\tfrac{f}{g}\right)(0)$.
+
+<Solution>
+$(f + g)(1) = f(1) + g(1) = 2 + 8 = 10$
+
+$(f - g)(-3) = f(-3) - g(-3) = 10 - (-4) = 14$
+
+$(fg)(5) = f(5) \cdot g(5) = 26 \cdot 20 = 520$
+
+$\left(\tfrac{f}{g}\right)(0) = \dfrac{f(0)}{g(0)} = \dfrac{1}{5}$
+</Solution>
+</Example>
+
+<Example n="2" title="الدوال الناتجة ومجالاتها">
+لتكن $f(x) = 8x - 9$ و $g(x) = \sqrt{2x - 1}$. أوجد كل دالة ومجالها.
+
+<Solution>
+مجال $f$ هو $(-\infty, \infty)$، ومجال $g$ هو $\left[\tfrac{1}{2}, \infty\right)$، والمشترك $\left[\tfrac{1}{2}, \infty\right)$.
+
+$(f + g)(x) = 8x - 9 + \sqrt{2x - 1}$، المجال $\left[\tfrac{1}{2}, \infty\right)$
+
+$(f - g)(x) = 8x - 9 - \sqrt{2x - 1}$، المجال $\left[\tfrac{1}{2}, \infty\right)$
+
+$(fg)(x) = (8x - 9)\sqrt{2x - 1}$، المجال $\left[\tfrac{1}{2}, \infty\right)$
+
+$\left(\tfrac{f}{g}\right)(x) = \dfrac{8x - 9}{\sqrt{2x - 1}}$، المجال $\left(\tfrac{1}{2}, \infty\right)$، لأن $g\left(\tfrac{1}{2}\right) = 0$ يجعل المقام صفرًا.
+</Solution>
+</Example>
+
+<Box kind="mistake" title="المجال بعد التبسيط">
+المجال يُحدد من الدالتين **الأصليتين**، لا من الناتج بعد التبسيط. لو كان $f(x) = \sqrt{x}$ و $g(x) = \sqrt{x}$ فإن $(fg)(x) = x$، لكن مجاله $[0, \infty)$ وليس كل الأعداد.
+</Box>
+
+## خارج قسمة الفرق <span class="en" lang="en">The Difference Quotient</span>
+
+ما متوسط معدل تغير $f$ بين $x$ ونقطة قريبة $x + h$؟ هو ميل القاطع:
+
+<Box kind="def" title="خارج قسمة الفرق" en="Difference Quotient">
+$$\frac{f(x + h) - f(x)}{h}, \qquad h \ne 0$$
+</Box>
+
+<DiffQuotient />
+
+<Box kind="rule" title="خطوات حساب خارج قسمة الفرق">
+1. أوجد $f(x + h)$ بوضع $x + h$ مكان كل $x$.
+2. أوجد $f(x + h) - f(x)$ وبسّط: تختفي حدود كثيرة، ويبقى $h$ عاملًا في كل الحدود.
+3. اقسم على $h$.
+</Box>
+
+<Example n="3" title="خارج قسمة الفرق">
+أوجد خارج قسمة الفرق لـ $f(x) = 2x^2 - 3x$ وبسّطه.
+
+<Solution>
+**الخطوة 1:** $f(x + h) = 2(x + h)^2 - 3(x + h) = 2x^2 + 4xh + 2h^2 - 3x - 3h$
+
+**الخطوة 2:** $f(x + h) - f(x) = (2x^2 + 4xh + 2h^2 - 3x - 3h) - (2x^2 - 3x) = 4xh + 2h^2 - 3h$
+
+**الخطوة 3:** $\dfrac{4xh + 2h^2 - 3h}{h} = \dfrac{h(4x + 2h - 3)}{h} = 4x + 2h - 3$
+</Solution>
+</Example>
+
+<Box kind="mistake" title="f(x + h) ليست f(x) + h">
+$f(x + h)$ تعني أن **المدخل** هو $x + h$. أما $f(x) + h$ فتعني أن نضيف $h$ إلى **المخرج**. للدالة $f(x) = x^2$: $f(x + h) = x^2 + 2xh + h^2$، بينما $f(x) + h = x^2 + h$.
+</Box>
+
+## تركيب الدوال ومجاله <span class="en" lang="en">Composition of Functions and Domain</span>
+
+<Box kind="def" title="تركيب الدوال" en="Composition of Functions">
+$$(f \circ g)(x) = f(g(x))$$
+
+نطبق $g$ **أولًا** على $x$، ثم نطبق $f$ على الناتج. نسمي $g$ الدالة **الداخلية** و $f$ الدالة **الخارجية**.
+
+**المجال:** كل $x$ في مجال $g$ بحيث يكون $g(x)$ في مجال $f$.
+</Box>
+
+<Composition />
+
+<Example n="4" title="تركيب عند قيمة">
+لتكن $f(x) = 2x - 1$ و $g(x) = \dfrac{4}{x - 1}$. أوجد $(f \circ g)(2)$ و $(g \circ f)(-3)$.
+
+<Solution>
+**$(f \circ g)(2)$:** الداخلية أولًا: $g(2) = \dfrac{4}{1} = 4$، ثم $f(4) = 7$.
+
+**$(g \circ f)(-3)$:** $f(-3) = -7$، ثم $g(-7) = \dfrac{4}{-8} = -\dfrac{1}{2}$.
+</Solution>
+</Example>
+
+<Example n="5" title="تركيب الصيغ والمجال">
+لتكن $f(x) = \sqrt{x}$ و $g(x) = x - 3$. أوجد $f \circ g$ و $g \circ f$ ومجاليهما.
+
+<Solution>
+**$f \circ g$:** $f(g(x)) = f(x - 3) = \sqrt{x - 3}$
+
+مجال $g$ كل الأعداد، لكن نحتاج $g(x) = x - 3 \ge 0$ ليكون في مجال $f$. المجال $[3, \infty)$.
+
+**$g \circ f$:** $g(f(x)) = g(\sqrt{x}) = \sqrt{x} - 3$
+
+نحتاج $x$ في مجال $f$، أي $x \ge 0$، وكل ناتج مقبول في $g$. المجال $[0, \infty)$.
+
+لاحظ: $f \circ g \ne g \circ f$، فالتركيب **ليس إبداليًا**.
+</Solution>
+</Example>
+
+<Example n="6" title="مجال تركيب فيه كسور">
+لتكن $f(x) = \dfrac{6}{x - 3}$ و $g(x) = \dfrac{1}{x}$. أوجد $f \circ g$ ومجاله.
+
+<Solution>
+$f(g(x)) = \dfrac{6}{\tfrac{1}{x} - 3}$. نضرب البسط والمقام في $x$: $\dfrac{6x}{1 - 3x}$
+
+**المجال:** يجب أن يكون $x$ في مجال $g$، أي $x \ne 0$. ويجب أن يكون $g(x)$ في مجال $f$، أي $\dfrac{1}{x} \ne 3$، أي $x \ne \dfrac{1}{3}$.
+
+المجال $(-\infty, 0) \cup \left(0, \tfrac{1}{3}\right) \cup \left(\tfrac{1}{3}, \infty\right)$.
+
+انتبه: الصيغة المبسطة $\dfrac{6x}{1 - 3x}$ تبدو معرفة عند $x = 0$، لكن $x = 0$ مستبعد لأنه خارج مجال $g$.
+</Solution>
+</Example>
+
+### تفكيك دالة إلى تركيب
+
+العملية العكسية مهمة جدًا في التفاضل (قاعدة السلسلة): أن ترى دالة معقدة كتركيب دالتين بسيطتين.
+
+<Example n="7" title="التفكيك">
+اكتب $h(x) = (x^2 - 5)^3 - 4(x^2 - 5) + 3$ على صورة $f(g(x))$.
+
+<Solution>
+المقدار $x^2 - 5$ يتكرر، فنجعله الدالة الداخلية: $g(x) = x^2 - 5$.
+
+ثم الخارجية تصف ما نفعله به: $f(x) = x^3 - 4x + 3$.
+
+**تحقق:** $f(g(x)) = (x^2 - 5)^3 - 4(x^2 - 5) + 3 = h(x)$ ✓
+
+(وهناك تفكيكات أخرى صحيحة، لكن هذا الأوضح.)
+</Solution>
+</Example>
+
+<Example n="8" title="تطبيق">
+يُستخدم $f(x) = 3.75x$ لتحويل الدولار إلى ريال، و $g(x) = 1.15x$ لإضافة ضريبة 15٪. اشتريت سلعة بـ 40 دولارًا والضريبة تُحسب بالريال. ما المبلغ النهائي بالريال؟
+
+<Solution>
+نحوّل أولًا ثم نضيف الضريبة: $(g \circ f)(40) = g(f(40)) = g(150) = 172.5$ ريالًا.
+
+وفي هذا المثال بالذات $g \circ f = f \circ g = 4.3125x$ لأن الدالتين ضرب في ثابت، وهي حالة نادرة.
+</Solution>
+</Example>
+
+<Check
+  q="إذا كان $f(x) = x^2$ و $g(x) = x + 1$، فما $(f \\circ g)(x)$؟"
+  options={["$x^2 + 1$", "$(x + 1)^2$", "$x^3 + x^2$", "$x^2 + x + 1$"]}
+  answer={1}
+  explain="$f(g(x)) = f(x + 1) = (x + 1)^2$. أما $x^2 + 1$ فهو $(g \\circ f)(x)$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $(f \pm g)$ و $fg$ و $\tfrac{f}{g}$ تُحسب عند كل $x$، والمجال المشترك بين المجالين، مع $g(x) \ne 0$ للقسمة.
+- خارج قسمة الفرق $\dfrac{f(x + h) - f(x)}{h}$: احسب، اطرح، اقسم على $h$.
+- $(f \circ g)(x) = f(g(x))$: الداخلية أولًا، والترتيب مهم.
+- مجال التركيب: $x$ في مجال $g$ **و** $g(x)$ في مجال $f$، ويُحدد قبل التبسيط.
+
+<Practice set="2.8" count={6} />

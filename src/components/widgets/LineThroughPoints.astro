@@ -1,0 +1,78 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-line2" title="مستقيم من نقطتين، ومستقيمان موازٍ وعمودي" en="Point-slope, parallel and perpendicular lines">
+  <div class="controls">
+    <label><span class="ltr">x₁ = <output data-o="x1"></output></span><input type="range" min="-6" max="6" value="-3" data-i="x1" /></label>
+    <label><span class="ltr">y₁ = <output data-o="y1"></output></span><input type="range" min="-6" max="6" value="-1" data-i="y1" /></label>
+    <label><span class="ltr">x₂ = <output data-o="x2"></output></span><input type="range" min="-6" max="6" value="3" data-i="x2" /></label>
+    <label><span class="ltr">y₂ = <output data-o="y2"></output></span><input type="range" min="-6" max="6" value="3" data-i="y2" /></label>
+    <label>النقطة P: <span class="ltr">x = <output data-o="px"></output></span><input type="range" min="-6" max="6" value="2" data-i="px" /></label>
+    <label>النقطة P: <span class="ltr">y = <output data-o="py"></output></span><input type="range" min="-6" max="6" value="-4" data-i="py" /></label>
+  </div>
+  <canvas aria-label="مستقيم من نقطتين ومستقيمان يمران بنقطة P"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--plot-curve)"></i>المستقيم الأصلي</span>
+    <span><i style="background:var(--plot-alt)"></i>الموازي عبر P</span>
+    <span><i style="background:var(--plot-hot)"></i>العمودي عبر P</span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  import { frac } from '../../lib/gen';
+  const root = document.getElementById('w-line2')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -8, xmax: 8, ymin: -8, ymax: 8 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  // y = (p/q)x + b بصيغة TeX، حيث الميل كسر p/q
+  function slopeInt(p: number, q: number, x0: number, y0: number) {
+    // b = y0 - (p/q) x0 = (q y0 - p x0)/q
+    const m = frac(p, q), b = frac(q * y0 - p * x0, q);
+    const mx = p === 0 ? '' : m === '1' ? 'x' : m === '-1' ? '-x' : `${m}x`;
+    const bs = b === '0' ? (p === 0 ? '0' : '') : p === 0 ? b : b.startsWith('-') ? ` - ${b.slice(1)}` : ` + ${b}`;
+    return `y = ${mx}${bs}`;
+  }
+  const ps = (n: number) => (n < 0 ? `(${n})` : String(n));
+  function draw() {
+    const x1 = v('x1'), y1 = v('y1'), x2 = v('x2'), y2 = v('y2'), px = v('px'), py = v('py');
+    for (const k of ['x1', 'y1', 'x2', 'y2', 'px', 'py']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    plot.fit(0.62);
+    plot.clear();
+    plot.grid(1, 2);
+    const dy = y2 - y1, dx = x2 - x1;
+    let html = '';
+    if (dx === 0 && dy === 0) {
+      html = '<p>النقطتان متطابقتان، ولا يحددان مستقيمًا واحدًا. حرّك إحداهما.</p>';
+    } else if (dx === 0) {
+      plot.seg(x1, -9, x1, 9, css('--plot-curve'), 3);
+      plot.seg(px, -9, px, 9, css('--plot-alt'), 2.5, [7, 5]);
+      plot.fn(() => py, css('--plot-hot'), 2.5, [3, 4]);
+      html = `<p>المسافة الأفقية صفر، فالميل <strong>غير معرّف</strong>، والمستقيم رأسي: ${tex(`$x = ${x1}$`)}.</p>` +
+        `<p>الموازي عبر P رأسي أيضًا: ${tex(`$x = ${px}$`)}، والعمودي أفقي: ${tex(`$y = ${py}$`)}.</p>`;
+    } else {
+      const m = dy / dx;
+      plot.fn((x) => y1 + m * (x - x1), css('--plot-curve'), 3);
+      plot.fn((x) => py + m * (x - px), css('--plot-alt'), 2.5, [7, 5]);
+      if (dy === 0) plot.seg(px, -9, px, 9, css('--plot-hot'), 2.5, [3, 4]);
+      else plot.fn((x) => py + (-dx / dy) * (x - px), css('--plot-hot'), 2.5, [3, 4]);
+      html =
+        `<p>الميل ${tex(`$m = \\dfrac{${y2} - ${ps(y1)}}{${x2} - ${ps(x1)}} = \\dfrac{${dy}}{${dx}} = ${frac(dy, dx)}$`)}</p>` +
+        `<p><strong>صيغة النقطة والميل:</strong> ${tex(`$y - ${ps(y1)} = ${frac(dy, dx)}(x - ${ps(x1)})$`)}</p>` +
+        `<p><strong>صيغة الميل والمقطع:</strong> ${tex(`$${slopeInt(dy, dx, x1, y1)}$`)}</p>` +
+        `<p><strong>الموازي عبر P</strong> له الميل نفسه: ${tex(`$${slopeInt(dy, dx, px, py)}$`)}</p>` +
+        (dy === 0
+          ? `<p><strong>العمودي عبر P</strong> رأسي لأن الأصلي أفقي: ${tex(`$x = ${px}$`)}</p>`
+          : `<p><strong>العمودي عبر P</strong> ميله المقلوب السالب ${tex(`$${frac(-dx, dy)}$`)}: ${tex(`$${slopeInt(-dx, dy, px, py)}$`)}</p>`);
+    }
+    plot.dot(x1, y1, css('--ink'));
+    plot.dot(x2, y2, css('--ink'));
+    plot.dot(px, py, css('--plot-hot'), 5, true);
+    plot.label(px, py, 'P', css('--plot-hot'));
+    out.innerHTML = html;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

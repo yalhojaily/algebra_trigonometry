@@ -30,12 +30,13 @@ const { set, count = 5 } = Astro.props;
 <script>
   import { ch1 } from '../lib/practice/ch1';
   import { chR } from '../lib/practice/chR';
+  import { ch2 } from '../lib/practice/ch2';
   import { tex } from '../lib/tex';
   import katex from 'katex';
-  import { parseList, sameSet, parse, toTex, equivalent, isFactored, hasRadicalDenominator, hasNegativeExponent, isExpanded, isMonomial } from '../lib/answer';
+  import { parseList, sameSet, sameList, stripPoint, parse, toTex, equivalent, isFactored, hasRadicalDenominator, hasNegativeExponent, isExpanded, isMonomial } from '../lib/answer';
   import type { Problem } from '../lib/gen';
 
-  const banks: Record<string, (() => Problem)[]> = { ...chR, ...ch1 };
+  const banks: Record<string, (() => Problem)[]> = { ...chR, ...ch1, ...ch2 };
   const REQ_MSG = {
     factored: 'الإجابة صحيحة القيمة لكنها غير محللة. اكتبها كحاصل ضرب عوامل.',
     noRadicalDenominator: 'الإجابة صحيحة القيمة، لكن ما زال في المقام جذر. أنطق المقام.',
@@ -108,10 +109,11 @@ const { set, count = 5 } = Astro.props;
         const input = form.querySelector('input')!;
         const prev = li.querySelector<HTMLElement>('.preview')!;
         const expected = parse(p.answer);
+        const clean = (v: string) => v.replace(/^\s*(y|[fgh]\s*\(\s*x\s*\)|\([fgh]\s*[∘o]\s*[fgh]\)\s*\(\s*x\s*\))\s*=/i, '');
         input.addEventListener('input', () => {
           if (!input.value.trim()) { prev.innerHTML = ''; return; }
           try {
-            prev.innerHTML = 'قرأتُها: ' + katex.renderToString(toTex(parse(input.value)), { throwOnError: false });
+            prev.innerHTML = 'قرأتُها: ' + katex.renderToString(toTex(parse(clean(input.value))), { throwOnError: false });
           } catch (err) {
             prev.textContent = (err as Error).message;
           }
@@ -120,7 +122,7 @@ const { set, count = 5 } = Astro.props;
           e.preventDefault();
           if (!input.value.trim()) return mark(false, 'اكتب إجابة أولًا.');
           try {
-            const given = parse(input.value);
+            const given = parse(clean(input.value));
             if (!equivalent(given, expected, p.vars, p.positive)) return mark(false, 'غير صحيح، حاول مرة أخرى أو اطلب تلميحًا.');
             const miss = (p.require ?? []).find((r) => !REQ_CHECK[r](given));
             if (miss) return mark(false, REQ_MSG[miss]);
@@ -136,7 +138,11 @@ const { set, count = 5 } = Astro.props;
           e.preventDefault();
           if (!input.value.trim()) return mark(false, 'اكتب إجابة أولًا.');
           try {
-            const given = parseList(input.value);
+            const given = parseList(p.ordered ? stripPoint(input.value) : input.value);
+            if (p.ordered) {
+              if (given.length !== p.answer.length) return mark(false, `غير صحيح. المطلوب ${p.answer.length} قيم بالترتيب، مفصولة بفواصل.`);
+              return mark(sameList(given, p.answer), sameList(given, p.answer) ? 'صحيح ✓' : 'غير صحيح، تأكد من القيم وترتيبها.');
+            }
             if (sameSet(given, p.answer)) mark(true, 'صحيح ✓');
             else if (given.length !== new Set(p.answer.map((a) => `${a.re.toFixed(6)},${a.im.toFixed(6)}`)).size && p.answer.length > 0)
               mark(false, `غير صحيح. عدد الحلول المتوقع: ${new Set(p.answer.map((a) => `${a.re.toFixed(6)},${a.im.toFixed(6)}`)).size}.`);

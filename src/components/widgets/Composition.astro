@@ -1,0 +1,65 @@
+---
+import Frame from './Frame.astro';
+const opts = [['lin', 'f(x) = 2x + 1'], ['sq', 'f(x) = x²'], ['sqrt', 'f(x) = √x'], ['rec', 'f(x) = 1/x'], ['shift', 'f(x) = x − 3']];
+---
+<Frame id="w-comp" title="آلة التركيب: الترتيب مهم" en="(f ∘ g)(x) = f(g(x))">
+  <div class="controls">
+    <label>الدالة الخارجية <span class="ltr">f</span>
+      <select data-i="f" dir="ltr">{opts.map(([k, t], i) => <option value={k} selected={i === 1}>{t}</option>)}</select>
+    </label>
+    <label>الدالة الداخلية <span class="ltr">g</span>
+      <select data-i="g" dir="ltr">{opts.map(([k, t], i) => <option value={k} selected={i === 4}>{t.replace('f(', 'g(')}</option>)}</select>
+    </label>
+    <label>المدخل <span class="ltr">x = <output data-o="x"></output></span><input type="range" min="-4" max="9" value="5" data-i="x" /></label>
+  </div>
+  <div class="machine" dir="ltr" aria-hidden="true">
+    <span class="io" data-v="x"></span><span class="arr">→</span>
+    <span class="box" data-n="g"></span><span class="arr">→</span>
+    <span class="io" data-v="gx"></span><span class="arr">→</span>
+    <span class="box" data-n="f"></span><span class="arr">→</span>
+    <span class="io out" data-v="fgx"></span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { tex } from '../../lib/tex';
+  import { fmt } from '../../lib/plot';
+  const root = document.getElementById('w-comp')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const D: Record<string, { f: (x: number) => number; t: (u: string) => string; dom: string }> = {
+    lin: { f: (x) => 2 * x + 1, t: (u) => `2${/^[x\d]$/.test(u) ? u : `(${u})`} + 1`, dom: 'all' },
+    sq: { f: (x) => x * x, t: (u) => (u.length === 1 ? `${u}^2` : `(${u})^2`), dom: 'all' },
+    sqrt: { f: (x) => (x >= 0 ? Math.sqrt(x) : NaN), t: (u) => `\\sqrt{${u}}`, dom: 'x≥0' },
+    rec: { f: (x) => (x === 0 ? NaN : 1 / x), t: (u) => `\\dfrac{1}{${u}}`, dom: 'x≠0' },
+    shift: { f: (x) => x - 3, t: (u) => `${u} - 3`, dom: 'all' },
+  };
+  const sel = (k: string) => root.querySelector<HTMLSelectElement>(`[data-i="${k}"]`)!.value;
+  const show = (n: number) => (Number.isFinite(n) ? fmt(n, 3) : 'غير معرّف');
+  function draw() {
+    const f = D[sel('f')], g = D[sel('g')];
+    const x = Number(root.querySelector<HTMLInputElement>('[data-i="x"]')!.value);
+    root.querySelector('[data-o="x"]')!.textContent = String(x);
+    const gx = g.f(x), fgx = Number.isFinite(gx) ? f.f(gx) : NaN;
+    const fx = f.f(x), gfx = Number.isFinite(fx) ? g.f(fx) : NaN;
+    root.querySelector('[data-v="x"]')!.textContent = String(x);
+    root.querySelector('[data-n="g"]')!.textContent = 'g';
+    root.querySelector('[data-n="f"]')!.textContent = 'f';
+    root.querySelector('[data-v="gx"]')!.textContent = show(gx);
+    root.querySelector('[data-v="fgx"]')!.textContent = show(fgx);
+    const fg = f.t(g.t('x')), gf = g.t(f.t('x'));
+    out.innerHTML =
+      `<p>${tex(`$g(${x}) = ${Number.isFinite(gx) ? fmt(gx, 3) : '\\text{undefined}'}$`)}، ثم ${tex(`$f(g(${x})) = ${Number.isFinite(fgx) ? fmt(fgx, 3) : '\\text{undefined}'}$`)}${Number.isFinite(fgx) ? '' : ' (المدخل خارج المجال)'}.</p>` +
+      `<p>${tex(`$(f \\circ g)(x) = ${fg}$`)}</p>` +
+      `<p>بالترتيب المعاكس: ${tex(`$(g \\circ f)(x) = ${gf}$`)}، و ${tex(`$(g \\circ f)(${x}) = ${Number.isFinite(gfx) ? fmt(gfx, 3) : '\\text{undefined}'}$`)}.</p>` +
+      `<p>${Number.isFinite(fgx) && Number.isFinite(gfx) && Math.abs(fgx - gfx) < 1e-9 ? 'هنا تساوت النتيجتان عند هذا المدخل، لكن هذا نادر ولا يعني تساوي الدالتين عمومًا.' : 'النتيجتان مختلفتان: التركيب غير إبدالي عمومًا، أي f ∘ g ≠ g ∘ f.'}</p>`;
+  }
+  root.querySelectorAll('input, select').forEach((i) => i.addEventListener('input', draw));
+  draw();
+</script>
+<style>
+  .machine { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem; margin: 0.4rem 0 0.8rem; font: 700 1.1rem var(--font-en); }
+  .io { min-width: 3.2rem; text-align: center; padding: 0.35rem 0.6rem; border: 1.5px solid var(--line); border-radius: 99px; background: var(--paper); }
+  .io.out { border-color: var(--accent); color: var(--accent); }
+  .box { width: 3rem; height: 3rem; display: grid; place-items: center; border-radius: 10px; background: var(--accent); color: var(--accent-ink); font-style: italic; }
+  .arr { color: var(--muted); }
+</style>

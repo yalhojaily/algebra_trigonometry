@@ -1,0 +1,66 @@
+---
+import Frame from './Frame.astro';
+const fs = [
+  ['id', 'f(x) = x'], ['sq', 'f(x) = x²'], ['cu', 'f(x) = x³'], ['sqrt', 'f(x) = √x'],
+  ['cbrt', 'f(x) = ∛x'], ['abs', 'f(x) = |x|'], ['pw', 'دالة بقطع'], ['step', 'f(x) = ⟦x⟧'], ['rel', 'x = y²'],
+];
+---
+<Frame id="w-basic" title="معرض الدوال الأساسية" en="Graphs of basic functions">
+  <div class="seg gal" role="group" aria-label="الدالة" dir="ltr">
+    {fs.map(([k, t], i) => <button type="button" data-f={k} aria-pressed={i === 1 ? 'true' : 'false'}>{t}</button>)}
+  </div>
+  <canvas aria-label="رسم الدالة المختارة"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-basic')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -6, xmax: 6, ymin: -5, ymax: 5 });
+  type Info = { name: string; dom: string; ran: string; inc: string; dec: string; cont: string; draw: () => void };
+  const C = () => css('--plot-curve');
+  const I: Record<string, Info> = {
+    id: { name: 'f(x) = x', dom: '(-\\infty, \\infty)', ran: '(-\\infty, \\infty)', inc: '(-\\infty, \\infty)', dec: '\\text{none}', cont: 'متصلة على كل مجالها', draw: () => plot.fn((x) => x, C(), 3) },
+    sq: { name: 'f(x) = x^2', dom: '(-\\infty, \\infty)', ran: '[0, \\infty)', inc: '(0, \\infty)', dec: '(-\\infty, 0)', cont: 'متصلة على كل مجالها', draw: () => plot.fn((x) => x * x, C(), 3) },
+    cu: { name: 'f(x) = x^3', dom: '(-\\infty, \\infty)', ran: '(-\\infty, \\infty)', inc: '(-\\infty, \\infty)', dec: '\\text{none}', cont: 'متصلة على كل مجالها', draw: () => plot.fn((x) => x ** 3, C(), 3) },
+    sqrt: { name: 'f(x) = \\sqrt{x}', dom: '[0, \\infty)', ran: '[0, \\infty)', inc: '(0, \\infty)', dec: '\\text{none}', cont: 'متصلة على مجالها', draw: () => plot.fn((x) => (x >= 0 ? Math.sqrt(x) : NaN), C(), 3) },
+    cbrt: { name: 'f(x) = \\sqrt[3]{x}', dom: '(-\\infty, \\infty)', ran: '(-\\infty, \\infty)', inc: '(-\\infty, \\infty)', dec: '\\text{none}', cont: 'متصلة على كل مجالها', draw: () => plot.fn((x) => Math.cbrt(x), C(), 3) },
+    abs: { name: 'f(x) = |x|', dom: '(-\\infty, \\infty)', ran: '[0, \\infty)', inc: '(0, \\infty)', dec: '(-\\infty, 0)', cont: 'متصلة على كل مجالها', draw: () => plot.fn((x) => Math.abs(x), C(), 3) },
+    pw: {
+      name: 'f(x) = \\begin{cases} x + 2 & x \\le 1 \\\\ -x + 1 & x > 1 \\end{cases}', dom: '(-\\infty, \\infty)', ran: '(-\\infty, 3]', inc: '(-\\infty, 1)', dec: '(1, \\infty)', cont: 'غير متصلة عند x = 1 (قفزة)',
+      draw: () => { plot.fn((x) => (x <= 1 ? x + 2 : NaN), C(), 3); plot.fn((x) => (x > 1 ? -x + 1 : NaN), C(), 3); plot.dot(1, 3, C(), 5); plot.dot(1, 0, C(), 5, true); },
+    },
+    step: {
+      name: 'f(x) = [\\![x]\\!]', dom: '(-\\infty, \\infty)', ran: '\\{\\ldots, -2, -1, 0, 1, 2, \\ldots\\}', inc: '\\text{none}', dec: '\\text{none}', cont: 'غير متصلة عند كل عدد صحيح، وثابتة بين كل عددين صحيحين',
+      draw: () => { for (let n = -6; n < 6; n++) { plot.seg(n, n, n + 1, n, C(), 3); plot.dot(n, n, C(), 4); plot.dot(n + 1, n, C(), 4, true); } },
+    },
+    rel: { name: 'x = y^2', dom: '[0, \\infty)', ran: '(-\\infty, \\infty)', inc: '', dec: '', cont: 'هذه علاقة وليست دالة', draw: () => plot.param((t) => t * t, (t) => t, -3, 3, C(), 3) },
+  };
+  let cur = 'sq';
+  function draw() {
+    const f = I[cur];
+    plot.fit(0.62);
+    plot.clear();
+    plot.grid(1, 2);
+    f.draw();
+    out.innerHTML =
+      `<p>${tex(`$${f.name}$`)}</p>` +
+      `<p>المجال ${tex(`$${f.dom}$`)}، والمدى ${tex(`$${f.ran}$`)}.</p>` +
+      (cur === 'rel'
+        ? '<p>لكل x موجب قيمتان لـ y، فالرسم يفشل في اختبار الخط الرأسي. لكنه اتحاد دالتين: <span class="ltr">y = √x</span> (النصف العلوي) و <span class="ltr">y = −√x</span> (السفلي).</p>'
+        : `<p>متزايدة على ${tex(`$${f.inc}$`)}، ومتناقصة على ${tex(`$${f.dec}$`)}${cur === 'step' ? '، وثابتة على كل فترة [n, n + 1)' : ''}.</p><p>${f.cont}.</p>`);
+  }
+  root.querySelectorAll<HTMLButtonElement>('[data-f]').forEach((b) =>
+    b.addEventListener('click', () => {
+      cur = b.dataset.f!;
+      root.querySelectorAll('[data-f]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      draw();
+    }),
+  );
+  onRedraw(canvas, draw);
+</script>
+<style>
+  .gal { flex-wrap: wrap; margin-bottom: 0.8rem; }
+</style>

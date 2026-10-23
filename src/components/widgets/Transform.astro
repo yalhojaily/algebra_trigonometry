@@ -1,0 +1,75 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-tf" title="مختبر التحويلات" en="y = a·f(x − h) + k">
+  <div class="controls">
+    <label>الدالة الأم
+      <select data-i="f" dir="ltr">
+        <option value="sq">f(x) = x²</option>
+        <option value="abs">f(x) = |x|</option>
+        <option value="sqrt">f(x) = √x</option>
+        <option value="cu">f(x) = x³</option>
+      </select>
+    </label>
+    <label><span class="ltr">a = <output data-o="a"></output></span><input type="range" min="-3" max="3" step="0.5" value="1" data-i="a" /></label>
+    <label><span class="ltr">h = <output data-o="h"></output></span><input type="range" min="-5" max="5" value="2" data-i="h" /></label>
+    <label><span class="ltr">k = <output data-o="k"></output></span><input type="range" min="-5" max="5" value="-1" data-i="k" /></label>
+    <label class="chk"><input type="checkbox" data-i="ref" /> انعكاس حول المحور y <span class="ltr">(x → −x)</span></label>
+  </div>
+  <canvas aria-label="الدالة الأم والدالة بعد التحويل"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--muted)"></i>الدالة الأم</span>
+    <span><i style="background:var(--plot-curve)"></i>بعد التحويل</span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-tf')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -8, xmax: 8, ymin: -7, ymax: 7 });
+  const F: Record<string, { f: (x: number) => number; t: (u: string) => string; key: [number, number] }> = {
+    sq: { f: (x) => x * x, t: (u) => `(${u})^2`, key: [0, 0] },
+    abs: { f: (x) => Math.abs(x), t: (u) => `|${u}|`, key: [0, 0] },
+    sqrt: { f: (x) => (x >= 0 ? Math.sqrt(x) : NaN), t: (u) => `\\sqrt{${u}}`, key: [0, 0] },
+    cu: { f: (x) => x ** 3, t: (u) => `(${u})^3`, key: [0, 0] },
+  };
+  const val = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const name = root.querySelector<HTMLSelectElement>('[data-i="f"]')!.value;
+    const a = val('a') || 0.5, h = val('h'), k = val('k');
+    const ref = root.querySelector<HTMLInputElement>('[data-i="ref"]')!.checked;
+    root.querySelector('[data-o="a"]')!.textContent = String(a);
+    root.querySelector('[data-o="h"]')!.textContent = String(h);
+    root.querySelector('[data-o="k"]')!.textContent = String(k);
+    const { f, t } = F[name];
+    const s = ref ? -1 : 1;
+    plot.fit(0.62);
+    plot.clear();
+    plot.grid(1, 2);
+    plot.fn(f, css('--muted'), 2, [6, 5]);
+    plot.fn((x) => a * f(s * (x - h)) + k, css('--plot-curve'), 3);
+    plot.dot(h, k, css('--plot-hot'), 5);
+    const inner = `${ref ? '-' : ''}${h === 0 ? 'x' : ref ? `(x ${h > 0 ? '-' : '+'} ${Math.abs(h)})` : `x ${h > 0 ? '-' : '+'} ${Math.abs(h)}`}`;
+    const eq = `y = ${a === 1 ? '' : a === -1 ? '-' : fmt(a)}${t(inner)}${k === 0 ? '' : ` ${k > 0 ? '+' : '-'} ${Math.abs(k)}`}`;
+    const steps: string[] = [];
+    if (ref) steps.push('انعكاس حول المحور y (لأن x استُبدل بـ −x).');
+    if (Math.abs(a) > 1) steps.push(`تمدد رأسي بمعامل ${Math.abs(a)}: الرسم أضيق (أطول).`);
+    if (Math.abs(a) < 1) steps.push(`انكماش رأسي بمعامل ${Math.abs(a)}: الرسم أعرض (أقصر).`);
+    if (a < 0) steps.push('انعكاس حول المحور x لأن a سالب: الرسم مقلوب.');
+    if (h !== 0) steps.push(`إزاحة أفقية ${Math.abs(h)} وحدات إلى ${h > 0 ? 'اليمين' : 'اليسار'} (لاحظ: ${tex(`$x ${h > 0 ? '-' : '+'} ${Math.abs(h)}$`)} داخل الدالة تعني ${h > 0 ? 'يمينًا' : 'يسارًا'}).`);
+    if (k !== 0) steps.push(`إزاحة رأسية ${Math.abs(k)} وحدات إلى ${k > 0 ? 'الأعلى' : 'الأسفل'}.`);
+    out.innerHTML =
+      `<p>${tex(`$${eq}$`)}</p>` +
+      (steps.length ? `<ol class="steps">${steps.map((x) => `<li>${x}</li>`).join('')}</ol>` : '<p>لا تحويل: هذه الدالة الأم نفسها.</p>') +
+      `<p>النقطة المميزة ${tex('$(0, 0)$')} في الدالة الأم انتقلت إلى ${tex(`$(${h}, ${k})$`)}.</p>`;
+  }
+  root.querySelectorAll('input, select').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>
+<style>
+  .chk { display: flex !important; align-items: center; gap: 0.4rem; }
+  .readout :global(.steps) { margin: 0.3rem 0; padding-inline-start: 1.3rem; }
+</style>

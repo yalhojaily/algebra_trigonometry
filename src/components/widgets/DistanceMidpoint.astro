@@ -1,0 +1,48 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-dist" title="المسافة ونقطة المنتصف" en="Distance and midpoint formulas">
+  <div class="controls">
+    <label><span class="ltr">x₁ = <output data-o="x1"></output></span><input type="range" min="-8" max="8" value="-4" data-i="x1" /></label>
+    <label><span class="ltr">y₁ = <output data-o="y1"></output></span><input type="range" min="-6" max="6" value="-2" data-i="y1" /></label>
+    <label><span class="ltr">x₂ = <output data-o="x2"></output></span><input type="range" min="-8" max="8" value="4" data-i="x2" /></label>
+    <label><span class="ltr">y₂ = <output data-o="y2"></output></span><input type="range" min="-6" max="6" value="4" data-i="y2" /></label>
+  </div>
+  <canvas aria-label="نقطتان والقطعة بينهما ونقطة المنتصف"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  import { simpRoot } from '../../lib/gen';
+  const root = document.getElementById('w-dist')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -10, xmax: 10, ymin: -7, ymax: 7 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const ps = (n: number) => (n < 0 ? `(${n})` : String(n));
+  function draw() {
+    const x1 = v('x1'), y1 = v('y1'), x2 = v('x2'), y2 = v('y2');
+    for (const k of ['x1', 'y1', 'x2', 'y2']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    plot.fit(0.62);
+    plot.clear();
+    plot.grid(1, 2);
+    plot.seg(x1, y1, x2, y1, css('--plot-alt'), 2, [6, 4]);
+    plot.seg(x2, y1, x2, y2, css('--plot-alt'), 2, [6, 4]);
+    plot.seg(x1, y1, x2, y2, css('--plot-curve'), 3);
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+    plot.dot(x1, y1, css('--ink'));
+    plot.dot(x2, y2, css('--ink'));
+    plot.dot(mx, my, css('--plot-hot'), 6);
+    plot.label(x1, y1, 'P', css('--ink'));
+    plot.label(x2, y2, 'Q', css('--ink'));
+    plot.label(mx, my, 'M', css('--plot-hot'));
+    const dx = x2 - x1, dy = y2 - y1, s = dx * dx + dy * dy;
+    out.innerHTML =
+      `<p>الضلعان الأفقي والرأسي للمثلث القائم: ${tex(`$|${dx}| = ${Math.abs(dx)}$`)} و ${tex(`$|${dy}| = ${Math.abs(dy)}$`)}، والقطعة PQ هي الوتر.</p>` +
+      `<p>${tex(`$d(P, Q) = \\sqrt{(${x2} - ${ps(x1)})^2 + (${y2} - ${ps(y1)})^2} = \\sqrt{${dx * dx} + ${dy * dy}} = \\sqrt{${s}}${simpRoot(s) !== `\\sqrt{${s}}` ? ` = ${simpRoot(s)}` : ''} \\approx ${fmt(Math.sqrt(s))}$`)}</p>` +
+      `<p>${tex(`$M = \\left(\\dfrac{${x1} + ${ps(x2)}}{2}, \\dfrac{${y1} + ${ps(y2)}}{2}\\right) = (${fmt(mx)}, ${fmt(my)})$`)}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

@@ -42,7 +42,7 @@ const readyIds = chapters.filter((c) => c.status === 'ready').flatMap((c) => c.s
   <section class="map" aria-labelledby="map-h">
     <div class="map-head">
       <h2 id="map-h">فصول الكتاب</h2>
-      <p class="map-note">الفصلان R و 1 جاهزان الآن، وبقية الفصول تُضاف تباعًا.</p>
+      <p class="map-note">الفصول R و 1 و 2 جاهزة الآن، وبقية الفصول تُضاف تباعًا.</p>
     </div>
     <ul class="cards">
       {[...chapters.filter((c) => c.status === 'ready'), ...chapters.filter((c) => c.status !== 'ready')].map((ch) => {

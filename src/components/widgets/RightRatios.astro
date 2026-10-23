@@ -1,0 +1,52 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-rr" title="النسب المثلثية في المثلث القائم" en="SOH-CAH-TOA">
+  <div class="controls">
+    <label>الزاوية <span class="ltr">A = <output data-o="a"></output>°</span><input type="range" min="5" max="85" value="35" data-i="a" /></label>
+    <label>حجم المثلث <span class="ltr">c = <output data-o="c"></output></span><input type="range" min="2" max="10" step="0.5" value="6" data-i="c" /></label>
+  </div>
+  <canvas aria-label="مثلث قائم وأضلاعه"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-rr')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -1, xmax: 11, ymin: -1, ymax: 10 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const A = v('a'), c = v('c');
+    root.querySelector('[data-o="a"]')!.textContent = String(A);
+    root.querySelector('[data-o="c"]')!.textContent = String(c);
+    const r = (A * Math.PI) / 180;
+    const b = c * Math.cos(r), a = c * Math.sin(r);
+    plot.fit(0.55);
+    const span = Math.max(b / 0.62, a / 0.36, 8);
+    plot.view = { xmin: -0.08 * span, xmax: 0.92 * span, ymin: -0.13 * span, ymax: 0.42 * span };
+    plot.clear();
+    const { ctx } = plot;
+    ctx.fillStyle = css('--accent-soft');
+    ctx.beginPath(); ctx.moveTo(plot.X(0), plot.Y(0)); ctx.lineTo(plot.X(b), plot.Y(0)); ctx.lineTo(plot.X(b), plot.Y(a)); ctx.closePath(); ctx.fill();
+    plot.seg(0, 0, b, 0, css('--plot-alt'), 3);
+    plot.seg(b, 0, b, a, css('--plot-hot'), 3);
+    plot.seg(0, 0, b, a, css('--plot-curve'), 3);
+    const s = span / 30;
+    plot.seg(b - s, 0, b - s, s, css('--muted'), 1.5);
+    plot.seg(b - s, s, b, s, css('--muted'), 1.5);
+    plot.param((u) => (span / 12) * Math.cos(u), (u) => (span / 12) * Math.sin(u), 0, r, css('--ink'), 2);
+    plot.label(span / 11, 0, 'A', css('--ink'));
+    plot.label(b / 2, -0.115 * span, `adj = ${fmt(b, 2)}`, css('--plot-alt'), 'center');
+    plot.label(b + 0.2, a / 2, `opp = ${fmt(a, 2)}`, css('--plot-hot'));
+    plot.label(b / 2 - 0.3, a / 2 + 0.3, `hyp = ${c}`, css('--plot-curve'), 'right');
+    out.innerHTML =
+      `<p>${tex(`$\\sin A = \\dfrac{\\text{opp}}{\\text{hyp}} = \\dfrac{${fmt(a, 2)}}{${c}} \\approx ${fmt(Math.sin(r), 4)}$`)}</p>` +
+      `<p>${tex(`$\\cos A = \\dfrac{\\text{adj}}{\\text{hyp}} = \\dfrac{${fmt(b, 2)}}{${c}} \\approx ${fmt(Math.cos(r), 4)}$`)}</p>` +
+      `<p>${tex(`$\\tan A = \\dfrac{\\text{opp}}{\\text{adj}} = \\dfrac{${fmt(a, 2)}}{${fmt(b, 2)}} \\approx ${fmt(Math.tan(r), 4)}$`)}</p>` +
+      `<p>غيّر حجم المثلث: الأضلاع تتغير لكن النسب ثابتة، لأنها تعتمد على الزاوية وحدها. ولاحظ أن ${tex(`$\\sin ${A}^\\circ = \\cos ${90 - A}^\\circ$`)}: المقابل للزاوية ${A}° هو المجاور للزاوية الأخرى ${90 - A}°.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

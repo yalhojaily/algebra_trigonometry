@@ -1,0 +1,86 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-elev" title="زاويتا الارتفاع والانخفاض" en="Angles of elevation and depression">
+  <div class="controls">
+    <label>الحالة
+      <select data-i="mode">
+        <option value="e">زاوية ارتفاع: قمة برج من الأرض</option>
+        <option value="d">زاوية انخفاض: قارب من قمة جرف</option>
+      </select>
+    </label>
+    <label>المسافة الأفقية <span class="ltr">d = <output data-o="d"></output> m</span><input type="range" min="20" max="120" step="5" value="60" data-i="d" /></label>
+    <label>الزاوية <span class="ltr">θ = <output data-o="a"></output>°</span><input type="range" min="5" max="70" value="35" data-i="a" /></label>
+  </div>
+  <canvas aria-label="رسم مسألة ارتفاع أو انخفاض"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-elev')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -10, xmax: 140, ymin: -8, ymax: 100 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const mode = root.querySelector<HTMLSelectElement>('[data-i="mode"]')!.value;
+    const d = v('d'), a = v('a');
+    root.querySelector('[data-o="d"]')!.textContent = String(d);
+    root.querySelector('[data-o="a"]')!.textContent = String(a);
+    const h = d * Math.tan((a * Math.PI) / 180);
+    const width = Math.max(d + 35, (Math.max(40, h * 1.15) + 8) / 0.58);
+    const top = width * 0.58 - 8;
+    plot.view = { xmin: -12, xmax: width - 12, ymin: -8, ymax: top };
+    plot.fit(0.58);
+    plot.clear();
+    const { ctx } = plot;
+    // الأرض أو الماء
+    ctx.fillStyle = mode === 'e' ? css('--line') : css('--accent-soft');
+    ctx.fillRect(0, plot.Y(0), plot.w, plot.h - plot.Y(0));
+    plot.seg(-12, 0, width, 0, css('--muted'), 1.5);
+    const r = (a * Math.PI) / 180;
+    if (mode === 'e') {
+      // برج عند x = d
+      ctx.fillStyle = css('--plot-alt');
+      ctx.globalAlpha = 0.25;
+      ctx.fillRect(plot.X(d - 3), plot.Y(h), plot.X(d + 3) - plot.X(d - 3), plot.Y(0) - plot.Y(h));
+      ctx.globalAlpha = 1;
+      plot.seg(d, 0, d, h, css('--plot-alt'), 3);
+      plot.seg(0, 0, d, h, css('--plot-hot'), 2.4, [7, 5]);
+      plot.seg(0, 0, d, 0, css('--ink'), 2.4);
+      plot.param((u) => 14 * Math.cos(u), (u) => 14 * Math.sin(u) * 1, 0, r, css('--plot-curve'), 2.5);
+      plot.dot(0, 0, css('--ink'), 5);
+      plot.label(16, 2, `θ = ${a}°`, css('--plot-curve'));
+      plot.label(d / 2, 0, `d = ${d}`, css('--ink'), 'center');
+      plot.label(d + 5, h / 2, `h ≈ ${fmt(h, 1)}`, css('--plot-alt'));
+      out.innerHTML =
+        `<p>زاوية الارتفاع تُقاس من <strong>الأفقي إلى الأعلى</strong> نحو خط النظر.</p>` +
+        `<p>الارتفاع هو الضلع المقابل والمسافة هي المجاور: ${tex(`$\\tan ${a}^\\circ = \\dfrac{h}{${d}}$`)} ← ${tex(`$h = ${d}\\tan ${a}^\\circ \\approx ${fmt(h, 2)}$`)} م.</p>` +
+        `<p>وطول خط النظر (الوتر) ${tex(`$\\dfrac{${d}}{\\cos ${a}^\\circ} \\approx ${fmt(d / Math.cos(r), 2)}$`)} م.</p>`;
+    } else {
+      // جرف عند x = 0 بارتفاع h، والقارب عند x = d
+      ctx.fillStyle = css('--muted');
+      ctx.globalAlpha = 0.3;
+      ctx.beginPath(); ctx.moveTo(plot.X(-12), plot.Y(0)); ctx.lineTo(plot.X(-12), plot.Y(h)); ctx.lineTo(plot.X(0), plot.Y(h)); ctx.lineTo(plot.X(0), plot.Y(0)); ctx.fill();
+      ctx.globalAlpha = 1;
+      plot.seg(0, h, width, h, css('--muted'), 1.5, [3, 4]);
+      plot.seg(0, h, d, 0, css('--plot-hot'), 2.4, [7, 5]);
+      plot.seg(0, 0, 0, h, css('--plot-alt'), 3);
+      plot.seg(0, 0, d, 0, css('--ink'), 2.4);
+      plot.param((u) => 14 * Math.cos(u), (u) => h + 14 * Math.sin(u), -r, 0, css('--plot-curve'), 2.5);
+      plot.param((u) => d + 14 * Math.cos(u), (u) => 14 * Math.sin(u), Math.PI - r, Math.PI, css('--plot-curve'), 2, [3, 3]);
+      plot.dot(0, h, css('--ink'), 5);
+      plot.dot(d, 0, css('--plot-hot'), 6);
+      plot.label(16, h, `θ = ${a}°`, css('--plot-curve'));
+      plot.label(d / 2, 0, `d = ${d}`, css('--ink'), 'center');
+      plot.label(2, h / 2, `h ≈ ${fmt(h, 1)}`, css('--plot-alt'));
+      out.innerHTML =
+        `<p>زاوية الانخفاض تُقاس من <strong>الأفقي إلى الأسفل</strong> نحو خط النظر (من المراقب في الأعلى).</p>` +
+        `<p>لأن الأفقي في الأعلى يوازي سطح الماء، فزاوية الانخفاض تساوي زاوية الارتفاع من القارب إلى المراقب (زاويتان متبادلتان داخليًا، القوس المنقط).</p>` +
+        `<p>${tex(`$\\tan ${a}^\\circ = \\dfrac{h}{${d}}$`)} ← ${tex(`$h = ${d}\\tan ${a}^\\circ \\approx ${fmt(h, 2)}$`)} م. وإذا عرفنا الارتفاع فالمسافة ${tex(`$d = \\dfrac{h}{\\tan\\theta}$`)}.</p>`;
+    }
+  }
+  root.querySelectorAll('input, select').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

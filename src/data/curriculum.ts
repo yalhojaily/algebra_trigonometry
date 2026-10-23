@@ -104,7 +104,7 @@ export const chapters: Chapter[] = [
     id: '5',
     ar: 'الدوال المثلثية',
     en: 'Trigonometric Functions',
-    status: 'soon',
+    status: 'ready',
     blurb: 'الزوايا وقياسها، تعريف الدوال المثلثية، الزوايا المرجعية، وحل المثلثات القائمة.',
     sections: [
       { id: '5.1', ar: 'الزوايا', en: 'Angles', topics: [t('مصطلحات أساسية', 'Basic Terminology'), t('القياس بالدرجات', 'Degree Measure'), t('الوضع القياسي', 'Standard Position'), t('الزوايا المتكافئة', 'Coterminal Angles')] },

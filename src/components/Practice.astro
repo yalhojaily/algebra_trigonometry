@@ -20,6 +20,7 @@ const { set, count = 5 } = Astro.props;
       <p>
         التعابير الجبرية: <code>3x^2 - 5x + 2</code> و <code>(x+1)(x-4)</code> و <code>x^(1/2)</code> و <code>(2x)/(x-1)</code>.
         اللوغاريتمات والأسس: <code>ln(5)</code> و <code>log(x)</code> و <code>log_2(8)</code> و <code>e^(2x)</code>.
+        الزوايا بالدرجات تُكتب عددًا فقط: <code>150</code> (علامة <code>°</code> اختيارية).
         يظهر تحت الحقل كيف فهم الموقع ما كتبته، فتأكد منه قبل التحقق.
       </p>
     </details>
@@ -34,12 +35,13 @@ const { set, count = 5 } = Astro.props;
   import { ch2 } from '../lib/practice/ch2';
   import { ch3 } from '../lib/practice/ch3';
   import { ch4 } from '../lib/practice/ch4';
+  import { ch5 } from '../lib/practice/ch5';
   import { tex } from '../lib/tex';
   import katex from 'katex';
   import { parseList, sameSet, sameList, stripPoint, parse, toTex, equivalent, isFactored, hasRadicalDenominator, hasNegativeExponent, isExpanded, isMonomial, isLogsExpanded, isLogsCondensed } from '../lib/answer';
   import type { Problem } from '../lib/gen';
 
-  const banks: Record<string, (() => Problem)[]> = { ...chR, ...ch1, ...ch2, ...ch3, ...ch4 };
+  const banks: Record<string, (() => Problem)[]> = { ...chR, ...ch1, ...ch2, ...ch3, ...ch4, ...ch5 };
   const REQ_MSG = {
     factored: 'الإجابة صحيحة القيمة لكنها غير محللة. اكتبها كحاصل ضرب عوامل.',
     noRadicalDenominator: 'الإجابة صحيحة القيمة، لكن ما زال في المقام جذر. أنطق المقام.',
@@ -230,6 +232,8 @@ const { set, count = 5 } = Astro.props;
   :global(.practice .item.ok::before) { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
   :global(.practice .item.bad::before) { background: var(--err-soft); border-color: var(--err); color: var(--err); }
   :global(.practice .q) { margin-bottom: 0.6rem; }
+  /* معادلة طويلة في الجوال تُمرَّر أفقيًا بدل أن توسّع الصفحة */
+  :global(.practice .q), :global(.practice .choice), :global(.practice .sol p), :global(.practice .hint) { overflow-x: auto; overflow-y: hidden; }
   :global(.practice .ans) { display: flex; gap: 0.5rem; flex-wrap: wrap; }
   :global(.practice .ans input) { flex: 1 1 14rem; min-width: 0; }
   :global(.practice .preview) { margin: 0.4rem 0 0; font-size: 0.95rem; color: var(--muted); min-height: 1.5em; }

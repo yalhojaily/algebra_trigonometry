@@ -1,0 +1,188 @@
+---
+section: "5.3"
+summary: "الدوال المثلثية في المثلث القائم (المقابل والمجاور والوتر)، والدوال المتتامة، والقيم الدقيقة للزوايا الخاصة 30° و45° و60°، والزاوية المرجعية لإيجاد قيم أي زاوية، والحساب بالآلة الحاسبة وإيجاد الزاوية من قيمة دالتها."
+minutes: 45
+prerequisites: ["5.2", "R.7"]
+terms:
+  - { ar: "الضلع المقابل", en: "Side Opposite", def: "الضلع الذي لا يمس الزاوية في المثلث القائم." }
+  - { ar: "الضلع المجاور", en: "Side Adjacent", def: "ضلع الزاوية الذي ليس وترًا." }
+  - { ar: "الوتر", en: "Hypotenuse", def: "الضلع المقابل للزاوية القائمة، وهو الأطول." }
+  - { ar: "الدوال المتتامة", en: "Cofunctions", def: "أزواج الدوال (sin, cos)، (tan, cot)، (sec, csc): قيمة كل منها عند A تساوي قيمة الأخرى عند 90° − A." }
+  - { ar: "الزاوية المرجعية", en: "Reference Angle", def: "الزاوية الحادة الموجبة بين الضلع النهائي للزاوية ومحور x." }
+  - { ar: "الزوايا الخاصة", en: "Special Angles", def: "30° و45° و60°، ولها قيم دقيقة تُستخرج من مثلثين خاصين." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import RightRatios from '../../components/widgets/RightRatios.astro';
+import ReferenceAngle from '../../components/widgets/ReferenceAngle.astro';
+
+ضع زاوية حادة $A$ من مثلث قائم في الوضع القياسي: يصبح الضلع المجاور هو $x$، والمقابل هو $y$، والوتر هو $r$. فتتحول تعريفات الدرس السابق إلى نسب بين أضلاع المثلث، وهي الصيغة الأشهر لعلم المثلثات. ثم نرى كيف نعود من أي زاوية، مهما كبرت، إلى زاوية حادة واحدة نعرف قيمها.
+
+## التعريف بالمثلث القائم <span class="en" lang="en">Right-Triangle-Based Definitions</span>
+
+<Box kind="def" title="النسب في المثلث القائم" en="Right-triangle definitions">
+لزاوية حادة $A$ في مثلث قائم:
+
+$$\sin A = \frac{\text{opposite}}{\text{hypotenuse}} \qquad \cos A = \frac{\text{adjacent}}{\text{hypotenuse}} \qquad \tan A = \frac{\text{opposite}}{\text{adjacent}}$$
+
+حيث <Term ar="المقابل" en="opposite" /> هو الضلع البعيد عن $A$، و<Term ar="المجاور" en="adjacent" /> ضلع $A$ غير الوتر، و<Term ar="الوتر" en="hypotenuse" /> مقابل القائمة. والثلاث الأخرى مقلوباتها: $\csc A = \tfrac{\text{hyp}}{\text{opp}}$، $\sec A = \tfrac{\text{hyp}}{\text{adj}}$، $\cot A = \tfrac{\text{adj}}{\text{opp}}$.
+
+للحفظ بالإنجليزية: **SOH-CAH-TOA**.
+</Box>
+
+<RightRatios />
+
+<Example n="1" title="من الأضلاع إلى النسب">
+مثلث $ABC$ قائم في $C$، فيه $a = 7$ (مقابل $A$) و $b = 24$ و $c = 25$. أوجد $\sin A$ و $\cos A$ و $\tan A$ و $\sin B$.
+
+<Solution>
+$\sin A = \tfrac{7}{25}$، $\cos A = \tfrac{24}{25}$، $\tan A = \tfrac{7}{24}$
+
+للزاوية $B$: المقابل هو $b = 24$، فإن $\sin B = \tfrac{24}{25}$
+
+لاحظ أن $\sin B = \cos A$. هذه ليست صدفة (الفقرة التالية).
+</Solution>
+</Example>
+
+## الدوال المتتامة <span class="en" lang="en">Cofunctions</span>
+
+الزاويتان الحادتان في المثلث القائم متتامتان: $A + B = 90^\circ$. والضلع المقابل لإحداهما هو المجاور للأخرى، فتتبادل النسب.
+
+<Box kind="rule" title="متطابقات الدوال المتتامة" en="Cofunction Identities">
+لأي زاوية حادة $A$:
+
+$$\sin A = \cos(90^\circ - A) \qquad \tan A = \cot(90^\circ - A) \qquad \sec A = \csc(90^\circ - A)$$
+
+ومن هنا جاءت الأسماء: «جيب التمام» يعني جيب الزاوية المتممة <span class="en" lang="en">(co-sine = complement's sine)</span>.
+</Box>
+
+<Example n="2" title="معادلة بالدوال المتتامة">
+أوجد $\theta$ إذا كان $\tan(2\theta - 18^\circ) = \cot(\theta + 18^\circ)$، والزاويتان حادتان.
+
+<Solution>
+الظل وظل التمام متساويان عندما تكون الزاويتان متتامتين.
+
+$(2\theta - 18^\circ) + (\theta + 18^\circ) = 90^\circ$ ← $3\theta = 90^\circ$
+
+$\theta = 30^\circ$
+</Solution>
+</Example>
+
+## قيم الزوايا الخاصة <span class="en" lang="en">Values of Special Angles</span>
+
+مثلثان صغيران يعطيان كل القيم الدقيقة التي تحتاجها:
+
+- **مثلث $45^\circ$-$45^\circ$-$90^\circ$**: نصف مربع ضلعه 1. الضلعان $1$ و $1$، والوتر $\sqrt2$.
+- **مثلث $30^\circ$-$60^\circ$-$90^\circ$**: نصف مثلث متساوي الأضلاع ضلعه 2. الضلع المقابل لـ $30^\circ$ طوله $1$، والمقابل لـ $60^\circ$ طوله $\sqrt3$، والوتر $2$.
+
+<Box kind="rule" title="جدول الزوايا الخاصة" en="Function values of special angles">
+| $\theta$ | $\sin\theta$ | $\cos\theta$ | $\tan\theta$ | $\csc\theta$ | $\sec\theta$ | $\cot\theta$ |
+|---|---|---|---|---|---|---|
+| $30^\circ$ | $\tfrac12$ | $\tfrac{\sqrt3}{2}$ | $\tfrac{\sqrt3}{3}$ | $2$ | $\tfrac{2\sqrt3}{3}$ | $\sqrt3$ |
+| $45^\circ$ | $\tfrac{\sqrt2}{2}$ | $\tfrac{\sqrt2}{2}$ | $1$ | $\sqrt2$ | $\sqrt2$ | $1$ |
+| $60^\circ$ | $\tfrac{\sqrt3}{2}$ | $\tfrac12$ | $\sqrt3$ | $\tfrac{2\sqrt3}{3}$ | $2$ | $\tfrac{\sqrt3}{3}$ |
+</Box>
+
+<Box kind="tip" title="طريقة لتذكّر عمود الجيب">
+$\sin 30^\circ, \sin 45^\circ, \sin 60^\circ = \tfrac{\sqrt1}{2}, \tfrac{\sqrt2}{2}, \tfrac{\sqrt3}{2}$. وعمود جيب التمام هو نفسه بترتيب معكوس، لأن $\cos\theta = \sin(90^\circ - \theta)$.
+</Box>
+
+## الزوايا المرجعية <span class="en" lang="en">Reference Angles</span>
+
+<Box kind="def" title="الزاوية المرجعية" en="Reference Angle">
+<Term ar="الزاوية المرجعية" en="reference angle" /> $\theta'$ لزاوية $\theta$ غير ربعية في الوضع القياسي هي الزاوية الحادة الموجبة بين ضلعها النهائي و**محور $x$**. وإذا كانت $\theta$ بين $0^\circ$ و $360^\circ$:
+
+| الربع | I | II | III | IV |
+|---|---|---|---|---|
+| $\theta'$ | $\theta$ | $180^\circ - \theta$ | $\theta - 180^\circ$ | $360^\circ - \theta$ |
+</Box>
+
+<Box kind="mistake" title="المرجع دائمًا محور x">
+الزاوية المرجعية لـ $110^\circ$ هي $70^\circ$ (إلى محور $x$ السالب)، وليست $20^\circ$ (إلى محور $y$).
+</Box>
+
+<Box kind="rule" title="القيم باستخدام الزاوية المرجعية" en="Finding values with reference angles">
+1. أوجد الزاوية المكافئة بين $0^\circ$ و $360^\circ$ إن لزم.
+2. أوجد الزاوية المرجعية $\theta'$.
+3. أوجد قيمة الدالة عند $\theta'$.
+4. ضع الإشارة الصحيحة حسب ربع $\theta$.
+</Box>
+
+<ReferenceAngle />
+
+<Example n="3" title="قيم دقيقة بالزاوية المرجعية">
+أوجد القيم الدقيقة: $\cos 210^\circ$، $\tan(-135^\circ)$، $\csc 675^\circ$.
+
+<Solution>
+$210^\circ$ في الربع الثالث، مرجعها $30^\circ$، وجيب التمام سالب هناك: $\cos 210^\circ = -\tfrac{\sqrt3}{2}$
+
+$-135^\circ$ مكافئة لـ $225^\circ$ (الربع الثالث)، مرجعها $45^\circ$، والظل موجب: $\tan(-135^\circ) = 1$
+
+$675^\circ - 360^\circ = 315^\circ$ (الربع الرابع)، مرجعها $45^\circ$، وقاطع التمام سالب: $\csc 675^\circ = -\sqrt2$
+</Solution>
+</Example>
+
+<Example n="4" title="إيجاد الزاوية من قيمة دقيقة">
+أوجد كل $\theta$ في $[0^\circ, 360^\circ)$ بحيث $\cos\theta = -\tfrac{\sqrt2}{2}$.
+
+<Solution>
+القيمة الموجبة $\tfrac{\sqrt2}{2}$ تقابل الزاوية المرجعية $45^\circ$.
+
+جيب التمام سالب في الربعين الثاني والثالث.
+
+$\theta = 180^\circ - 45^\circ = 135^\circ$ أو $\theta = 180^\circ + 45^\circ = 225^\circ$
+</Solution>
+</Example>
+
+## تقريبات الآلة الحاسبة <span class="en" lang="en">Calculator Approximations</span>
+
+<Box kind="mistake" title="وضع الدرجات">
+تأكد أن الآلة على وضع **DEG** (درجات) لا **RAD** (راديان، الفصل 6). الخطأ الشائع: $\sin 30$ تعطي $-0.988$ بدل $0.5$ لأن الآلة تعتبر 30 راديانًا.
+</Box>
+
+<Example n="5" title="قيم تقريبية وزاوية من قيمة">
+(أ) احسب $\sec 49^\circ 12'$. (ب) أوجد زاوية حادة $\theta$ بحيث $\sin\theta = 0.9677$.
+
+<Solution>
+(أ) حوّل: $49^\circ 12' = 49.2^\circ$. لا زر للقاطع، فنستخدم $\sec 49.2^\circ = \dfrac{1}{\cos 49.2^\circ} \approx \dfrac{1}{0.6534} \approx 1.5304$
+
+(ب) الدالة العكسية تعطي الزاوية: $\theta = \sin^{-1}(0.9677)$
+
+$\theta \approx 75.40^\circ$
+</Solution>
+</Example>
+
+## تطبيق <span class="en" lang="en">An Application</span>
+
+<Example n="6" title="درجة انحدار طريق">
+الانحدار $\theta$ لطريق مرتبط بقوة الجاذبية على سيارة وزنها $W$ بالعلاقة $F = W\sin\theta$. ما القوة على سيارة وزنها 2500 رطل على طريق انحداره $-2.5^\circ$ (نزول)؟
+
+<Solution>
+$F = 2500\sin(-2.5^\circ)$
+
+$\approx 2500(-0.04362)$
+
+$\approx -109$ رطل. الإشارة السالبة تعني أن القوة تدفع السيارة في اتجاه النزول.
+</Solution>
+</Example>
+
+<Check
+  q="ما قيمة $\\sin 300^\\circ$؟"
+  options={["$\\tfrac{\\sqrt3}{2}$", "$-\\tfrac{\\sqrt3}{2}$", "$-\\tfrac12$", "$\\tfrac12$"]}
+  answer={1}
+  explain="$300^\\circ$ في الربع الرابع، مرجعها $60^\\circ$، والجيب سالب هناك: $-\\sin 60^\\circ = -\\tfrac{\\sqrt3}{2}$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- في المثلث القائم: $\sin = \tfrac{\text{opp}}{\text{hyp}}$، $\cos = \tfrac{\text{adj}}{\text{hyp}}$، $\tan = \tfrac{\text{opp}}{\text{adj}}$.
+- الدالة عند $A$ = دالتها المتتامة عند $90^\circ - A$.
+- احفظ جدول $30^\circ, 45^\circ, 60^\circ$ أو استخرجه من المثلثين الخاصين.
+- لأي زاوية: الزاوية المرجعية (إلى محور $x$) تعطي القيمة، والربع يعطي الإشارة.
+- الآلة على DEG، ومقلوب الدالة بقسمة 1، والزاوية بالدالة العكسية.
+
+<Practice set="5.3" count={7} />

@@ -1,0 +1,100 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-tp" title="الدوال الست من نقطة على الضلع النهائي" en="sin θ = y/r, cos θ = x/r, tan θ = y/x">
+  <div class="controls">
+    <label><span class="ltr">x = <output data-o="x"></output></span><input type="range" min="-6" max="6" value="-4" data-i="x" /></label>
+    <label><span class="ltr">y = <output data-o="y"></output></span><input type="range" min="-6" max="6" value="3" data-i="y" /></label>
+  </div>
+  <canvas aria-label="نقطة على الضلع النهائي وزاويتها"></canvas>
+  <div class="tbl" dir="ltr"></div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-tp')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const tbl = root.querySelector<HTMLElement>('.tbl')!;
+  const plot = new Plot(canvas, { xmin: -8, xmax: 8, ymin: -7, ymax: 7 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const gcd = (a: number, b: number): number => (b === 0 ? Math.abs(a) : gcd(b, a % b));
+  /** √n مبسّط: [k, m] حيث √n = k√m */
+  const root2 = (n: number): [number, number] => { let k = 1, m = n; for (let p = 2; p * p <= m; p++) while (m % (p * p) === 0) { m /= p * p; k *= p; } return [k, m]; };
+  /** a / (k√m) بصيغة مبسطة مع إنطاق المقام */
+  function over(a: number, k: number, m: number): string {
+    if (a === 0) return '0';
+    // a/(k√m) = a√m/(k m)
+    let num = a, den = k * m;
+    if (m === 1) den = k;
+    const g = gcd(num, den); num /= g; den /= g;
+    const s = num < 0 ? '-' : '';
+    const n = Math.abs(num);
+    const top = m === 1 ? String(n) : `${n === 1 ? '' : n}\\sqrt{${m}}`;
+    return den === 1 ? `${s}${top}` : `${s}\\dfrac{${top}}{${den}}`;
+  }
+  function frac(a: number, b: number): string {
+    if (b === 0) return '\\text{undefined}';
+    if (a === 0) return '0';
+    const g = gcd(a, b); a /= g; b /= g;
+    if (b < 0) { a = -a; b = -b; }
+    return b === 1 ? String(a) : `${a < 0 ? '-' : ''}\\dfrac{${Math.abs(a)}}{${b}}`;
+  }
+  /** b / (k√m) معكوس */
+  function under(b: number, k: number, m: number): string {
+    if (b === 0) return '\\text{undefined}';
+    // (k√m)/b
+    const g = gcd(k, b); let kk = k / g, bb = b / g;
+    if (bb < 0) { kk = -kk; bb = -bb; }
+    const s = kk < 0 ? '-' : '';
+    const top = m === 1 ? String(Math.abs(kk)) : `${Math.abs(kk) === 1 ? '' : Math.abs(kk)}\\sqrt{${m}}`;
+    return bb === 1 ? `${s}${top}` : `${s}\\dfrac{${top}}{${bb}}`;
+  }
+  function draw() {
+    let x = v('x'), y = v('y');
+    root.querySelector('[data-o="x"]')!.textContent = String(x);
+    root.querySelector('[data-o="y"]')!.textContent = String(y);
+    plot.fit(0.62);
+    plot.view = { xmin: -7.6 / 0.62, xmax: 7.6 / 0.62, ymin: -7.6, ymax: 7.6 };
+    plot.clear();
+    plot.grid(1, 2);
+    if (x === 0 && y === 0) { out.innerHTML = '<p>نقطة الأصل لا تحدد زاوية. حرّك أحد المنزلقين.</p>'; tbl.innerHTML = ''; return; }
+    const r2 = x * x + y * y, r = Math.sqrt(r2);
+    const [k, m] = root2(r2);
+    const th = Math.atan2(y, x);
+    const thd = ((th * 180) / Math.PI + 360) % 360;
+    plot.param((s) => r * Math.cos(s), (s) => r * Math.sin(s), 0, 2 * Math.PI, css('--line'), 1.5, [4, 4]);
+    plot.param((s) => 0.9 * Math.cos(s), (s) => 0.9 * Math.sin(s), 0, (thd * Math.PI) / 180, css('--plot-hot'), 2);
+    plot.seg(0, 0, 7.5 * Math.cos(th), 7.5 * Math.sin(th), css('--plot-curve'), 3);
+    plot.seg(x, 0, x, y, css('--plot-alt'), 2, [5, 4]);
+    plot.seg(0, 0, x, 0, css('--plot-alt'), 2, [5, 4]);
+    plot.dot(x, y, css('--plot-hot'), 6);
+    plot.label(x, y, `(${x}, ${y})`, css('--ink'), x < 0 ? 'right' : 'left');
+    const rT = m === 1 ? String(k) : `${k === 1 ? '' : k}\\sqrt{${m}}`;
+    const rows: [string, string, string, number][] = [
+      ['\\sin\\theta', '\\dfrac{y}{r}', over(y, k, m), y / r],
+      ['\\cos\\theta', '\\dfrac{x}{r}', over(x, k, m), x / r],
+      ['\\tan\\theta', '\\dfrac{y}{x}', frac(y, x), y / x],
+      ['\\csc\\theta', '\\dfrac{r}{y}', under(y, k, m), r / y],
+      ['\\sec\\theta', '\\dfrac{r}{x}', under(x, k, m), r / x],
+      ['\\cot\\theta', '\\dfrac{x}{y}', frac(x, y), x / y],
+    ];
+    tbl.innerHTML = '<div class="g6">' + rows.map(([n, d, val, num]) =>
+      `<div class="c ${Number.isFinite(num) ? (num > 0 ? 'pos' : num < 0 ? 'neg' : '') : 'und'}">${tex(`$${n} = ${d} = ${val}$`)}</div>`).join('') + '</div>';
+    const quad = x > 0 && y > 0 ? 'الأول: كل الدوال موجبة' : x < 0 && y > 0 ? 'الثاني: الجيب وقاطع التمام فقط موجبان' : x < 0 && y < 0 ? 'الثالث: الظل وظل التمام فقط موجبان' : x > 0 && y < 0 ? 'الرابع: جيب التمام والقاطع فقط موجبان' : 'ضلعها على محور: زاوية ربعية، وبعض الدوال غير معرّف لأن المقام صفر';
+    out.innerHTML =
+      `<p>${tex(`$r = \\sqrt{x^2 + y^2} = \\sqrt{${x * x} + ${y * y}} = ${rT}$`)}، و ${tex(`$\\theta \\approx ${fmt(thd, 1)}^\\circ$`)}.</p>` +
+      `<p>الربع ${quad}. (الإطار الأخضر: قيمة موجبة، والأحمر: سالبة.)</p>` +
+      `<p>اختر نقطة أخرى على الضلع نفسه (مثل ضعفها) وستجد القيم الست لا تتغير: هي نسب، والمثلثات المتشابهة تعطي النسب نفسها.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>
+<style>
+  .tbl :global(.g6) { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0.4rem; margin-top: 0.8rem; }
+  .tbl :global(.c) { padding: 0.35rem 0.6rem; border-radius: var(--radius-s); background: var(--paper); border-inline-start: 4px solid var(--line); }
+  .tbl :global(.c.pos) { border-color: var(--ok); }
+  .tbl :global(.c.neg) { border-color: var(--err); }
+  .tbl :global(.c.und) { border-color: var(--muted); opacity: 0.75; }
+</style>

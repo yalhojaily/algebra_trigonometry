@@ -1,0 +1,169 @@
+---
+section: "5.2"
+summary: "الدوال المثلثية الست لأي زاوية من نقطة على ضلعها النهائي، وقيمها عند الزوايا الربعية، ومتطابقات المقلوب والقسمة وفيثاغورس، وإشارات الدوال في الأرباع الأربعة ومدى قيمها."
+minutes: 40
+prerequisites: ["5.1", "2.1"]
+terms:
+  - { ar: "الجيب", en: "Sine", def: "sin θ = y/r." }
+  - { ar: "جيب التمام", en: "Cosine", def: "cos θ = x/r." }
+  - { ar: "الظل", en: "Tangent", def: "tan θ = y/x، حيث x ≠ 0." }
+  - { ar: "قاطع التمام", en: "Cosecant", def: "csc θ = r/y، حيث y ≠ 0." }
+  - { ar: "القاطع", en: "Secant", def: "sec θ = r/x، حيث x ≠ 0." }
+  - { ar: "ظل التمام", en: "Cotangent", def: "cot θ = x/y، حيث y ≠ 0." }
+  - { ar: "متطابقات المقلوب", en: "Reciprocal Identities", def: "csc θ = 1/sin θ، sec θ = 1/cos θ، cot θ = 1/tan θ." }
+  - { ar: "متطابقات فيثاغورس", en: "Pythagorean Identities", def: "sin²θ + cos²θ = 1، tan²θ + 1 = sec²θ، 1 + cot²θ = csc²θ." }
+  - { ar: "متطابقات القسمة", en: "Quotient Identities", def: "tan θ = sin θ / cos θ، cot θ = cos θ / sin θ." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import TrigPoint from '../../components/widgets/TrigPoint.astro';
+
+ضع زاوية في الوضع القياسي واختر أي نقطة على ضلعها النهائي. المسافات الثلاث $x$ و $y$ و $r$ (البعد عن الأصل) تتغير إذا ابتعدت النقطة، لكن **النسب** بينها لا تتغير، لأن المثلثات الناتجة متشابهة. هذه النسب الست هي الدوال المثلثية، وهي تعتمد على الزاوية وحدها.
+
+## الدوال المثلثية <span class="en" lang="en">Trigonometric Functions</span>
+
+<Box kind="def" title="الدوال المثلثية الست" en="Trigonometric Functions">
+لتكن $(x, y)$ نقطة غير الأصل على الضلع النهائي للزاوية $\theta$ في الوضع القياسي، و $r = \sqrt{x^2 + y^2} > 0$ بعدها عن الأصل:
+
+$$\sin\theta = \frac{y}{r} \qquad \cos\theta = \frac{x}{r} \qquad \tan\theta = \frac{y}{x}\ (x \ne 0)$$
+
+$$\csc\theta = \frac{r}{y}\ (y \ne 0) \qquad \sec\theta = \frac{r}{x}\ (x \ne 0) \qquad \cot\theta = \frac{x}{y}\ (y \ne 0)$$
+
+الأسماء: <Term ar="الجيب" en="sine" />، <Term ar="جيب التمام" en="cosine" />، <Term ar="الظل" en="tangent" />، <Term ar="قاطع التمام" en="cosecant" />، <Term ar="القاطع" en="secant" />، <Term ar="ظل التمام" en="cotangent" />.
+</Box>
+
+<Example n="1" title="من نقطة إلى الدوال الست">
+الضلع النهائي للزاوية $\theta$ يمر بـ $(-8, 15)$. أوجد قيم الدوال الست.
+
+<Solution>
+$r = \sqrt{(-8)^2 + 15^2} = \sqrt{289} = 17$
+
+$\sin\theta = \tfrac{15}{17}$، $\cos\theta = -\tfrac{8}{17}$، $\tan\theta = -\tfrac{15}{8}$
+
+$\csc\theta = \tfrac{17}{15}$، $\sec\theta = -\tfrac{17}{8}$، $\cot\theta = -\tfrac{8}{15}$
+</Solution>
+</Example>
+
+<Example n="2" title="الضلع النهائي معطى بمعادلة">
+الضلع النهائي لـ $\theta$ هو الشعاع $x + 2y = 0$ مع $x \ge 0$. أوجد $\sin\theta$ و $\cos\theta$.
+
+<Solution>
+اختر أي نقطة على الشعاع بـ $x \ge 0$، مثل $x = 2$: $2 + 2y = 0$ ← $y = -1$. النقطة $(2, -1)$ في الربع الرابع.
+
+$r = \sqrt{4 + 1} = \sqrt{5}$
+
+$\sin\theta = \dfrac{-1}{\sqrt5} = -\dfrac{\sqrt5}{5}$، $\cos\theta = \dfrac{2}{\sqrt5} = \dfrac{2\sqrt5}{5}$ (بعد إنطاق المقام).
+</Solution>
+</Example>
+
+<TrigPoint />
+
+## الزوايا الربعية <span class="en" lang="en">Quadrantal Angles</span>
+
+للزوايا الربعية نختار النقطة التي بعدها 1 على المحور: $(1, 0)$ لـ $0^\circ$، و $(0, 1)$ لـ $90^\circ$، و $(-1, 0)$ لـ $180^\circ$، و $(0, -1)$ لـ $270^\circ$. وحين يكون المقام صفرًا تكون الدالة **غير معرّفة**.
+
+| $\theta$ | $\sin$ | $\cos$ | $\tan$ | $\csc$ | $\sec$ | $\cot$ |
+|---|---|---|---|---|---|---|
+| $0^\circ$ | $0$ | $1$ | $0$ | undefined | $1$ | undefined |
+| $90^\circ$ | $1$ | $0$ | undefined | $1$ | undefined | $0$ |
+| $180^\circ$ | $0$ | $-1$ | $0$ | undefined | $-1$ | undefined |
+| $270^\circ$ | $-1$ | $0$ | undefined | $-1$ | undefined | $0$ |
+
+<Box kind="tip" title="متى تكون الدالة غير معرّفة؟">
+الظل والقاطع مقامهما $x$، فهما غير معرّفين حين يكون الضلع النهائي على **محور $y$** ($90^\circ, 270^\circ, \dots$). وظل التمام وقاطع التمام مقامهما $y$، فهما غير معرّفين حين يكون الضلع على **محور $x$** ($0^\circ, 180^\circ, \dots$).
+</Box>
+
+## متطابقات المقلوب <span class="en" lang="en">Reciprocal Identities</span>
+
+لاحظ أن $\csc\theta = \tfrac{r}{y}$ هو مقلوب $\sin\theta = \tfrac{y}{r}$، وهكذا.
+
+<Box kind="rule" title="متطابقات المقلوب" en="Reciprocal Identities">
+$$\csc\theta = \frac{1}{\sin\theta} \qquad \sec\theta = \frac{1}{\cos\theta} \qquad \cot\theta = \frac{1}{\tan\theta}$$
+
+(حيث المقام لا يساوي صفرًا). وفي الآلة الحاسبة لا توجد أزرار لـ csc وsec وcot، فنحسبها بهذه المتطابقات.
+</Box>
+
+<Box kind="mistake" title="المقلوب ليس الدالة العكسية">
+$\csc\theta = \dfrac{1}{\sin\theta}$، أما $\sin^{-1}$ في الآلة الحاسبة فهي **الدالة العكسية** (تعطي زاوية)، وليست المقلوب. نفس فكرة $f^{-1}$ في الدرس 4.1.
+</Box>
+
+## الإشارات ومدى القيم <span class="en" lang="en">Signs and Ranges of Function Values</span>
+
+$r$ موجب دائمًا، فالإشارة تأتي من $x$ و $y$:
+
+<Box kind="rule" title="إشارات الدوال في الأرباع" en="Signs by quadrant">
+| الربع | $x$ | $y$ | الدوال الموجبة |
+|---|---|---|---|
+| I | $+$ | $+$ | كلها |
+| II | $-$ | $+$ | $\sin$ و $\csc$ |
+| III | $-$ | $-$ | $\tan$ و $\cot$ |
+| IV | $+$ | $-$ | $\cos$ و $\sec$ |
+
+للحفظ: «**ك**ل **ج**يب **ظ**ل **ت**مام» بالترتيب من الربع الأول إلى الرابع.
+</Box>
+
+<Box kind="rule" title="مدى القيم" en="Ranges">
+بما أن $|x| \le r$ و $|y| \le r$:
+
+- $-1 \le \sin\theta \le 1$ و $-1 \le \cos\theta \le 1$.
+- $\csc\theta \le -1$ أو $\csc\theta \ge 1$، وكذلك $\sec\theta$.
+- $\tan\theta$ و $\cot\theta$ قد يساويان أي عدد حقيقي.
+</Box>
+
+<Example n="3" title="ممكن أم مستحيل؟">
+هل يمكن أن يكون: (أ) $\sin\theta = 2.5$؟ (ب) $\tan\theta = 110.47$؟ (ج) $\sec\theta = 0.6$؟
+
+<Solution>
+(أ) مستحيل: الجيب لا يتجاوز 1.
+
+(ب) ممكن: الظل يأخذ أي قيمة.
+
+(ج) مستحيل: $|\sec\theta| \ge 1$ دائمًا.
+</Solution>
+</Example>
+
+## متطابقات فيثاغورس والقسمة <span class="en" lang="en">Pythagorean and Quotient Identities</span>
+
+ابدأ من $x^2 + y^2 = r^2$ واقسم على $r^2$: $\left(\tfrac{x}{r}\right)^2 + \left(\tfrac{y}{r}\right)^2 = 1$، أي $\cos^2\theta + \sin^2\theta = 1$. والقسمة على $x^2$ أو $y^2$ تعطي المتطابقتين الأخريين.
+
+<Box kind="rule" title="متطابقات فيثاغورس" en="Pythagorean Identities">
+$$\sin^2\theta + \cos^2\theta = 1 \qquad \tan^2\theta + 1 = \sec^2\theta \qquad 1 + \cot^2\theta = \csc^2\theta$$
+
+($\sin^2\theta$ تعني $(\sin\theta)^2$.)
+</Box>
+
+<Box kind="rule" title="متطابقات القسمة" en="Quotient Identities">
+$$\tan\theta = \frac{\sin\theta}{\cos\theta} \qquad \cot\theta = \frac{\cos\theta}{\sin\theta}$$
+</Box>
+
+<Example n="4" title="إيجاد بقية الدوال من دالة وربع">
+إذا كان $\sin\theta = -\tfrac{2}{3}$ و $\theta$ في الربع الثالث، فأوجد $\cos\theta$ و $\tan\theta$.
+
+<Solution>
+$\cos^2\theta = 1 - \sin^2\theta = 1 - \tfrac{4}{9} = \tfrac{5}{9}$ ← $\cos\theta = \pm\tfrac{\sqrt5}{3}$
+
+في الربع الثالث جيب التمام سالب: $\cos\theta = -\tfrac{\sqrt5}{3}$
+
+$\tan\theta = \dfrac{\sin\theta}{\cos\theta} = \dfrac{-2/3}{-\sqrt5/3} = \dfrac{2}{\sqrt5} = \dfrac{2\sqrt5}{5}$ (موجب كما يجب في الربع الثالث).
+</Solution>
+</Example>
+
+<Check
+  q="إذا كان $\\tan\\theta < 0$ و $\\cos\\theta > 0$، ففي أي ربع تقع $\\theta$؟"
+  options={["الأول", "الثاني", "الثالث", "الرابع"]}
+  answer={3}
+  explain="جيب التمام موجب في الأول والرابع، والظل سالب في الثاني والرابع. المشترك: الرابع."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- من نقطة $(x, y)$ و $r = \sqrt{x^2 + y^2}$: $\sin = \tfrac{y}{r}$، $\cos = \tfrac{x}{r}$، $\tan = \tfrac{y}{x}$، والثلاث الأخرى مقلوباتها.
+- عند الزوايا الربعية بعض الدوال غير معرّف (المقام صفر).
+- الإشارات: كل، جيب، ظل، تمام.
+- $\sin^2\theta + \cos^2\theta = 1$ ومشتقاتها، و $\tan\theta = \tfrac{\sin\theta}{\cos\theta}$.
+
+<Practice set="5.2" count={6} />

@@ -1,0 +1,69 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-ang" title="الزاوية في الوضع القياسي" en="Angles in standard position">
+  <div class="controls">
+    <label>قياس الزاوية <span class="ltr">θ = <output data-o="t"></output>°</span><input type="range" min="-720" max="720" step="5" value="135" data-i="t" /></label>
+  </div>
+  <canvas aria-label="زاوية في الوضع القياسي"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-ang')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -1.6, xmax: 1.6, ymin: -1.25, ymax: 1.25 });
+  const inp = root.querySelector<HTMLInputElement>('[data-i="t"]')!;
+  const Q = ['', 'الأول', 'الثاني', 'الثالث', 'الرابع'];
+  function draw() {
+    const t = Number(inp.value);
+    root.querySelector('[data-o="t"]')!.textContent = String(t);
+    const w = Math.max(320, canvas.clientWidth);
+    plot.view = { xmin: -1.6 * (w / 600) * 0.95, xmax: 1.6 * (w / 600) * 0.95, ymin: -1.25, ymax: 1.25 };
+    const asp = (plot.view.ymax - plot.view.ymin) / (plot.view.xmax - plot.view.xmin);
+    plot.fit(asp);
+    plot.clear();
+    const { ctx } = plot;
+    ctx.strokeStyle = css('--muted');
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(plot.X(plot.view.xmin), plot.Y(0)); ctx.lineTo(plot.X(plot.view.xmax), plot.Y(0));
+    ctx.moveTo(plot.X(0), plot.Y(-1.25)); ctx.lineTo(plot.X(0), plot.Y(1.25));
+    ctx.stroke();
+    ctx.fillStyle = css('--muted');
+    ctx.font = '600 13px "Noto Sans", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ([['I', 0.75, 0.95], ['II', -0.75, 0.95], ['III', -0.75, -0.95], ['IV', 0.75, -0.95]] as const).forEach(([s, x, y]) => ctx.fillText(s, plot.X(x), plot.Y(y)));
+    const rad = (t * Math.PI) / 180;
+    // الضلع الابتدائي
+    plot.seg(0, 0, 1.1, 0, css('--plot-alt'), 3.5);
+    // قوس الدوران (حلزوني للزوايا الكبيرة)
+    const turns = Math.abs(rad);
+    plot.param((s) => (0.22 + 0.06 * (s / (2 * Math.PI))) * Math.cos(Math.sign(rad) * s), (s) => (0.22 + 0.06 * (s / (2 * Math.PI))) * Math.sin(Math.sign(rad) * s), 0, turns, css('--plot-hot'), 2);
+    // رأس السهم
+    if (turns > 0.05) {
+      const r = 0.22 + 0.06 * (turns / (2 * Math.PI));
+      const ex = r * Math.cos(rad), ey = r * Math.sin(rad);
+      const dir = rad + Math.sign(rad) * Math.PI / 2;
+      const a1 = dir + Math.PI - 0.5, a2 = dir + Math.PI + 0.5;
+      plot.seg(ex, ey, ex + 0.07 * Math.cos(a1), ey + 0.07 * Math.sin(a1), css('--plot-hot'), 2);
+      plot.seg(ex, ey, ex + 0.07 * Math.cos(a2), ey + 0.07 * Math.sin(a2), css('--plot-hot'), 2);
+    }
+    // الضلع النهائي
+    plot.seg(0, 0, 1.1 * Math.cos(rad), 1.1 * Math.sin(rad), css('--plot-curve'), 3.5);
+    plot.dot(0, 0, css('--ink'), 4);
+    const m = ((t % 360) + 360) % 360;
+    const quad = m % 90 === 0 ? 0 : Math.floor(m / 90) + 1;
+    const where = quad ? `ضلعها النهائي في <strong>الربع ${Q[quad]}</strong>` : `<strong>زاوية ربعية</strong>: ضلعها النهائي على محور ${m % 180 === 0 ? tex('$x$') : tex('$y$')}`;
+    const cot = [m - 720, m - 360, m + 360, m + 720].filter((c) => c !== t).slice(0, 3);
+    out.innerHTML =
+      `<p>${tex(`$\\theta = ${t}^\\circ$`)}: ${t > 0 ? 'دوران عكس عقارب الساعة (زاوية موجبة)' : t < 0 ? 'دوران مع عقارب الساعة (زاوية سالبة)' : 'لا دوران'}${Math.abs(t) >= 360 ? `، وفيها ${Math.floor(Math.abs(t) / 360)} دورة كاملة على الأقل` : ''}.</p>` +
+      `<p>${where}.</p>` +
+      `<p>الزاوية المكافئة بين ${tex('$0^\\circ$')} و ${tex('$360^\\circ$')} هي ${tex(`$${m}^\\circ$`)}، ومن الزوايا المكافئة الأخرى: ${cot.map((c) => tex(`$${c}^\\circ$`)).join('، ')}. كلها تختلف بمضاعفات ${tex('$360^\\circ$')} ولها الضلع النهائي نفسه.</p>`;
+  }
+  inp.addEventListener('input', draw);
+  onRedraw(canvas, draw);
+</script>

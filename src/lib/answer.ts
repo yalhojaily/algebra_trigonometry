@@ -49,6 +49,7 @@ export function normalize(s: string) {
     .replace(/[−–]/g, '-')
     .replace(/[×·]/g, '*')
     .replace(/÷/g, '/')
+    .replace(/°/g, '')
     .replace(/\s+/g, '')
     .toLowerCase();
 }

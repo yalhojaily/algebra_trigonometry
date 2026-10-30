@@ -1,0 +1,115 @@
+---
+section: "9.8"
+summary: "مصفوفة الوحدة كمحايد للضرب، والمعكوس الضربي للمصفوفة المربعة ومتى يوجد، وإيجاده بعمليات الصفوف على [A | I] وبالصيغة المختصرة لـ 2 × 2، وحل النظام AX = B بالحل X = A⁻¹B."
+minutes: 40
+prerequisites: ["9.7", "9.3"]
+terms:
+  - { ar: "مصفوفة الوحدة", en: "Identity Matrix", def: "مصفوفة مربعة قطرها الرئيسي آحاد وبقية عناصرها أصفار، وتحقق AI = IA = A." }
+  - { ar: "المعكوس الضربي", en: "Multiplicative Inverse", def: "A⁻¹ التي تحقق AA⁻¹ = A⁻¹A = I." }
+  - { ar: "مصفوفة منفردة", en: "Singular Matrix", def: "مصفوفة مربعة ليس لها معكوس؛ محددها صفر." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import MatInverse from '../../components/widgets/MatInverse.astro';
+
+لحل $3x = 12$ نضرب في $\tfrac13$، مقلوب 3. فلو كتبنا النظام بالمصفوفات $AX = B$، هل نستطيع «القسمة» على $A$؟ لا توجد قسمة مصفوفات، لكن يوجد **معكوس**: مصفوفة $A^{-1}$ تلغي أثر $A$، فيصير الحل $X = A^{-1}B$ بخطوة واحدة.
+
+## مصفوفات الوحدة <span class="en" lang="en">Identity Matrices</span>
+
+<Box kind="def" title="مصفوفة الوحدة" en="Identity Matrix">
+$$I_2 = \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} \qquad I_3 = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}$$
+
+لكل مصفوفة مربعة $A$ من الرتبة $n$: $AI_n = I_nA = A$. فـ $I$ تؤدي دور العدد 1 في الضرب.
+</Box>
+
+## المعكوس الضربي <span class="en" lang="en">Multiplicative Inverses</span>
+
+<Box kind="def" title="معكوس المصفوفة" en="Multiplicative Inverse">
+$A^{-1}$ معكوس المصفوفة المربعة $A$ إذا كان $AA^{-1} = A^{-1}A = I$.
+
+ويوجد المعكوس **إذا وفقط إذا** كان $\det A \ne 0$. والمصفوفة التي محددها صفر <Term ar="منفردة" en="singular" /> ليس لها معكوس.
+</Box>
+
+<Box kind="rule" title="إيجاد المعكوس بعمليات الصفوف" en="Finding A⁻¹ by row operations">
+1. اكتب المصفوفة الموسّعة $[A \mid I]$.
+2. طبّق غاوس-جوردان حتى يصير الجزء الأيسر $I$.
+3. الجزء الأيمن عندئذ هو $A^{-1}$: $[I \mid A^{-1}]$. وإذا ظهر صف أصفار في الجزء الأيسر فلا معكوس.
+</Box>
+
+<Example n="1" title="معكوس 3 × 3">
+أوجد معكوس $A = \begin{bmatrix} 1 & 0 & 1 \\ 2 & -2 & -1 \\ 3 & 0 & 0 \end{bmatrix}$.
+
+<Solution>
+$\left[\begin{array}{ccc|ccc} 1 & 0 & 1 & 1 & 0 & 0 \\ 2 & -2 & -1 & 0 & 1 & 0 \\ 3 & 0 & 0 & 0 & 0 & 1 \end{array}\right]$. بـ $R_2 - 2R_1$ و $R_3 - 3R_1$ ثم $-\tfrac12R_2$ و $-\tfrac13R_3$:
+
+$\left[\begin{array}{ccc|ccc} 1 & 0 & 1 & 1 & 0 & 0 \\ 0 & 1 & \tfrac32 & 1 & -\tfrac12 & 0 \\ 0 & 0 & 1 & 1 & 0 & -\tfrac13 \end{array}\right]$، ثم $R_1 - R_3$ و $R_2 - \tfrac32R_3$:
+
+$A^{-1} = \begin{bmatrix} 0 & 0 & \tfrac13 \\ -\tfrac12 & -\tfrac12 & \tfrac12 \\ 1 & 0 & -\tfrac13 \end{bmatrix}$. وتحقق بأن $AA^{-1} = I$.
+</Solution>
+</Example>
+
+<Box kind="rule" title="الصيغة المختصرة لـ 2 × 2" en="Inverse of a 2 × 2 matrix">
+$$\begin{bmatrix} a & b \\ c & d \end{bmatrix}^{-1} = \frac{1}{ad - bc}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix}, \qquad ad - bc \ne 0$$
+
+بدّل عنصري القطر الرئيسي، وغيّر إشارتي القطر الآخر، واقسم على المحدد.
+</Box>
+
+<Example n="2" title="معكوس 2 × 2">
+أوجد معكوس $\begin{bmatrix} 2 & 4 \\ -1 & 2 \end{bmatrix}$.
+
+<Solution>
+$\det = 4 + 4 = 8$
+
+$A^{-1} = \dfrac18\begin{bmatrix} 2 & -4 \\ 1 & 2 \end{bmatrix}$
+
+$= \begin{bmatrix} \tfrac14 & -\tfrac12 \\ \tfrac18 & \tfrac14 \end{bmatrix}$
+</Solution>
+</Example>
+
+## حل الأنظمة بالمعكوس <span class="en" lang="en">Solution of Systems Using Inverse Matrices</span>
+
+النظام $\begin{cases} a_1x + b_1y = c_1 \\ a_2x + b_2y = c_2 \end{cases}$ يُكتب $AX = B$ حيث $A$ مصفوفة المعاملات، و $X = \begin{bmatrix} x \\ y \end{bmatrix}$، و $B = \begin{bmatrix} c_1 \\ c_2 \end{bmatrix}$. اضرب الطرفين **من اليسار** في $A^{-1}$:
+
+$$A^{-1}AX = A^{-1}B \ \Longrightarrow\ IX = A^{-1}B \ \Longrightarrow\ X = A^{-1}B$$
+
+<MatInverse />
+
+<Example n="3" title="نظام بالمعكوس">
+حل $\begin{cases} 2x - 3y = 4 \\ x + 5y = 2 \end{cases}$
+
+<Solution>
+$A = \begin{bmatrix} 2 & -3 \\ 1 & 5 \end{bmatrix}$، $\det A = 10 + 3 = 13$، و $A^{-1} = \dfrac{1}{13}\begin{bmatrix} 5 & 3 \\ -1 & 2 \end{bmatrix}$.
+
+$X = A^{-1}B = \dfrac{1}{13}\begin{bmatrix} 5 & 3 \\ -1 & 2 \end{bmatrix}\begin{bmatrix} 4 \\ 2 \end{bmatrix} = \dfrac{1}{13}\begin{bmatrix} 26 \\ 0 \end{bmatrix}$
+
+$x = 2$، $y = 0$.
+</Solution>
+</Example>
+
+<Box kind="mistake" title="الترتيب مهم">
+$X = A^{-1}B$ وليس $BA^{-1}$: الضرب غير إبدالي، وفي الغالب $BA^{-1}$ ليس معرّفًا أصلًا (عمود في مصفوفة 2 × 2).
+</Box>
+
+<Box kind="tip" title="متى أستخدم المعكوس؟">
+إذا كانت مصفوفة المعاملات ثابتة والثوابت تتغير (مثل حساب الإنتاج لطلبيات مختلفة)، فاحسب $A^{-1}$ مرة واحدة، ثم كل حل جديد ضرب واحد $A^{-1}B$.
+</Box>
+
+<Check
+  q="لأي قيمة لـ $k$ تكون $\\begin{bmatrix} 2 & 6 \\\\ 1 & k \\end{bmatrix}$ بلا معكوس؟"
+  options={["$k = 2$", "$k = 3$", "$k = 6$", "$k = 12$"]}
+  answer={1}
+  explain="المحدد $2k - 6 = 0$ ← $k = 3$: يصبح الصف الثاني نصف الأول."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $I$ محايد الضرب: $AI = IA = A$.
+- $A^{-1}$ موجود إذا وفقط إذا $\det A \ne 0$، ويُوجد بـ $[A \mid I] \to [I \mid A^{-1}]$.
+- لـ 2 × 2: $\tfrac{1}{ad - bc}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$.
+- $AX = B$ ← $X = A^{-1}B$.
+
+<Practice set="9.8" count={5} />

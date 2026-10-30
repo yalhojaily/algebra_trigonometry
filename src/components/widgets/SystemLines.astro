@@ -1,0 +1,54 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-sys" title="نظام معادلتين خطيتين" en="Consistent, inconsistent, dependent">
+  <div class="controls">
+    <label><span class="ltr"><output data-o="a1"></output>x + <output data-o="b1"></output>y = <output data-o="c1"></output></span>
+      <input type="range" min="-5" max="5" value="2" data-i="a1" /><input type="range" min="-5" max="5" value="1" data-i="b1" /><input type="range" min="-10" max="10" value="4" data-i="c1" /></label>
+    <label><span class="ltr"><output data-o="a2"></output>x + <output data-o="b2"></output>y = <output data-o="c2"></output></span>
+      <input type="range" min="-5" max="5" value="1" data-i="a2" /><input type="range" min="-5" max="5" value="-1" data-i="b2" /><input type="range" min="-10" max="10" value="-1" data-i="c2" /></label>
+  </div>
+  <canvas aria-label="مستقيما النظام"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  import { q, qTex } from '../../lib/frac';
+  const root = document.getElementById('w-sys')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -10, xmax: 10, ymin: -7, ymax: 7 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function line(a: number, b: number, c: number, col: string) {
+    if (b !== 0) plot.fn((x) => (c - a * x) / b, col, 3);
+    else if (a !== 0) plot.seg(c / a, -20, c / a, 20, col, 3);
+  }
+  const eqT = (a: number, b: number, c: number) => `${a === 0 ? '' : a === 1 ? 'x' : a === -1 ? '-x' : a + 'x'}${b === 0 ? '' : `${a === 0 ? (b < 0 ? '-' : '') : b < 0 ? ' - ' : ' + '}${Math.abs(b) === 1 ? '' : Math.abs(b)}y`}${a === 0 && b === 0 ? '0' : ''} = ${c}`;
+  function draw() {
+    const a1 = v('a1'), b1 = v('b1'), c1 = v('c1'), a2 = v('a2'), b2 = v('b2'), c2 = v('c2');
+    for (const k of ['a1', 'b1', 'c1', 'a2', 'b2', 'c2']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    plot.fit(0.62);
+    plot.view = { xmin: -7 / 0.62, xmax: 7 / 0.62, ymin: -7, ymax: 7 };
+    plot.clear();
+    plot.grid(1, 2);
+    line(a1, b1, c1, css('--plot-curve'));
+    line(a2, b2, c2, css('--plot-alt'));
+    const D = a1 * b2 - a2 * b1;
+    const sys = `$\\begin{cases} ${eqT(a1, b1, c1)} \\\\ ${eqT(a2, b2, c2)} \\end{cases}$`;
+    let msg = '';
+    if ((a1 === 0 && b1 === 0) || (a2 === 0 && b2 === 0)) msg = 'إحدى المعادلتين ليست مستقيمًا (المعاملان صفر). حرّك المنزلقات.';
+    else if (D !== 0) {
+      const x = q(c1 * b2 - c2 * b1, D), y = q(a1 * c2 - a2 * c1, D);
+      const xv = x.n / x.d, yv = y.n / y.d;
+      plot.dot(xv, yv, css('--plot-hot'), 7);
+      msg = `<strong>نظام متسق بحل وحيد</strong>: المستقيمان يتقاطعان في ${tex(`$\\left(${qTex(x)}, ${qTex(y)}\\right)$`)}${Number.isInteger(xv) && Number.isInteger(yv) ? '' : ` ${tex(`$\\approx (${fmt(xv, 2)}, ${fmt(yv, 2)})$`)}`}.`;
+    } else {
+      const same = a1 * c2 === a2 * c1 && b1 * c2 === b2 * c1;
+      msg = same ? '<strong>نظام معتمد</strong> (dependent): المعادلتان تمثلان المستقيم نفسه، فلكل نقطة عليه حل، أي عدد لا نهائي من الحلول.' : '<strong>نظام غير متسق</strong> (inconsistent): المستقيمان متوازيان (الميل نفسه ومقطعان مختلفان)، فلا حل.';
+    }
+    out.innerHTML = `<p>${tex(sys)}</p><p>${msg}</p><p>${tex(`$a_1b_2 - a_2b_1 = ${D}$`)}: ${D !== 0 ? 'لا يساوي صفرًا، فالميلان مختلفان.' : 'يساوي صفرًا، فالميلان متساويان.'}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

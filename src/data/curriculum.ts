@@ -166,7 +166,7 @@ export const chapters: Chapter[] = [
     id: '9',
     ar: 'الأنظمة والمصفوفات',
     en: 'Systems and Matrices',
-    status: 'soon',
+    status: 'ready',
     blurb: 'أنظمة المعادلات الخطية وغير الخطية، المصفوفات والمحددات، الكسور الجزئية، والبرمجة الخطية.',
     sections: [
       { id: '9.1', ar: 'أنظمة المعادلات الخطية', en: 'Systems of Linear Equations', topics: [t('الأنظمة الخطية', 'Linear Systems'), t('طريقة التعويض', 'Substitution Method'), t('طريقة الحذف', 'Elimination Method'), t('أنظمة خاصة', 'Special Systems'), t('تطبيقات', 'Application of Systems of Equations'), t('أنظمة بثلاثة مجاهيل', 'Linear Systems with Three Unknowns'), t('نمذجة البيانات', 'Application of Systems to Model Data')] },

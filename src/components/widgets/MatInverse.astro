@@ -1,0 +1,41 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-inv2" title="معكوس مصفوفة 2 × 2 وحل نظام به" en="A⁻¹ and X = A⁻¹B">
+  <div class="controls">
+    <label><span class="ltr">A = [[<output data-o="a"></output>, <output data-o="b"></output>], [<output data-o="c"></output>, <output data-o="d"></output>]]</span>
+      <input type="range" min="-6" max="6" value="3" data-i="a" /><input type="range" min="-6" max="6" value="2" data-i="b" /><input type="range" min="-6" max="6" value="1" data-i="c" /><input type="range" min="-6" max="6" value="1" data-i="d" /></label>
+    <label><span class="ltr">B = [<output data-o="p"></output>, <output data-o="s"></output>]</span>
+      <input type="range" min="-10" max="10" value="7" data-i="p" /><input type="range" min="-10" max="10" value="3" data-i="s" /></label>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { tex } from '../../lib/tex';
+  import { q, qTex, mul, add, matTex } from '../../lib/frac';
+  const root = document.getElementById('w-inv2')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const a = v('a'), b = v('b'), c = v('c'), d = v('d'), p = v('p'), s = v('s');
+    for (const k of ['a', 'b', 'c', 'd', 'p', 's']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    const det = a * d - b * c;
+    const A = `\\begin{bmatrix} ${a} & ${b} \\\\ ${c} & ${d} \\end{bmatrix}`;
+    if (det === 0) {
+      out.innerHTML = `<p>${tex(`$\\det A = (${a})(${d}) - (${b})(${c}) = 0$`)}</p><p><strong>لا معكوس</strong>: المصفوفة «منفردة» <span class="en" lang="en">(singular)</span>. والنظام ${tex(`$${a}x + ${b}y = ${p},\\ ${c}x + ${d}y = ${s}$`)} إما بلا حل أو بعدد لا نهائي من الحلول.</p>`;
+      return;
+    }
+    const inv = [[q(d, det), q(-b, det)], [q(-c, det), q(a, det)]];
+    const x = add(mul(inv[0][0], q(p)), mul(inv[0][1], q(s))), y = add(mul(inv[1][0], q(p)), mul(inv[1][1], q(s)));
+    out.innerHTML =
+      `<p>${tex(`$A = ${A},\\quad \\det A = (${a})(${d}) - (${b})(${c}) = ${det}$`)}</p>` +
+      `<p>${tex(`$A^{-1} = \\dfrac{1}{${det}}\\begin{bmatrix} ${d} & ${-b} \\\\ ${-c} & ${a} \\end{bmatrix} = ${matTex(inv)}$`)}</p>` +
+      `<p>القاعدة: بدّل عنصري القطر الرئيسي، وغيّر إشارتي الآخرين، واقسم على المحدد. وتحقق: ${tex('$AA^{-1} = I = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$')}.</p>` +
+      `<p>لحل ${tex(`$\\begin{cases} ${a}x + ${b}y = ${p} \\\\ ${c}x + ${d}y = ${s} \\end{cases}$`)} اكتبه ${tex('$AX = B$')}، ثم ${tex(`$X = A^{-1}B = ${matTex(inv)}\\begin{bmatrix} ${p} \\\\ ${s} \\end{bmatrix} = \\begin{bmatrix} ${qTex(x)} \\\\ ${qTex(y)} \\end{bmatrix}$`)}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  draw();
+</script>
+<style>
+  #w-inv2 :global(.readout) { overflow-x: auto; }
+</style>

@@ -1,0 +1,44 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-det" title="المحدد مساحة متوازي أضلاع" en="det = signed area">
+  <div class="controls">
+    <label>العمود الأول <span class="ltr">⟨<output data-o="a"></output>, <output data-o="c"></output>⟩</span>
+      <input type="range" min="-5" max="5" value="3" data-i="a" /><input type="range" min="-5" max="5" value="1" data-i="c" /></label>
+    <label>العمود الثاني <span class="ltr">⟨<output data-o="b"></output>, <output data-o="d"></output>⟩</span>
+      <input type="range" min="-5" max="5" value="1" data-i="b" /><input type="range" min="-5" max="5" value="2" data-i="d" /></label>
+  </div>
+  <canvas aria-label="متوازي الأضلاع الذي يشكله عمودا المصفوفة"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-det')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -10, xmax: 10, ymin: -7, ymax: 7 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const a = v('a'), b = v('b'), c = v('c'), d = v('d');
+    for (const k of ['a', 'b', 'c', 'd']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    plot.fit(0.62);
+    plot.view = { xmin: -10.5 / 0.62 / 1.5, xmax: 10.5 / 0.62 / 1.5, ymin: -10.5 / 1.5, ymax: 10.5 / 1.5 };
+    plot.clear();
+    plot.grid(1, 2);
+    const det = a * d - b * c;
+    const { ctx } = plot;
+    ctx.fillStyle = det >= 0 ? css('--accent-soft') : css('--err-soft');
+    ctx.beginPath(); ctx.moveTo(plot.X(0), plot.Y(0)); ctx.lineTo(plot.X(a), plot.Y(c)); ctx.lineTo(plot.X(a + b), plot.Y(c + d)); ctx.lineTo(plot.X(b), plot.Y(d)); ctx.closePath(); ctx.fill();
+    plot.seg(a, c, a + b, c + d, css('--muted'), 1.2, [4, 3]);
+    plot.seg(b, d, a + b, c + d, css('--muted'), 1.2, [4, 3]);
+    plot.seg(0, 0, a, c, css('--plot-curve'), 3.5);
+    plot.seg(0, 0, b, d, css('--plot-alt'), 3.5);
+    plot.dot(a, c, css('--plot-curve'), 5); plot.dot(b, d, css('--plot-alt'), 5);
+    out.innerHTML =
+      `<p>${tex(`$\\det\\begin{bmatrix} ${a} & ${b} \\\\ ${c} & ${d} \\end{bmatrix} = (${a})(${d}) - (${b})(${c}) = ${det}$`)}</p>` +
+      `<p>القيمة المطلقة ${tex(`$|${det}| = ${Math.abs(det)}$`)} هي <strong>مساحة</strong> متوازي الأضلاع المظلل الذي يشكله عمودا المصفوفة. ${det === 0 ? 'المحدد صفر: العمودان على مستقيم واحد فلا مساحة، والمصفوفة <strong>ليس لها معكوس</strong> والنظام المقابل ليس له حل وحيد.' : det > 0 ? 'والإشارة الموجبة تعني أن الدوران من العمود الأول إلى الثاني عكس عقارب الساعة.' : 'والإشارة السالبة (اللون الأحمر) تعني أن الترتيب انعكس: الدوران من العمود الأول إلى الثاني مع عقارب الساعة.'}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

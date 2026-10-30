@@ -1,0 +1,114 @@
+---
+section: "9.4"
+summary: "تفكيك المقدار النسبي إلى مجموع كسور أبسط: القسمة أولًا إذا كان البسط من درجة أعلى، ثم صورة التفكيك حسب نوع عوامل المقام (خطية مختلفة، خطية مكررة، تربيعية غير قابلة للتحليل، تربيعية مكررة)، وإيجاد الثوابت بالتعويض أو بمقارنة المعاملات."
+minutes: 40
+prerequisites: ["R.5", "9.1"]
+terms:
+  - { ar: "الكسور الجزئية", en: "Partial Fractions", def: "الكسور البسيطة التي مجموعها يساوي مقدارًا نسبيًا معطى." }
+  - { ar: "التفكيك", en: "Decomposition", def: "كتابة المقدار النسبي مجموعًا لكسور جزئية." }
+  - { ar: "عامل تربيعي غير قابل للتحليل", en: "Irreducible Quadratic Factor", def: "عامل ax² + bx + c مميزه سالب، فلا يتحلل إلى عوامل خطية حقيقية." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import PartialFrac from '../../components/widgets/PartialFrac.astro';
+
+جمع الكسور سهل: $\tfrac{2}{x - 1} + \tfrac{3}{x + 1} = \tfrac{5x - 1}{x^2 - 1}$. الاتجاه المعاكس أصعب لكنه أنفع: تفكيك الكسر المعقد إلى قطع بسيطة يجعل التكامل في التفاضل والتكامل ممكنًا، ويُستخدم في تحليل الإشارات والدوائر الكهربائية. هذا التفكيك يُختزل في النهاية إلى حل نظام معادلات خطية.
+
+## تفكيك المقادير النسبية <span class="en" lang="en">Decomposition of Rational Expressions</span>
+
+<Box kind="rule" title="خطوات التفكيك" en="Partial fraction decomposition of f(x)/g(x)">
+1. إذا كانت درجة البسط $\ge$ درجة المقام، **اقسم** أولًا: $\tfrac{f(x)}{g(x)} = q(x) + \tfrac{r(x)}{g(x)}$، وفكّك الباقي.
+2. حلّل المقام $g(x)$ إلى عوامل خطية وتربيعية غير قابلة للتحليل.
+3. اكتب صورة التفكيك حسب العوامل (الجدول أدناه).
+4. اضرب في المقام، وأوجد الثوابت بتعويض قيم مناسبة لـ $x$ أو بمقارنة المعاملات (نظام معادلات).
+</Box>
+
+<Box kind="def" title="صورة التفكيك حسب العوامل" en="Form of the decomposition">
+| العامل في المقام | الحدود في التفكيك |
+|---|---|
+| خطي $(ax + b)$ | $\dfrac{A}{ax + b}$ |
+| خطي مكرر $(ax + b)^m$ | $\dfrac{A_1}{ax + b} + \dfrac{A_2}{(ax + b)^2} + \cdots + \dfrac{A_m}{(ax + b)^m}$ |
+| تربيعي $(ax^2 + bx + c)$ | $\dfrac{Bx + C}{ax^2 + bx + c}$ |
+| تربيعي مكرر $(ax^2 + bx + c)^m$ | $\dfrac{B_1x + C_1}{ax^2 + bx + c} + \cdots + \dfrac{B_mx + C_m}{(ax^2 + bx + c)^m}$ |
+</Box>
+
+<PartialFrac />
+
+## عوامل خطية مختلفة <span class="en" lang="en">Distinct Linear Factors</span>
+
+<Example n="1" title="ثلاثة عوامل">
+فكّك $\dfrac{2x^4 - 4x^3 + 6x^2 + 4x - 13}{x^3 - 4x}$.
+
+<Solution>
+درجة البسط أكبر، فنقسم: $\dfrac{2x^4 - 4x^3 + 6x^2 + 4x - 13}{x^3 - 4x} = 2x - 4 + \dfrac{14x^2 - 12x - 13}{x(x - 2)(x + 2)}$.
+
+$14x^2 - 12x - 13 = A(x - 2)(x + 2) + Bx(x + 2) + Cx(x - 2)$. عند $x = 0$: $-13 = -4A$ ← $A = \tfrac{13}{4}$. عند $x = 2$: $19 = 8B$ ← $B = \tfrac{19}{8}$. عند $x = -2$: $67 = 8C$ ← $C = \tfrac{67}{8}$.
+
+$= 2x - 4 + \dfrac{13/4}{x} + \dfrac{19/8}{x - 2} + \dfrac{67/8}{x + 2}$
+</Solution>
+</Example>
+
+## عوامل خطية مكررة <span class="en" lang="en">Repeated Linear Factors</span>
+
+<Example n="2" title="عامل مكرر">
+فكّك $\dfrac{2x}{(x - 1)^3}$.
+
+<Solution>
+$\dfrac{2x}{(x - 1)^3} = \dfrac{A}{x - 1} + \dfrac{B}{(x - 1)^2} + \dfrac{C}{(x - 1)^3}$، فإن $2x = A(x - 1)^2 + B(x - 1) + C$.
+
+عند $x = 1$: $C = 2$. ومعامل $x^2$: $A = 0$. ومعامل $x$: $-2A + B = 2$ ← $B = 2$.
+
+$\dfrac{2x}{(x - 1)^3} = \dfrac{2}{(x - 1)^2} + \dfrac{2}{(x - 1)^3}$
+</Solution>
+</Example>
+
+<Box kind="mistake" title="لا تنسَ القوى الأدنى">
+العامل $(x - 1)^3$ يحتاج **ثلاثة** حدود: $\tfrac{A}{x - 1} + \tfrac{B}{(x - 1)^2} + \tfrac{C}{(x - 1)^3}$. كتابة الحد الأخير وحده تجعل النظام بلا حل.
+</Box>
+
+## عوامل خطية وتربيعية مختلفة <span class="en" lang="en">Distinct Linear and Quadratic Factors</span>
+
+<Example n="3" title="خطي وتربيعي">
+فكّك $\dfrac{x^2 + 3x - 1}{(x + 1)(x^2 + 2)}$.
+
+<Solution>
+$\dfrac{A}{x + 1} + \dfrac{Bx + C}{x^2 + 2}$، فإن $x^2 + 3x - 1 = A(x^2 + 2) + (Bx + C)(x + 1)$.
+
+عند $x = -1$: $-3 = 3A$ ← $A = -1$. ومعامل $x^2$: $A + B = 1$ ← $B = 2$. والثابت: $2A + C = -1$ ← $C = 1$.
+
+$= \dfrac{-1}{x + 1} + \dfrac{2x + 1}{x^2 + 2}$
+</Solution>
+</Example>
+
+## عوامل تربيعية مكررة <span class="en" lang="en">Repeated Quadratic Factors</span>
+
+<Example n="4" title="تربيعي مكرر">
+فكّك $\dfrac{2x}{(x^2 + 1)^2(x - 1)}$.
+
+<Solution>
+$\dfrac{A}{x - 1} + \dfrac{Bx + C}{x^2 + 1} + \dfrac{Dx + E}{(x^2 + 1)^2}$، فإن $2x = A(x^2 + 1)^2 + (Bx + C)(x^2 + 1)(x - 1) + (Dx + E)(x - 1)$.
+
+عند $x = 1$: $2 = 4A$ ← $A = \tfrac12$. ومقارنة المعاملات تعطي النظام: $x^4$: $A + B = 0$، $x^3$: $C - B = 0$، $x^2$: $2A + B - C + D = 0$، $x$: $C - B - D + E = 2$.
+
+$B = -\tfrac12$، $C = -\tfrac12$، $D = -1$، $E = 1$. والتفكيك: $\dfrac{1/2}{x - 1} - \dfrac{\tfrac12 x + \tfrac12}{x^2 + 1} + \dfrac{-x + 1}{(x^2 + 1)^2}$.
+</Solution>
+</Example>
+
+<Check
+  q="كم ثابتًا مجهولًا في تفكيك $\\dfrac{1}{x^2(x^2 + 4)}$؟"
+  options={["2", "3", "4", "5"]}
+  answer={2}
+  explain="$\\tfrac{A}{x} + \\tfrac{B}{x^2}$ للعامل المكرر $x^2$، و $\\tfrac{Cx + D}{x^2 + 4}$ للتربيعي: أربعة ثوابت."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- اقسم أولًا إن كان البسط بدرجة المقام أو أعلى.
+- عامل خطي ← $A$، مكرر ← حد لكل قوة، تربيعي ← $Bx + C$.
+- اضرب في المقام، ثم عوّض الجذور أو قارن المعاملات.
+
+<Practice set="9.4" count={4} />

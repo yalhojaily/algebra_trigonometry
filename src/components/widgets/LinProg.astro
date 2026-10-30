@@ -1,0 +1,58 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-lp" title="البرمجة الخطية: أفضل نقطة في المنطقة الممكنة" en="Linear programming">
+  <div class="controls">
+    <label>الهدف <span class="ltr">z = <output data-o="a"></output>x + <output data-o="b"></output>y</span>
+      <input type="range" min="1" max="10" value="3" data-i="a" /><input type="range" min="1" max="10" value="5" data-i="b" /></label>
+    <label>مستوى الهدف <span class="ltr">z = <output data-o="z"></output></span><input type="range" min="0" max="100" value="30" data-i="z" /></label>
+  </div>
+  <canvas aria-label="المنطقة الممكنة وخط الهدف"></canvas>
+  <div class="tbl" dir="ltr"></div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-lp')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const tbl = root.querySelector<HTMLElement>('.tbl')!;
+  const plot = new Plot(canvas, { xmin: -1, xmax: 12, ymin: -1, ymax: 10 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  // القيود: x ≥ 0، y ≥ 0، x + y ≤ 8، x + 2y ≤ 12، 3x + y ≤ 18
+  const V: [number, number][] = [[0, 0], [6, 0], [5, 3], [4, 4], [0, 6]];
+  function draw() {
+    const a = v('a'), b = v('b'), z = v('z');
+    root.querySelector('[data-o="a"]')!.textContent = String(a);
+    root.querySelector('[data-o="b"]')!.textContent = String(b);
+    root.querySelector('[data-o="z"]')!.textContent = String(z);
+    plot.fit(0.62);
+    plot.view = { xmin: -1, xmax: -1 + 11 / 0.62, ymin: -1, ymax: 10 };
+    plot.clear();
+    plot.grid(1, 2);
+    const { ctx } = plot;
+    ctx.fillStyle = css('--accent-soft');
+    ctx.beginPath(); V.forEach(([x, y], k) => (k ? ctx.lineTo(plot.X(x), plot.Y(y)) : ctx.moveTo(plot.X(x), plot.Y(y)))); ctx.closePath(); ctx.fill();
+    plot.fn((x) => 8 - x, css('--muted'), 1.4, [4, 3]);
+    plot.fn((x) => (12 - x) / 2, css('--muted'), 1.4, [4, 3]);
+    plot.fn((x) => 18 - 3 * x, css('--muted'), 1.4, [4, 3]);
+    plot.fn((x) => (z - a * x) / b, css('--plot-hot'), 2.5);
+    const vals = V.map(([x, y]) => a * x + b * y);
+    const best = Math.max(...vals);
+    V.forEach(([x, y], k) => { plot.dot(x, y, vals[k] === best ? css('--ok') : css('--plot-curve'), vals[k] === best ? 8 : 5); plot.label(x + 0.15, y, `(${x}, ${y})`, css('--ink')); });
+    tbl.innerHTML = '<table><thead><tr><th>(x, y)</th><th>z</th></tr></thead><tbody>' + V.map(([x, y], k) => `<tr${vals[k] === best ? ' class="hl"' : ''}><td>(${x}, ${y})</td><td>${vals[k]}</td></tr>`).join('') + '</tbody></table>';
+    const inside = V.some(([x, y]) => a * x + b * y >= z);
+    out.innerHTML =
+      `<p>القيود: ${tex('$x \\ge 0,\\ y \\ge 0,\\ x + y \\le 8,\\ x + 2y \\le 12,\\ 3x + y \\le 18$')}. المنطقة الملونة هي <strong>المنطقة الممكنة</strong>.</p>` +
+      `<p>الخط الأحمر كل النقاط التي يكون فيها ${tex(`$z = ${z}$`)}. ${inside ? 'يقطع المنطقة الممكنة، فهذه القيمة ممكنة.' : 'لا يمس المنطقة: هذه القيمة غير ممكنة.'} حرّك المستوى للأعلى: آخر نقطة يلمسها الخط قبل أن يغادر المنطقة هي <strong>رأس</strong>.</p>` +
+      `<p>نظرية البرمجة الخطية: القيمة العظمى (والصغرى) تقع عند أحد الرؤوس. هنا العظمى ${tex(`$z = ${best}$`)} عند ${V.filter((_, k) => vals[k] === best).map(([x, y]) => tex(`$(${x}, ${y})$`)).join(' و ')}.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>
+<style>
+  .tbl :global(table) { border-collapse: collapse; margin: 0.8rem auto 0; font-family: var(--font-en); min-width: 14rem; }
+  .tbl :global(th), .tbl :global(td) { padding: 0.25rem 0.8rem; border-bottom: 1px solid var(--line); text-align: center; }
+  .tbl :global(tr.hl td) { color: var(--ok); font-weight: 700; }
+</style>

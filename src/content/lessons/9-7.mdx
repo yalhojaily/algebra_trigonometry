@@ -1,0 +1,129 @@
+---
+section: "9.7"
+summary: "جبر المصفوفات: الأبعاد والتساوي، والجمع والطرح، والمصفوفة الصفرية والمعاكسة، والضرب في عدد، وضرب المصفوفات صفًا في عمود وشرط تعريفه، ولماذا لا يكون إبداليًا، مع تطبيق على حساب التكاليف."
+minutes: 40
+prerequisites: ["9.2"]
+terms:
+  - { ar: "أبعاد المصفوفة", en: "Dimensions", def: "m × n: عدد الصفوف × عدد الأعمدة." }
+  - { ar: "مصفوفة مربعة", en: "Square Matrix", def: "مصفوفة عدد صفوفها يساوي عدد أعمدتها." }
+  - { ar: "المصفوفة الصفرية", en: "Zero Matrix", def: "مصفوفة كل عناصرها أصفار، وهي محايدة الجمع." }
+  - { ar: "الضرب في عدد", en: "Scalar Multiplication", def: "ضرب كل عنصر في المصفوفة بالعدد نفسه." }
+  - { ar: "ضرب المصفوفات", en: "Matrix Multiplication", def: "العنصر cᵢⱼ في AB مجموع حواصل ضرب الصف i من A في العمود j من B." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import MatMul from '../../components/widgets/MatMul.astro';
+
+استخدمنا المصفوفات في الدرسين 9.2 و 9.3 جداول لحل الأنظمة. هنا نعاملها كأعداد من نوع جديد: نجمعها ونطرحها ونضربها. وقواعد الجمع طبيعية، أما الضرب فله تعريف خاص يبدو غريبًا أول الأمر، لكنه بالضبط ما يجعل النظام $AX = B$ ممكنًا، وما تقوم عليه رسومات الحاسوب والتعلم الآلي.
+
+## تعريفات أساسية <span class="en" lang="en">Basic Definitions</span>
+
+<Box kind="def" title="المصفوفة" en="Matrix">
+- مصفوفة <Term ar="أبعادها" en="dimensions" /> $m \times n$ فيها $m$ صفًا و $n$ عمودًا، والعنصر $a_{ij}$ في الصف $i$ والعمود $j$.
+- مصفوفتان **متساويتان** إذا تساوت أبعادهما وكل العناصر المتناظرة.
+- **مصفوفة مربعة**: $n \times n$. و**مصفوفة صف**: $1 \times n$. و**مصفوفة عمود**: $m \times 1$.
+</Box>
+
+## جمع المصفوفات وطرحها <span class="en" lang="en">Matrix Addition and Subtraction</span>
+
+<Box kind="rule" title="الجمع والطرح" en="Addition and Subtraction">
+تُجمع (وتُطرح) مصفوفتان **بالأبعاد نفسها** فقط، عنصرًا بعنصر:
+
+$$\begin{bmatrix} 1 & 5 \\ -2 & 3 \end{bmatrix} + \begin{bmatrix} 4 & -1 \\ 0 & 6 \end{bmatrix} = \begin{bmatrix} 5 & 4 \\ -2 & 9 \end{bmatrix}$$
+</Box>
+
+## مصفوفات خاصة <span class="en" lang="en">Special Matrices</span>
+
+- <Term ar="المصفوفة الصفرية" en="zero matrix" /> $O$: كل عناصرها أصفار، و $A + O = A$.
+- **المعاكسة** $-A$: كل عنصر بإشارة معاكسة، و $A + (-A) = O$.
+- والطرح $A - B = A + (-B)$.
+
+## الضرب في عدد <span class="en" lang="en">Scalar Multiplication</span>
+
+<Example n="1" title="عمليات مركبة">
+لـ $A = \begin{bmatrix} 2 & -3 \\ 0 & 4 \end{bmatrix}$ و $B = \begin{bmatrix} -1 & 2 \\ 5 & 1 \end{bmatrix}$، أوجد $3A - 2B$.
+
+<Solution>
+$3A = \begin{bmatrix} 6 & -9 \\ 0 & 12 \end{bmatrix}$ و $2B = \begin{bmatrix} -2 & 4 \\ 10 & 2 \end{bmatrix}$
+
+اطرح عنصرًا بعنصر:
+
+$3A - 2B = \begin{bmatrix} 8 & -13 \\ -10 & 10 \end{bmatrix}$
+</Solution>
+</Example>
+
+## ضرب المصفوفات <span class="en" lang="en">Matrix Multiplication</span>
+
+<Box kind="def" title="ضرب مصفوفتين" en="Matrix Product">
+إذا كانت $A$ أبعادها $m \times n$ و $B$ أبعادها $n \times p$، فإن $AB$ أبعادها $m \times p$، وعنصرها
+
+$$c_{ij} = a_{i1}b_{1j} + a_{i2}b_{2j} + \cdots + a_{in}b_{nj}$$
+
+أي **الصف $i$ من $A$** «مضروبًا نقطيًا» في **العمود $j$ من $B$** (كما في الدرس 8.4). والشرط: عدد أعمدة $A$ = عدد صفوف $B$.
+</Box>
+
+<MatMul />
+
+<Example n="2" title="ضرب (2 × 3)(3 × 2)">
+أوجد $AB$ لـ $A = \begin{bmatrix} -3 & 4 & 2 \\ 5 & 0 & 4 \end{bmatrix}$ و $B = \begin{bmatrix} -6 & 4 \\ 2 & 3 \\ 3 & -2 \end{bmatrix}$.
+
+<Solution>
+الأبعاد $(2 \times 3)(3 \times 2) = 2 \times 2$. $c_{11} = (-3)(-6) + 4(2) + 2(3) = 32$، و $c_{12} = (-3)(4) + 4(3) + 2(-2) = -4$.
+
+$c_{21} = 5(-6) + 0(2) + 4(3) = -18$، و $c_{22} = 5(4) + 0(3) + 4(-2) = 12$.
+
+$AB = \begin{bmatrix} 32 & -4 \\ -18 & 12 \end{bmatrix}$
+</Solution>
+</Example>
+
+<Box kind="mistake" title="AB ≠ BA">
+ضرب المصفوفات **ليس إبداليًا**. في المثال السابق $BA$ أبعادها $3 \times 3$، فلا يمكن أن تساوي $AB$. وحتى مع المصفوفات المربعة يختلف الناتج عادة. لذلك انتبه دائمًا لترتيب الضرب.
+</Box>
+
+<Example n="3" title="الضرب غير إبدالي">
+لـ $A = \begin{bmatrix} 1 & 2 \\ 0 & 1 \end{bmatrix}$ و $B = \begin{bmatrix} 1 & 0 \\ 3 & 1 \end{bmatrix}$ قارن $AB$ و $BA$.
+
+<Solution>
+$AB = \begin{bmatrix} 1 + 6 & 0 + 2 \\ 0 + 3 & 0 + 1 \end{bmatrix} = \begin{bmatrix} 7 & 2 \\ 3 & 1 \end{bmatrix}$
+
+$BA = \begin{bmatrix} 1 & 2 \\ 3 & 6 + 1 \end{bmatrix} = \begin{bmatrix} 1 & 2 \\ 3 & 7 \end{bmatrix}$
+
+$AB \ne BA$.
+</Solution>
+</Example>
+
+## تطبيق <span class="en" lang="en">An Application of Matrix Algebra</span>
+
+<Example n="4" title="تكلفة الإنتاج">
+مطعم يحضّر نوعين من الوجبات. الكميات المطلوبة (كغ) من اللحم والأرز والخضار لكل وجبة في المصفوفة $Q$، وأسعار الكيلو في $P$. ما تكلفة كل وجبة؟
+
+$Q = \begin{bmatrix} 0.3 & 0.2 & 0.1 \\ 0.1 & 0.3 & 0.2 \end{bmatrix}$ (صف لكل وجبة)، و $P = \begin{bmatrix} 40 \\ 6 \\ 10 \end{bmatrix}$ (لحم، أرز، خضار)
+
+<Solution>
+التكلفة $QP$: $(2 \times 3)(3 \times 1) = 2 \times 1$.
+
+الوجبة الأولى: $0.3(40) + 0.2(6) + 0.1(10) = 12 + 1.2 + 1 = 14.2$ ريالًا.
+
+الثانية: $0.1(40) + 0.3(6) + 0.2(10) = 4 + 1.8 + 2 = 7.8$ ريالات.
+</Solution>
+</Example>
+
+<Check
+  q="$A$ أبعادها $3 \\times 2$ و $B$ أبعادها $2 \\times 4$. ما أبعاد $AB$؟ وهل $BA$ معرّف؟"
+  options={["$3 \\times 4$، و $BA$ غير معرّف", "$2 \\times 2$، و $BA$ معرّف", "$3 \\times 4$، و $BA$ معرّف", "$AB$ غير معرّف"]}
+  answer={0}
+  explain="$(3 \\times 2)(2 \\times 4) = 3 \\times 4$. أما $(2 \\times 4)(3 \\times 2)$ فـ $4 \\ne 3$، فلا يُعرّف."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- الجمع والطرح عنصرًا بعنصر، وبالأبعاد نفسها فقط.
+- $kA$: اضرب كل عنصر.
+- $AB$: صف في عمود، و $(m \times n)(n \times p) = m \times p$.
+- $AB \ne BA$ عمومًا.
+
+<Practice set="9.7" count={5} />

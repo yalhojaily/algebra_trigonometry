@@ -1,0 +1,57 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-pf" title="الكسور الجزئية: الكسر مجموع كسور أبسط" en="Partial fraction decomposition">
+  <div class="controls">
+    <label>المقدار
+      <select data-i="p">
+        <option value="0">(5x − 1) / ((x − 1)(x + 1))</option>
+        <option value="1">(x + 5) / ((x − 1)(x + 2))</option>
+        <option value="2">(2x + 3) / (x + 1)²</option>
+        <option value="3">(3x² + 1) / (x(x² + 1))</option>
+      </select>
+    </label>
+  </div>
+  <canvas aria-label="المقدار الأصلي وأجزاؤه"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--plot-curve)"></i>المقدار الأصلي</span>
+    <span><i style="background:var(--plot-alt)"></i>الكسر الأول</span>
+    <span><i style="background:var(--plot-hot)"></i>الكسر الثاني</span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-pf')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -6, xmax: 6, ymin: -8, ymax: 8 });
+  const sel = root.querySelector<HTMLSelectElement>('[data-i="p"]')!;
+  type P = { f: (x: number) => number; g: (x: number) => number; h: (x: number) => number; poles: number[]; tex: string; dec: string; how: string };
+  const P: P[] = [
+    { f: (x) => (5 * x - 1) / ((x - 1) * (x + 1)), g: (x) => 2 / (x - 1), h: (x) => 3 / (x + 1), poles: [1, -1], tex: '\\dfrac{5x - 1}{(x - 1)(x + 1)}', dec: '\\dfrac{2}{x - 1} + \\dfrac{3}{x + 1}', how: `اضرب في المقام: ${'$5x - 1 = A(x + 1) + B(x - 1)$'}. عوّض ${'$x = 1$'}: ${'$4 = 2A$'} ← ${'$A = 2$'}. وعوّض ${'$x = -1$'}: ${'$-6 = -2B$'} ← ${'$B = 3$'}.` },
+    { f: (x) => (x + 5) / ((x - 1) * (x + 2)), g: (x) => 2 / (x - 1), h: (x) => -1 / (x + 2), poles: [1, -2], tex: '\\dfrac{x + 5}{(x - 1)(x + 2)}', dec: '\\dfrac{2}{x - 1} - \\dfrac{1}{x + 2}', how: `${'$x + 5 = A(x + 2) + B(x - 1)$'}. عند ${'$x = 1$'}: ${'$6 = 3A$'} ← ${'$A = 2$'}. وعند ${'$x = -2$'}: ${'$3 = -3B$'} ← ${'$B = -1$'}.` },
+    { f: (x) => (2 * x + 3) / (x + 1) ** 2, g: (x) => 2 / (x + 1), h: (x) => 1 / (x + 1) ** 2, poles: [-1], tex: '\\dfrac{2x + 3}{(x + 1)^2}', dec: '\\dfrac{2}{x + 1} + \\dfrac{1}{(x + 1)^2}', how: `العامل المكرر يحتاج حدين: ${'$2x + 3 = A(x + 1) + B$'}. عند ${'$x = -1$'}: ${'$B = 1$'}. وبمقارنة معاملي ${'$x$'}: ${'$A = 2$'}.` },
+    { f: (x) => (3 * x * x + 1) / (x * (x * x + 1)), g: (x) => 1 / x, h: (x) => (2 * x) / (x * x + 1), poles: [0], tex: '\\dfrac{3x^2 + 1}{x(x^2 + 1)}', dec: '\\dfrac{1}{x} + \\dfrac{2x}{x^2 + 1}', how: `العامل التربيعي غير القابل للتحليل يأخذ بسطًا خطيًا: ${'$3x^2 + 1 = A(x^2 + 1) + (Bx + C)x$'}. عند ${'$x = 0$'}: ${'$A = 1$'}. ومقارنة المعاملات: ${'$A + B = 3$'} ← ${'$B = 2$'}، و ${'$C = 0$'}.` },
+  ];
+  function draw() {
+    const p = P[Number(sel.value)];
+    plot.fit(0.55);
+    plot.view = { xmin: -6 / 0.55 * 0.8, xmax: 6 / 0.55 * 0.8, ymin: -6, ymax: 6 };
+    plot.clear();
+    plot.grid(1, 2);
+    const cut = (f: (x: number) => number) => (x: number) => (p.poles.some((a) => Math.abs(x - a) < 0.03) ? NaN : f(x));
+    p.poles.forEach((a) => plot.seg(a, -20, a, 20, css('--muted'), 1.2, [5, 4]));
+    plot.fn(cut(p.g), css('--plot-alt'), 2, [6, 4]);
+    plot.fn(cut(p.h), css('--plot-hot'), 2, [6, 4]);
+    plot.fn(cut(p.f), css('--plot-curve'), 3.5);
+    const x0 = 2.5;
+    out.innerHTML =
+      `<p>${tex(`$${p.tex} = ${p.dec}$`)}</p>` +
+      `<p>${p.how.replace(/\$([^$]+)\$/g, (_m, t) => tex(`$${t}$`))}</p>` +
+      `<p>تحقق عند ${tex(`$x = ${x0}$`)}: الأصلي ${tex(`$\\approx ${p.f(x0).toFixed(4)}$`)}، ومجموع الجزأين ${tex(`$\\approx ${p.g(x0).toFixed(4)} ${p.h(x0) < 0 ? '-' : '+'} ${Math.abs(p.h(x0)).toFixed(4)} = ${(p.g(x0) + p.h(x0)).toFixed(4)}$`)}. المنحنى المتصل هو مجموع المنحنيين المتقطعين عند كل نقطة.</p>`;
+  }
+  sel.addEventListener('change', draw);
+  onRedraw(canvas, draw);
+</script>

@@ -1,0 +1,74 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-mm" title="ضرب المصفوفات: صف في عمود" en="Row-by-column multiplication">
+  <div class="controls">
+    <label>الأبعاد
+      <select data-i="dim">
+        <option value="2x3*3x2">(2 × 3)(3 × 2)</option>
+        <option value="2x2*2x2">(2 × 2)(2 × 2)</option>
+        <option value="3x2*2x3">(3 × 2)(2 × 3)</option>
+        <option value="2x3*2x2">(2 × 3)(2 × 2)</option>
+      </select>
+    </label>
+    <label><button type="button" class="btn" data-i="new">أرقام جديدة</button></label>
+  </div>
+  <div class="mm" dir="ltr"></div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-mm')!;
+  const box = root.querySelector<HTMLElement>('.mm')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const sel = root.querySelector<HTMLSelectElement>('[data-i="dim"]')!;
+  const rnd = () => Math.floor(Math.random() * 11) - 5;
+  let A: number[][] = [], B: number[][] = [], sel_i = 0, sel_j = 0;
+  function make() {
+    const [a, b] = sel.value.split('*');
+    const [m, n] = a.split('x').map(Number), [p, r] = b.split('x').map(Number);
+    A = Array.from({ length: m }, () => Array.from({ length: n }, rnd));
+    B = Array.from({ length: p }, () => Array.from({ length: r }, rnd));
+    sel_i = 0; sel_j = 0;
+    show();
+  }
+  const cell = (x: number, cls: string, attrs = '') => `<td class="${cls}" ${attrs}>${x}</td>`;
+  function show() {
+    const m = A.length, n = A[0].length, p = B.length, r = B[0].length;
+    if (n !== p) {
+      box.innerHTML = `<div class="grids"><table>${A.map((row) => `<tr>${row.map((x) => cell(x, '')).join('')}</tr>`).join('')}</table><span class="op">×</span><table>${B.map((row) => `<tr>${row.map((x) => cell(x, '')).join('')}</tr>`).join('')}</table></div>`;
+      out.innerHTML = `<p><strong>الضرب غير معرّف</strong>: عدد أعمدة الأولى (${n}) لا يساوي عدد صفوف الثانية (${p}). كل صف من الأولى يجب أن يكون بطول كل عمود من الثانية.</p>`;
+      return;
+    }
+    const C = Array.from({ length: m }, (_, i) => Array.from({ length: r }, (_, j) => A[i].reduce((s, a, k) => s + a * B[k][j], 0)));
+    const tA = `<table>${A.map((row, i) => `<tr>${row.map((x) => cell(x, i === sel_i ? 'hr' : '')).join('')}</tr>`).join('')}</table>`;
+    const tB = `<table>${B.map((row) => `<tr>${row.map((x, j) => cell(x, j === sel_j ? 'hc' : '')).join('')}</tr>`).join('')}</table>`;
+    const tC = `<table class="res">${C.map((row, i) => `<tr>${row.map((x, j) => cell(x, i === sel_i && j === sel_j ? 'hx' : 'pick', `data-i="${i}" data-j="${j}" tabindex="0" role="button" aria-label="العنصر ${i + 1}، ${j + 1}"`)).join('')}</tr>`).join('')}</table>`;
+    box.innerHTML = `<div class="grids">${tA}<span class="op">×</span>${tB}<span class="op">=</span>${tC}</div>`;
+    box.querySelectorAll<HTMLElement>('.res td').forEach((td) => {
+      const go = () => { sel_i = Number(td.dataset.i); sel_j = Number(td.dataset.j); show(); };
+      td.addEventListener('click', go);
+      td.addEventListener('keydown', (e) => { if ((e as KeyboardEvent).key === 'Enter') go(); });
+    });
+    const terms = A[sel_i].map((a, k) => `(${a})(${B[k][sel_j]})`).join(' + ');
+    out.innerHTML =
+      `<p>العنصر في الصف ${sel_i + 1} والعمود ${sel_j + 1}: <strong>الصف ${sel_i + 1}</strong> من الأولى (أزرق) في <strong>العمود ${sel_j + 1}</strong> من الثانية (أخضر):</p>` +
+      `<p>${tex(`$c_{${sel_i + 1}${sel_j + 1}} = ${terms} = ${C[sel_i][sel_j]}$`)}</p>` +
+      `<p>الأبعاد: ${tex(`$(${m} \\times ${n})(${p} \\times ${r}) = ${m} \\times ${r}$`)}. اضغط أي عنصر في الناتج لترى كيف حُسب.</p>`;
+  }
+  sel.addEventListener('change', make);
+  root.querySelector('[data-i="new"]')!.addEventListener('click', make);
+  make();
+</script>
+<style>
+  .mm { overflow-x: auto; }
+  .mm :global(.grids) { display: flex; align-items: center; justify-content: center; gap: 0.6rem; padding: 0.5rem 0; min-width: max-content; }
+  .mm :global(table) { border-collapse: collapse; border-inline: 2px solid var(--ink); font: 600 1.05rem var(--font-en); }
+  .mm :global(td) { width: 2.4rem; height: 2.1rem; text-align: center; border-radius: 4px; }
+  .mm :global(td.hr) { background: var(--plot-alt); color: #fff; }
+  .mm :global(td.hc) { background: var(--plot-curve); color: #fff; }
+  .mm :global(td.hx) { background: var(--plot-hot); color: #fff; }
+  .mm :global(td.pick) { cursor: pointer; }
+  .mm :global(td.pick:hover) { background: var(--accent-soft); }
+  .mm :global(.op) { font: 700 1.3rem var(--font-en); color: var(--muted); }
+</style>

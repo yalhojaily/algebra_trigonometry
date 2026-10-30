@@ -57,7 +57,7 @@ export function normalize(s: string) {
 // ===== شجرة التعبير =====
 const TRIG = ['sin', 'cos', 'tan', 'sec', 'csc', 'cot'] as const;
 const ARC = ['arcsin', 'arccos', 'arctan'] as const;
-type Fn = 'ln' | 'log' | 'exp' | 'abs' | (typeof TRIG)[number] | (typeof ARC)[number];
+type Fn = 'ln' | 'log' | 'exp' | 'abs' | 'cis' | (typeof TRIG)[number] | (typeof ARC)[number];
 export type Node =
   | { t: 'num'; v: number }
   | { t: 'i' }
@@ -92,8 +92,8 @@ function tokenize(s: string): Tok[] {
       if (!(base > 0) || base === 1) throw new Error('أساس اللوغاريتم غير صالح');
       out.push({ t: 'fn', f: 'log', base });
       k = j;
-    } else if ((['arcsin', 'arccos', 'arctan', 'ln', 'log', 'exp', 'abs', ...TRIG] as const).some((name) => s.startsWith(name, k))) {
-      const f = (['arcsin', 'arccos', 'arctan', 'ln', 'log', 'exp', 'abs', ...TRIG] as const).find((name) => s.startsWith(name, k))!;
+    } else if ((['arcsin', 'arccos', 'arctan', 'cis', 'ln', 'log', 'exp', 'abs', ...TRIG] as const).some((name) => s.startsWith(name, k))) {
+      const f = (['arcsin', 'arccos', 'arctan', 'cis', 'ln', 'log', 'exp', 'abs', ...TRIG] as const).find((name) => s.startsWith(name, k))!;
       k += f.length;
       // sin^2(x) تعني (sin x)^2 ، و sin^-1(x) تعني arcsin
       let pow: number | undefined;
@@ -209,6 +209,10 @@ export function evalNode(n: Node, vars: Record<string, number> = {}): C {
       const a = evalNode(n.a, vars);
       if (n.f === 'abs') return c(Math.hypot(a.re, a.im));
       if (n.f === 'exp') { const m = Math.exp(a.re); return c(m * Math.cos(a.im), m * Math.sin(a.im)); }
+      if (n.f === 'cis') {
+        if (a.im !== 0) throw new Error('زاوية مركبة');
+        return c(Math.cos(a.re), Math.sin(a.re));
+      }
       if ((ARC as readonly string[]).includes(n.f)) {
         if (a.im !== 0) throw new Error('دالة عكسية لعدد مركب');
         if (n.f !== 'arctan' && Math.abs(a.re) > 1 + 1e-12) throw new Error('خارج مجال الدالة العكسية');
@@ -251,6 +255,7 @@ export function toTex(n: Node): string {
       if (n.f === 'exp') return `e^{${toTex(n.a)}}`;
       if (n.f === 'abs') return `\\left|${toTex(n.a)}\\right|`;
       if ((TRIG as readonly string[]).includes(n.f)) return `\\${n.f}\\left(${toTex(n.a)}\\right)`;
+      if (n.f === 'cis') return `\\operatorname{cis}\\left(${toTex(n.a)}\\right)`;
       if ((ARC as readonly string[]).includes(n.f)) return `\\${n.f.slice(3)}^{-1}\\left(${toTex(n.a)}\\right)`;
       return `${n.f === 'ln' ? '\\ln' : n.base ? `\\log_{${n.base}}` : '\\log'}\\left(${toTex(n.a)}\\right)`;
     case 'add': return `${toTex(n.a)} + ${toTex(n.b)}`;
@@ -369,7 +374,7 @@ export function sameList(given: C[], expected: C[], tol?: number) {
 }
 
 /** يزيل الأقواس الخارجية من نقطة مكتوبة (3, -2) */
-export const stripPoint = (s: string) => s.trim().replace(/^\(\s*([^()]*(?:\([^()]*\)[^()]*)*)\s*\)$/, '$1');
+export const stripPoint = (s: string) => s.trim().replace(/^[<⟨〈]\s*(.*?)\s*[>⟩〉]$/, '$1').replace(/^\(\s*([^()]*(?:\([^()]*\)[^()]*)*)\s*\)$/, '$1');
 
 /** تكافؤ تعبيرين جبريين بالتعويض في نقاط عشوائية */
 export function equivalent(given: Node, expected: Node, vars: string[], positive = false): boolean {

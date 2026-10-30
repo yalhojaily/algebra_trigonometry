@@ -1,0 +1,130 @@
+---
+section: "8.8"
+summary: "المعادلات الوسيطية: وصف المنحنى بزوج x = f(t) و y = g(t) يحدد الموضع والاتجاه والتوقيت، وحذف الوسيط للحصول على المعادلة الديكارتية، وإيجاد معادلات وسيطية لمنحنى معطى، والدويري، وتطبيقات حركة المقذوفات."
+minutes: 40
+prerequisites: ["8.7", "2.5"]
+terms:
+  - { ar: "معادلات وسيطية", en: "Parametric Equations", def: "زوج x = f(t)، y = g(t) يعطي نقطة لكل قيمة للوسيط t." }
+  - { ar: "الوسيط", en: "Parameter", def: "المتغير المساعد t (غالبًا الزمن أو زاوية)." }
+  - { ar: "منحنى مستوٍ", en: "Plane Curve", def: "مجموعة النقاط (f(t), g(t)) عندما تتغير t في فترة." }
+  - { ar: "الدويري (السيكلويد)", en: "Cycloid", def: "مسار نقطة على حافة دائرة تتدحرج على مستقيم: x = r(t − sin t)، y = r(1 − cos t)." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import Parametric from '../../components/widgets/Parametric.astro';
+
+المعادلة $y = x^2$ ترسم مسار الكرة، لكنها لا تخبرك **متى** كانت الكرة في كل نقطة، ولا **في أي اتجاه** كانت تتحرك. المعادلات الوسيطية تضيف هذا البعد: الإحداثيان كلاهما دالة لمتغير ثالث، عادة الزمن.
+
+## مفاهيم أساسية <span class="en" lang="en">Basic Concepts</span>
+
+<Box kind="def" title="المعادلات الوسيطية" en="Parametric Equations">
+إذا كانت $f$ و $g$ دالتين معرّفتين على فترة $I$، فمجموعة النقاط $(f(t), g(t))$ لكل $t \in I$ <Term ar="منحنى مستوٍ" en="plane curve" />، والمعادلتان
+
+$$x = f(t), \qquad y = g(t)$$
+
+<Term ar="معادلات وسيطية" en="parametric equations" /> له، و $t$ <Term ar="الوسيط" en="parameter" />.
+</Box>
+
+<Parametric />
+
+## الرسوم ومكافئاتها الديكارتية <span class="en" lang="en">Parametric Graphs and Their Rectangular Equivalents</span>
+
+لإيجاد المعادلة الديكارتية **نحذف الوسيط**: نحل إحدى المعادلتين لـ $t$ ونعوّض في الأخرى، أو نستخدم متطابقة مثل $\sin^2 t + \cos^2 t = 1$.
+
+<Example n="1" title="حذف الوسيط بالتعويض">
+ارسم $x = t^2$، $y = 2t + 3$ لـ $-3 \le t \le 3$، ثم احذف الوسيط.
+
+<Solution>
+جدول: $t = -3$ ← $(9, -3)$، و $t = 0$ ← $(0, 3)$، و $t = 3$ ← $(9, 9)$. المنحنى قطع مكافئ أفقي يُرسم من الأسفل إلى الأعلى.
+
+من الثانية $t = \tfrac{y - 3}{2}$، وبالتعويض: $x = \left(\tfrac{y - 3}{2}\right)^2$.
+
+$x = \tfrac14(y - 3)^2$ مع $-3 \le y \le 9$ (القيد يأتي من فترة $t$).
+</Solution>
+</Example>
+
+<Example n="2" title="حذف الوسيط بمتطابقة">
+احذف الوسيط من $x = 2\sin t$، $y = 3\cos t$.
+
+<Solution>
+$\sin t = \tfrac{x}{2}$ و $\cos t = \tfrac{y}{3}$.
+
+$\sin^2 t + \cos^2 t = 1$
+
+$\dfrac{x^2}{4} + \dfrac{y^2}{9} = 1$: قطع ناقص. ومع ازدياد $t$ من 0 تبدأ النقطة من $(0, 3)$ وتتحرك مع عقارب الساعة.
+</Solution>
+</Example>
+
+<Box kind="mistake" title="انتبه للمجال بعد الحذف">
+$x = \sqrt t$، $y = t + 1$ تعطي $y = x^2 + 1$، لكن $x = \sqrt t \ge 0$، فالمنحنى **نصف** القطع المكافئ فقط. احمل قيود الوسيط إلى المعادلة الديكارتية.
+</Box>
+
+<Example n="3" title="معادلات وسيطية لمنحنى">
+أوجد معادلتين وسيطيتين لـ $y = x^2 - 2$.
+
+<Solution>
+أبسط اختيار: $x = t$، $y = t^2 - 2$ لكل $t$.
+
+اختيار آخر: $x = t + 1$، $y = (t + 1)^2 - 2 = t^2 + 2t - 1$.
+
+لأي منحنى عدد لا نهائي من التمثيلات الوسيطية، تختلف في السرعة ونقطة البداية والاتجاه.
+</Solution>
+</Example>
+
+## الدويري <span class="en" lang="en">The Cycloid</span>
+
+<Box kind="def" title="الدويري" en="Cycloid">
+مسار نقطة على حافة دائرة نصف قطرها $r$ تتدحرج على محور $x$ دون انزلاق:
+
+$$x = r(t - \sin t), \qquad y = r(1 - \cos t)$$
+
+حيث $t$ زاوية الدوران بالراديان. بعد دورة كاملة ($t = 2\pi$) تقدّم المركز مسافة $2\pi r$: المحيط.
+</Box>
+
+<details class="derive">
+<summary>من أين جاءت المعادلتان؟</summary>
+
+بعد دوران بزاوية $t$، تدحرجت الدائرة مسافة $rt$ (طول القوس الذي لامس الأرض)، فمركزها عند $(rt, r)$. والنقطة على الحافة تبعد عن المركز $r$ بزاوية تجعلها عند $(rt - r\sin t,\ r - r\cos t)$ (لأنها تبدأ أسفل المركز وتدور مع عقارب الساعة).
+</details>
+
+للدويري المقلوب خاصيتان مدهشتان: هو **منحنى أسرع نزول** <span class="en" lang="en">(brachistochrone)</span> بين نقطتين، و**منحنى زمن متساوٍ** <span class="en" lang="en">(tautochrone)</span>: كرة توضع في أي نقطة عليه تصل إلى القاع في الزمن نفسه.
+
+## تطبيقات <span class="en" lang="en">Applications of Parametric Equations</span>
+
+<Box kind="rule" title="حركة المقذوف" en="Projectile motion">
+جسم أُطلق بسرعة $v_0$ وزاوية $\theta$ من ارتفاع $h$ (بإهمال مقاومة الهواء، و $g \approx 9.8$ م/ث²):
+
+$$x = (v_0\cos\theta)t, \qquad y = (v_0\sin\theta)t - \tfrac12 gt^2 + h$$
+</Box>
+
+<Example n="4" title="كرة مضروبة">
+ضُربت كرة من ارتفاع 1 م بسرعة 30 م/ث وزاوية $35^\circ$. متى تصل الأرض، وكم تبعد؟
+
+<Solution>
+$y = (30\sin 35^\circ)t - 4.9t^2 + 1 \approx 17.21t - 4.9t^2 + 1$. الأرض حين $y = 0$: $4.9t^2 - 17.21t - 1 = 0$.
+
+بالقانون العام: $t = \dfrac{17.21 + \sqrt{17.21^2 + 19.6}}{9.8} \approx 3.57$ ث (نرفض الجذر السالب).
+
+$x = (30\cos 35^\circ)(3.57) \approx 24.57 \times 3.57 \approx 87.7$ م.
+</Solution>
+</Example>
+
+<Check
+  q="ما المعادلة الديكارتية لـ $x = t - 1$، $y = 2t$؟"
+  options={["$y = 2x - 1$", "$y = 2x + 2$", "$y = \\tfrac{x + 1}{2}$", "$y = 2x + 1$"]}
+  answer={1}
+  explain="$t = x + 1$، فإن $y = 2(x + 1) = 2x + 2$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $x = f(t)$، $y = g(t)$: المنحنى مع الاتجاه والتوقيت.
+- احذف الوسيط بالتعويض أو بمتطابقة، واحمل قيود $t$.
+- لكل منحنى تمثيلات وسيطية لا نهائية.
+- الدويري $x = r(t - \sin t)$، $y = r(1 - \cos t)$، والمقذوف $x = (v_0\cos\theta)t$، $y = (v_0\sin\theta)t - 4.9t^2 + h$.
+
+<Practice set="8.8" count={5} />

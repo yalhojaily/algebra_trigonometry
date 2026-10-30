@@ -1,0 +1,77 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-pol" title="رسم المعادلات القطبية" en="Polar graphs r = f(θ)">
+  <div class="controls">
+    <label>المنحنى
+      <select data-i="k">
+        <option value="rose">وردة r = a cos(nθ)</option>
+        <option value="lima">حلزون باسكال r = a + b cos θ</option>
+        <option value="circ">دائرة r = a sin θ</option>
+        <option value="lem">لِمنِسكيت r² = a² cos 2θ</option>
+        <option value="spir">حلزون أرخميدس r = aθ</option>
+      </select>
+    </label>
+    <label><span class="ltr">a = <output data-o="a"></output></span><input type="range" min="1" max="4" step="0.5" value="3" data-i="a" /></label>
+    <label><span class="ltr">b / n = <output data-o="b"></output></span><input type="range" min="1" max="6" step="0.5" value="3" data-i="b" /></label>
+    <label>تتبّع <span class="ltr">θ = <output data-o="t"></output>π</span><input type="range" min="0" max="4" step="0.01" value="2" data-i="t" /></label>
+  </div>
+  <canvas aria-label="منحنى قطبي"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-pol')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -8, xmax: 8, ymin: -5, ymax: 5 });
+  const sel = root.querySelector<HTMLSelectElement>('[data-i="k"]')!;
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const k = sel.value, a = v('a');
+    let b = v('b');
+    if (k === 'rose') b = Math.round(b);
+    const T = v('t') * Math.PI;
+    root.querySelector('[data-o="a"]')!.textContent = String(a);
+    root.querySelector('[data-o="b"]')!.textContent = String(b);
+    root.querySelector('[data-o="t"]')!.textContent = fmt(v('t'), 2);
+    const f: (t: number) => number =
+      k === 'rose' ? (t) => a * Math.cos(b * t)
+      : k === 'lima' ? (t) => a + b * Math.cos(t)
+      : k === 'circ' ? (t) => a * Math.sin(t)
+      : k === 'lem' ? (t) => { const q = a * a * Math.cos(2 * t); return q >= 0 ? Math.sqrt(q) : NaN; }
+      : (t) => (a / 4) * t;
+    const maxR = k === 'lima' ? a + b : k === 'spir' ? (a / 4) * 4 * Math.PI : a;
+    const H = Math.max(maxR, 1) * 1.1;
+    plot.fit(0.62);
+    plot.view = { xmin: -H / 0.62, xmax: H / 0.62, ymin: -H, ymax: H };
+    plot.clear();
+    // شبكة قطبية
+    const { ctx } = plot;
+    ctx.strokeStyle = css('--line'); ctx.lineWidth = 1;
+    const step = H > 8 ? 2 : 1;
+    for (let r = step; r <= H * 1.6; r += step) { ctx.beginPath(); ctx.arc(plot.X(0), plot.Y(0), plot.X(r) - plot.X(0), 0, 2 * Math.PI); ctx.stroke(); }
+    for (let j = 0; j < 12; j++) { const u = (j * Math.PI) / 6; plot.seg(0, 0, 2 * H * Math.cos(u), 2 * H * Math.sin(u), css('--line'), 1); }
+    plot.seg(-3 * H, 0, 3 * H, 0, css('--muted'), 1.4);
+    const full = k === 'spir' ? 4 * Math.PI : k === 'rose' && b % 2 === 0 ? 2 * Math.PI : k === 'rose' ? Math.PI : 2 * Math.PI;
+    plot.param((t) => f(t) * Math.cos(t), (t) => f(t) * Math.sin(t), 0, full, css('--line'), 1.5);
+    plot.param((t) => f(t) * Math.cos(t), (t) => f(t) * Math.sin(t), 0, Math.min(T, k === 'spir' ? 4 * Math.PI : 4 * Math.PI), css('--plot-curve'), 3);
+    const rT = f(T);
+    if (Number.isFinite(rT)) {
+      plot.seg(0, 0, rT * Math.cos(T), rT * Math.sin(T), css('--plot-hot'), 1.8);
+      plot.dot(rT * Math.cos(T), rT * Math.sin(T), css('--plot-hot'), 6);
+    }
+    const info: Record<string, string> = {
+      rose: `وردة ${tex(`$r = ${a}\\cos ${b}\\theta$`)}: ${b % 2 ? `n فردي، فلها ${tex(`$n = ${b}$`)} بتلات وتكتمل عندما ${tex('$\\theta$')} تقطع ${tex('$\\pi$')}` : `n زوجي، فلها ${tex(`$2n = ${2 * b}$`)} بتلة وتكتمل في ${tex('$2\\pi$')}`}، وطول كل بتلة ${a}.`,
+      lima: `${tex(`$r = ${a} + ${b}\\cos\\theta$`)}: ${a === b ? '<strong>قلبية</strong> (a = b): تمر بالقطب مرة واحدة.' : a < b ? '<strong>حلزون بعقدة داخلية</strong> (a < b): r يصير سالبًا في جزء من الدورة.' : a >= 2 * b ? '<strong>محدب</strong> (a ≥ 2b).' : '<strong>بغمّازة</strong> (b < a < 2b).'}`,
+      circ: `${tex(`$r = ${a}\\sin\\theta$`)}: دائرة قطرها ${a} تمر بالقطب ومركزها ${tex(`$(0, ${a / 2})$`)} بالإحداثيات الديكارتية، لأن ${tex('$r^2 = ar\\sin\\theta$')} تعني ${tex(`$x^2 + y^2 = ${a}y$`)}.`,
+      lem: `لِمنِسكيت ${tex(`$r^2 = ${a * a}\\cos 2\\theta$`)}: معرّف فقط حيث ${tex('$\\cos 2\\theta \\ge 0$')}، وشكله رقم ثمانية أفقي.`,
+      spir: `حلزون أرخميدس ${tex(`$r = ${fmt(a / 4, 3)}\\theta$`)}: يبتعد عن القطب بمسافة ثابتة مع كل دورة.`,
+    };
+    out.innerHTML = `<p>${info[k]}</p><p>عند ${tex(`$\\theta = ${fmt(v('t'), 2)}\\pi$`)}: ${Number.isFinite(rT) ? tex(`$r \\approx ${fmt(rT, 3)}$`) + (rT < 0 ? '، و r سالب فالنقطة تُرسم في الاتجاه المعاكس للزاوية' : '') : 'غير معرّف'}.</p>`;
+  }
+  sel.addEventListener('change', draw);
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

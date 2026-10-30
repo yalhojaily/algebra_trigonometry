@@ -1,0 +1,137 @@
+---
+section: "8.2"
+summary: "قانون جيوب التمام كتعميم لفيثاغورس: اشتقاقه بالإحداثيات، واستخدامه في حالتي SAS و SSS، واختيار القانون المناسب لكل حالة، وصيغة هيرون لمساحة المثلث من أضلاعه الثلاثة مع اشتقاقها."
+minutes: 40
+prerequisites: ["8.1", "2.1"]
+terms:
+  - { ar: "قانون جيوب التمام", en: "Law of Cosines", def: "c² = a² + b² − 2ab cos C، وبالمثل للضلعين الآخرين." }
+  - { ar: "صيغة هيرون", en: "Heron's Formula", def: "مساحة المثلث √(s(s−a)(s−b)(s−c)) حيث s نصف المحيط." }
+  - { ar: "نصف المحيط", en: "Semiperimeter", def: "s = (a + b + c)/2." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import LawCosines from '../../components/widgets/LawCosines.astro';
+
+قانون الجيوب يحتاج زاوية وضلعها المقابل معروفين معًا. فإذا عرفنا ضلعين والزاوية **بينهما** (SAS)، أو الأضلاع الثلاثة (SSS)، فلا يوجد زوج كامل نبدأ منه. هنا يأتي قانون جيوب التمام، وهو فيثاغورس نفسه مع حد تصحيح للمثلثات غير القائمة.
+
+## اشتقاق القانون <span class="en" lang="en">Derivation of the Law of Cosines</span>
+
+ضع الرأس $C$ عند الأصل، والضلع $a$ على محور $x$ الموجب: $B = (a, 0)$. والرأس $A$ على بعد $b$ من الأصل بزاوية $C$: $A = (b\cos C, b\sin C)$. الضلع $c$ هو المسافة بين $A$ و $B$:
+
+$$c^2 = (b\cos C - a)^2 + (b\sin C)^2 = b^2\cos^2 C - 2ab\cos C + a^2 + b^2\sin^2 C = a^2 + b^2 - 2ab\cos C$$
+
+<Box kind="rule" title="قانون جيوب التمام" en="Law of Cosines">
+$$a^2 = b^2 + c^2 - 2bc\cos A$$
+
+$$b^2 = a^2 + c^2 - 2ac\cos B$$
+
+$$c^2 = a^2 + b^2 - 2ab\cos C$$
+
+إذا كانت $C = 90^\circ$ فإن $\cos C = 0$، ويصير القانون فيثاغورس.
+</Box>
+
+<LawCosines />
+
+## استخدام القانون <span class="en" lang="en">Using the Law of Cosines</span>
+
+<Example n="1" title="ضلعان والزاوية بينهما (SAS)">
+بحيرة بين نقطتين $A$ و $B$. من نقطة $C$ قاس مسّاح $CA = 259$ م و $CB = 423$ م والزاوية $C = 132^\circ 40'$. أوجد $AB$.
+
+<Solution>
+$c^2 = 423^2 + 259^2 - 2(423)(259)\cos 132^\circ 40'$
+
+$\approx 178929 + 67081 + 148501 \approx 394511$ (الحد الأخير موجب لأن جيب تمام الزاوية المنفرجة سالب)
+
+$c \approx 628$ م.
+</Solution>
+</Example>
+
+<Example n="2" title="حل مثلث كامل (SAS)">
+حل المثلث إذا كان $A = 42.3^\circ$ و $b = 12.9$ و $c = 15.4$.
+
+<Solution>
+$a^2 = 12.9^2 + 15.4^2 - 2(12.9)(15.4)\cos 42.3^\circ \approx 109.7$ ← $a \approx 10.47$.
+
+نوجد الزاوية **الأصغر** بقانون الجيوب (الزاوية المقابلة للضلع الأصغر $b$ حادة حتمًا): $\sin B = \dfrac{12.9\sin 42.3^\circ}{10.47} \approx 0.8289$ ← $B \approx 56.0^\circ$.
+
+$C = 180^\circ - 42.3^\circ - 56.0^\circ = 81.7^\circ$
+</Solution>
+</Example>
+
+<Box kind="tip" title="لماذا الزاوية الأصغر أولًا؟">
+بعد إيجاد الضلع الثالث، إذا استخدمت قانون الجيوب لزاوية قد تكون منفرجة فإن $\sin^{-1}$ ستعطيك زاوية حادة خاطئة. الزاوية المقابلة لأصغر ضلع لا يمكن أن تكون منفرجة، فابدأ بها.
+</Box>
+
+<Example n="3" title="ثلاثة أضلاع (SSS)">
+أوجد أكبر زاوية في المثلث الذي أضلاعه $a = 9.47$ و $b = 15.9$ و $c = 21.1$.
+
+<Solution>
+أكبر زاوية تقابل أطول ضلع، وهي $C$: $\cos C = \dfrac{a^2 + b^2 - c^2}{2ab} = \dfrac{89.68 + 252.81 - 445.21}{2(9.47)(15.9)}$
+
+$\approx \dfrac{-102.72}{301.15} \approx -0.3411$
+
+$C \approx 109.9^\circ$. ($\cos^{-1}$ تعطي الزاوية المنفرجة مباشرة، بخلاف $\sin^{-1}$.)
+</Solution>
+</Example>
+
+<Box kind="rule" title="أي قانون أستخدم؟" en="Choosing a method">
+- **زوج معروف** (زاوية وضلعها المقابل) ← قانون الجيوب.
+- **SAS** ← جيوب التمام للضلع الثالث، ثم الجيوب لأصغر زاوية.
+- **SSS** ← جيوب التمام لأكبر زاوية، ثم الجيوب أو جيوب التمام للباقي.
+</Box>
+
+## صيغة هيرون <span class="en" lang="en">Heron's Formula for the Area of a Triangle</span>
+
+<Box kind="rule" title="صيغة هيرون" en="Heron's Formula">
+إذا كانت أضلاع المثلث $a, b, c$ و $s = \dfrac{a + b + c}{2}$ (<Term ar="نصف المحيط" en="semiperimeter" />) فإن
+
+$$\mathcal{A} = \sqrt{s(s - a)(s - b)(s - c)}$$
+</Box>
+
+<Example n="4" title="مساحة أرض مثلثة">
+قطعة أرض مثلثة أضلاعها 2350 م و 3500 م و 4200 م. ما مساحتها؟
+
+<Solution>
+$s = \dfrac{2350 + 3500 + 4200}{2} = 5025$
+
+$\mathcal{A} = \sqrt{5025(2675)(1525)(825)}$
+
+$\approx 4{,}110{,}000$ م² (نحو 411 هكتارًا).
+</Solution>
+</Example>
+
+## اشتقاق صيغة هيرون <span class="en" lang="en">Derivation of Heron's Formula</span>
+
+<details class="derive">
+<summary>من قانون جيوب التمام إلى هيرون</summary>
+
+ابدأ من $\mathcal{A} = \tfrac12 ab\sin C$، فإن $\mathcal{A}^2 = \tfrac14 a^2b^2(1 - \cos^2 C) = \tfrac14 a^2b^2(1 - \cos C)(1 + \cos C)$.
+
+من قانون جيوب التمام $\cos C = \dfrac{a^2 + b^2 - c^2}{2ab}$، فإن:
+
+$1 + \cos C = \dfrac{(a + b)^2 - c^2}{2ab} = \dfrac{(a + b + c)(a + b - c)}{2ab} = \dfrac{2s \cdot 2(s - c)}{2ab}$
+
+$1 - \cos C = \dfrac{c^2 - (a - b)^2}{2ab} = \dfrac{(c - a + b)(c + a - b)}{2ab} = \dfrac{2(s - a) \cdot 2(s - b)}{2ab}$
+
+بالتعويض: $\mathcal{A}^2 = \tfrac14 a^2b^2 \cdot \dfrac{16\,s(s - a)(s - b)(s - c)}{4a^2b^2} = s(s - a)(s - b)(s - c)$.
+</details>
+
+<Check
+  q="في المثلث: $a = 3$ و $b = 5$ و $C = 120^\\circ$. ما $c$؟"
+  options={["$\\sqrt{19}$", "$7$", "$\\sqrt{34}$", "$4$"]}
+  answer={1}
+  explain="$c^2 = 9 + 25 - 2(3)(5)\\cos 120^\\circ = 34 + 15 = 49$، إذن $c = 7$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $c^2 = a^2 + b^2 - 2ab\cos C$: فيثاغورس مع تصحيح.
+- SAS: الضلع الثالث مباشرة. SSS: الزاوية من $\cos C = \tfrac{a^2 + b^2 - c^2}{2ab}$.
+- بعد جيوب التمام، استخدم الجيوب للزاوية الأصغر فقط.
+- هيرون: $\sqrt{s(s - a)(s - b)(s - c)}$.
+
+<Practice set="8.2" count={5} />

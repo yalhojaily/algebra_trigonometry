@@ -149,7 +149,7 @@ export const chapters: Chapter[] = [
     id: '8',
     ar: 'تطبيقات علم المثلثات',
     en: 'Applications of Trigonometry',
-    status: 'soon',
+    status: 'ready',
     blurb: 'قانونا الجيوب وجيوب التمام، المتجهات، الصيغة القطبية للأعداد المركبة، والمعادلات الوسيطية.',
     sections: [
       { id: '8.1', ar: 'قانون الجيوب', en: 'The Law of Sines', topics: [t('التطابق والمثلثات غير القائمة', 'Congruency and Oblique Triangles'), t('اشتقاق قانون الجيوب', 'Derivation of the Law of Sines'), t('استخدام قانون الجيوب', 'Using the Law of Sines'), t('الحالة الغامضة', 'Description of the Ambiguous Case'), t('مساحة المثلث', 'Area of a Triangle')] },

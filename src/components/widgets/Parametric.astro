@@ -1,0 +1,87 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-par" title="المعادلات الوسيطية" en="x = f(t), y = g(t)">
+  <div class="controls">
+    <label>المنحنى
+      <select data-i="k">
+        <option value="cyc">الدويري: دائرة تتدحرج</option>
+        <option value="proj">مسار مقذوف</option>
+        <option value="ell">قطع ناقص x = a cos t, y = b sin t</option>
+      </select>
+    </label>
+    <label><span class="ltr">t = <output data-o="t"></output></span><input type="range" min="0" max="1" step="0.002" value="0.35" data-i="t" /></label>
+    <label><span class="ltr">p = <output data-o="p"></output></span><input type="range" min="1" max="4" step="0.5" value="2" data-i="p" /></label>
+  </div>
+  <canvas aria-label="منحنى وسيطي ونقطة متحركة عليه"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-par')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -1, xmax: 20, ymin: -1, ymax: 6 });
+  const sel = root.querySelector<HTMLSelectElement>('[data-i="k"]')!;
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const k = sel.value, p = v('p'), s = v('t');
+    root.querySelector('[data-o="p"]')!.textContent = String(p);
+    plot.fit(0.5);
+    const { ctx } = plot;
+    if (k === 'cyc') {
+      const r = p, tMax = 4 * Math.PI, t = s * tMax;
+      root.querySelector('[data-o="t"]')!.textContent = fmt(t, 2);
+      const W = r * tMax + 2 * r;
+      plot.view = { xmin: -r, xmax: W - r, ymin: -0.15 * W * 0.5, ymax: 0.85 * W * 0.5 };
+      plot.clear();
+      plot.grid(r >= 2 ? 2 : 1, 2);
+      const X = (u: number) => r * (u - Math.sin(u)), Y = (u: number) => r * (1 - Math.cos(u));
+      plot.param(X, Y, 0, tMax, css('--line'), 1.5);
+      plot.param(X, Y, 0, t, css('--plot-curve'), 3);
+      plot.param((u) => r * t + r * Math.cos(u), (u) => r + r * Math.sin(u), 0, 2 * Math.PI, css('--plot-alt'), 2);
+      plot.seg(r * t, r, X(t), Y(t), css('--plot-alt'), 1.5);
+      plot.dot(r * t, r, css('--plot-alt'), 3);
+      plot.dot(X(t), Y(t), css('--plot-hot'), 6);
+      out.innerHTML =
+        `<p>دائرة نصف قطرها ${tex(`$r = ${r}$`)} تتدحرج على محور ${tex('$x$')}، ونتتبع نقطة على حافتها: ${tex(`$x = ${r}(t - \\sin t),\\ y = ${r}(1 - \\cos t)$`)}.</p>` +
+        `<p>عند ${tex(`$t = ${fmt(t, 2)}$`)} (زاوية الدوران بالراديان): النقطة ${tex(`$(${fmt(X(t), 2)}, ${fmt(Y(t), 2)})$`)}، والمركز تحرّك مسافة ${tex(`$rt \\approx ${fmt(r * t, 2)}$`)} = طول القوس الملامس للأرض.</p>` +
+        `<p>الدويري (السيكلويد) هو أيضًا «منحنى أسرع نزول»: كرة تنزلق عليه مقلوبًا تصل أسرع مما لو انزلقت على خط مستقيم.</p>`;
+    } else if (k === 'proj') {
+      const v0 = 20 + p * 5, ang = 50 * (Math.PI / 180), g = 9.8;
+      const T = (2 * v0 * Math.sin(ang)) / g, t = s * T;
+      root.querySelector('[data-o="t"]')!.textContent = fmt(t, 2);
+      const X = (u: number) => v0 * Math.cos(ang) * u, Y = (u: number) => v0 * Math.sin(ang) * u - 0.5 * g * u * u;
+      const R = X(T), Hm = Y(T / 2);
+      const W = R * 1.1;
+      plot.view = { xmin: -0.05 * W, xmax: W, ymin: -0.1 * Math.max(Hm, W * 0.5), ymax: Math.max(Hm * 1.2, W * 0.5 * 0.9) };
+      plot.clear();
+      plot.grid(R > 60 ? 10 : 5, 2);
+      plot.param(X, Y, 0, T, css('--line'), 1.5);
+      plot.param(X, Y, 0, t, css('--plot-curve'), 3);
+      plot.dot(X(t), Y(t), css('--plot-hot'), 6);
+      plot.seg(X(t), Y(t), X(t) + 0.15 * v0 * Math.cos(ang), Y(t) + 0.15 * (v0 * Math.sin(ang) - g * t), css('--plot-alt'), 2);
+      out.innerHTML =
+        `<p>مقذوف بسرعة ${tex(`$v_0 = ${v0}$`)} م/ث وزاوية ${tex('$50^\\circ$')}: ${tex(`$x = (${v0}\\cos 50^\\circ)t,\\ y = (${v0}\\sin 50^\\circ)t - 4.9t^2$`)}.</p>` +
+        `<p>عند ${tex(`$t = ${fmt(t, 2)}$`)} ث: ${tex(`$(${fmt(X(t), 1)}, ${fmt(Y(t), 1)})$`)}. يهبط بعد ${tex(`$${fmt(T, 2)}$`)} ث على بعد ${tex(`$${fmt(R, 1)}$`)} م، وأقصى ارتفاع ${tex(`$${fmt(Hm, 1)}$`)} م.</p>` +
+        `<p>بحذف ${tex('$t$')} (من معادلة x نجد t ونعوّض في y) نحصل على قطع مكافئ، لكن الصيغة الوسيطية تخبرنا أيضًا <strong>متى</strong> يكون الجسم في كل موضع.</p>`;
+    } else {
+      const a = p + 2, b = 2, t = s * 2 * Math.PI;
+      root.querySelector('[data-o="t"]')!.textContent = fmt(t, 2);
+      plot.view = { xmin: -(a + 1) * 1, xmax: (a + 1) * 1, ymin: -(a + 1) * 0.5, ymax: (a + 1) * 0.5 };
+      plot.clear();
+      plot.grid(1, 1);
+      plot.param((u) => a * Math.cos(u), (u) => b * Math.sin(u), 0, 2 * Math.PI, css('--line'), 1.5);
+      plot.param((u) => a * Math.cos(u), (u) => b * Math.sin(u), 0, t, css('--plot-curve'), 3);
+      plot.dot(a * Math.cos(t), b * Math.sin(t), css('--plot-hot'), 6);
+      out.innerHTML =
+        `<p>${tex(`$x = ${a}\\cos t,\\ y = ${b}\\sin t$`)}. لحذف الوسيط: ${tex(`$\\left(\\tfrac{x}{${a}}\\right)^2 + \\left(\\tfrac{y}{${b}}\\right)^2 = \\cos^2 t + \\sin^2 t = 1$`)}، وهو قطع ناقص.</p>` +
+        `<p>عند ${tex(`$t = ${fmt(t, 2)}$`)}: ${tex(`$(${fmt(a * Math.cos(t), 2)}, ${fmt(b * Math.sin(t), 2)})$`)}. ازدياد ${tex('$t$')} يحرّك النقطة عكس عقارب الساعة: الصيغة الوسيطية تعطي <strong>اتجاه</strong> الحركة.</p>`;
+    }
+    void ctx;
+  }
+  sel.addEventListener('change', draw);
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

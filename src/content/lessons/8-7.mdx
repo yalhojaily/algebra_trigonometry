@@ -1,0 +1,141 @@
+---
+section: "8.7"
+summary: "نظام الإحداثيات القطبية (r, θ) والتحويل من وإلى الديكارتي، ورسم المعادلات القطبية (الدوائر، والحلازين والقلبية، والورود، واللمنسكيت، والحلزون)، والتماثل، والتحويل بين المعادلات القطبية والديكارتية، وتصنيف المنحنيات."
+minutes: 45
+prerequisites: ["8.5", "6.3"]
+terms:
+  - { ar: "الإحداثيات القطبية", en: "Polar Coordinates", def: "تحديد النقطة ببعدها r عن القطب وزاويتها θ من المحور القطبي." }
+  - { ar: "القطب", en: "Pole", def: "نقطة الأصل في النظام القطبي." }
+  - { ar: "المحور القطبي", en: "Polar Axis", def: "نصف المستقيم الذي تُقاس منه الزاوية، ويقابل محور x الموجب." }
+  - { ar: "قلبية", en: "Cardioid", def: "منحنى r = a(1 ± cos θ) أو r = a(1 ± sin θ)، على شكل قلب." }
+  - { ar: "منحنى الوردة", en: "Rose Curve", def: "r = a cos nθ أو r = a sin nθ، له n بتلة إذا كان n فرديًا و 2n إذا كان زوجيًا." }
+  - { ar: "لِمنِسكيت", en: "Lemniscate", def: "r² = a² cos 2θ أو r² = a² sin 2θ، على شكل رقم ثمانية." }
+  - { ar: "حلزون باسكال", en: "Limaçon", def: "r = a ± b cos θ أو r = a ± b sin θ." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import PolarGraph from '../../components/widgets/PolarGraph.astro';
+
+رادار المطار لا يقول «الطائرة عند $x = 12$، $y = 5$»، بل «على بعد 13 كم باتجاه $23^\circ$». هذه **الإحداثيات القطبية**: بعد وزاوية. وبعض المنحنيات التي تحتاج معادلات ديكارتية معقدة (مثل الورود واللوالب) تصير في الصورة القطبية بسيطة جدًا.
+
+## نظام الإحداثيات القطبية <span class="en" lang="en">Polar Coordinate System</span>
+
+<Box kind="def" title="الإحداثيات القطبية" en="Polar Coordinates">
+النقطة $P(r, \theta)$: $r$ بعدها (المؤشَّر) عن <Term ar="القطب" en="pole" />، و $\theta$ الزاوية من <Term ar="المحور القطبي" en="polar axis" /> (محور $x$ الموجب).
+
+- $r < 0$ يعني السير مسافة $|r|$ في الاتجاه **المعاكس** للزاوية: $(-r, \theta)$ هي نفسها $(r, \theta + 180^\circ)$.
+- لكل نقطة تمثيلات قطبية لا نهائية: $(r, \theta) = (r, \theta + 360^\circ k)$.
+</Box>
+
+<Box kind="rule" title="التحويل" en="Rectangular ↔ Polar">
+$$x = r\cos\theta \qquad y = r\sin\theta \qquad r^2 = x^2 + y^2 \qquad \tan\theta = \frac{y}{x}\ (x \ne 0)$$
+</Box>
+
+<Example n="1" title="من القطبي إلى الديكارتي وبالعكس">
+(أ) حوّل $(-4, 135^\circ)$ إلى ديكارتي. (ب) حوّل $(1, -\sqrt3)$ إلى قطبي بطريقتين.
+
+<Solution>
+(أ) $x = -4\cos 135^\circ = 2\sqrt2$ و $y = -4\sin 135^\circ = -2\sqrt2$: النقطة $(2\sqrt2, -2\sqrt2)$ في الربع الرابع، لأن $r$ السالب عكس الاتجاه.
+
+(ب) $r = \sqrt{1 + 3} = 2$، والنقطة في الربع الرابع: $\theta = 300^\circ$. إذن $(2, 300^\circ)$.
+
+وتمثيل آخر: $(2, -60^\circ)$ أو $(-2, 120^\circ)$.
+</Solution>
+</Example>
+
+## رسوم المعادلات القطبية <span class="en" lang="en">Graphs of Polar Equations</span>
+
+المعادلة القطبية $r = f(\theta)$ تُرسم بجدول قيم: لكل زاوية نحسب $r$ ونضع النقطة. ويساعد **التماثل**:
+
+<Box kind="rule" title="اختبارات التماثل" en="Tests for symmetry">
+- حول المحور القطبي (محور $x$): إذا لم تتغير المعادلة باستبدال $\theta$ بـ $-\theta$ (مثل المعادلات بـ $\cos\theta$ فقط).
+- حول المستقيم $\theta = \tfrac{\pi}{2}$ (محور $y$): إذا لم تتغير باستبدال $\theta$ بـ $\pi - \theta$ (مثل المعادلات بـ $\sin\theta$ فقط).
+- حول القطب: إذا لم تتغير باستبدال $r$ بـ $-r$.
+</Box>
+
+<Example n="2" title="قلبية">
+ارسم $r = 1 + \cos\theta$.
+
+<Solution>
+متماثلة حول المحور القطبي (فيها $\cos$ فقط)، فنكفي بـ $0 \le \theta \le \pi$: عند $0^\circ$ يكون $r = 2$، وعند $60^\circ$: $1.5$، وعند $90^\circ$: $1$، وعند $120^\circ$: $0.5$، وعند $180^\circ$: $0$.
+
+نصل النقاط ونعكس النصف العلوي حول المحور.
+
+الشكل قلب يلمس القطب عند $\theta = 180^\circ$.
+</Solution>
+</Example>
+
+<PolarGraph />
+
+<Box kind="def" title="أشهر المنحنيات القطبية" en="Classification of polar curves">
+| المنحنى | المعادلة | الشكل |
+|---|---|---|
+| دائرة مركزها القطب | $r = a$ | دائرة نصف قطرها $\lvert a\rvert$ |
+| دائرة تمر بالقطب | $r = a\cos\theta$ أو $r = a\sin\theta$ | قطرها $\lvert a\rvert$ |
+| حلزون باسكال | $r = a \pm b\cos\theta$ أو $\pm b\sin\theta$ | $a < b$: عقدة داخلية، $a = b$: **قلبية**، $b < a < 2b$: غمّازة، $a \ge 2b$: محدب |
+| وردة | $r = a\cos n\theta$ أو $a\sin n\theta$ | $n$ فردي: $n$ بتلة، $n$ زوجي: $2n$ بتلة |
+| لِمنِسكيت | $r^2 = a^2\cos 2\theta$ أو $a^2\sin 2\theta$ | رقم ثمانية |
+| حلزون أرخميدس | $r = a\theta$ | لولب يبتعد بانتظام |
+</Box>
+
+<Example n="3" title="وردة بأربع بتلات">
+ارسم $r = 3\cos 2\theta$.
+
+<Solution>
+$n = 2$ زوجي، فلها 4 بتلات طول كل منها 3.
+
+البتلات حيث $|\cos 2\theta| = 1$: عند $\theta = 0^\circ, 90^\circ, 180^\circ, 270^\circ$، والقطب حيث $\cos 2\theta = 0$: عند $45^\circ, 135^\circ, \dots$
+
+عندما يكون $r < 0$ (مثلًا عند $\theta = 90^\circ$: $r = -3$) تُرسم البتلة في الاتجاه المعاكس، أي عند $270^\circ$.
+</Solution>
+</Example>
+
+## التحويل إلى المعادلات الديكارتية <span class="en" lang="en">Conversion from Polar to Rectangular Equations</span>
+
+<Example n="4" title="معادلة قطبية إلى ديكارتية">
+حوّل $r = \dfrac{4}{1 + \sin\theta}$ إلى معادلة ديكارتية.
+
+<Solution>
+اضرب في المقام: $r + r\sin\theta = 4$ ← $r + y = 4$ ← $r = 4 - y$.
+
+ربّع: $r^2 = (4 - y)^2$ ← $x^2 + y^2 = 16 - 8y + y^2$.
+
+$x^2 = -8(y - 2)$: قطع مكافئ مفتوح للأسفل رأسه $(0, 2)$.
+</Solution>
+</Example>
+
+<Example n="5" title="ديكارتية إلى قطبية">
+حوّل $x + y = 4$ إلى معادلة قطبية.
+
+<Solution>
+$r\cos\theta + r\sin\theta = 4$
+
+$r(\cos\theta + \sin\theta) = 4$
+
+$r = \dfrac{4}{\cos\theta + \sin\theta}$
+</Solution>
+</Example>
+
+<Box kind="tip" title="حيل التحويل">
+اضرب الطرفين في $r$ لتُظهر $r\cos\theta = x$ أو $r\sin\theta = y$ أو $r^2 = x^2 + y^2$. مثلًا $r = 6\cos\theta$ ← $r^2 = 6r\cos\theta$ ← $x^2 + y^2 = 6x$: دائرة.
+</Box>
+
+<Check
+  q="كم بتلة لـ $r = 2\\sin 5\\theta$؟"
+  options={["5", "10", "2", "25"]}
+  answer={0}
+  explain="$n = 5$ فردي، فعدد البتلات $n = 5$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $(r, \theta)$: بعد وزاوية، و $r < 0$ يعني الاتجاه المعاكس.
+- $x = r\cos\theta$، $y = r\sin\theta$، $r^2 = x^2 + y^2$.
+- استخدم التماثل وجدول القيم للرسم، وتعرّف على العائلات: الدوائر، والحلازين، والورود، واللمنسكيت.
+- للتحويل: اضرب في $r$ وعوّض.
+
+<Practice set="8.7" count={5} />

@@ -1,0 +1,52 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-cr" title="الجذور النونية لعدد مركب" en="nth roots: equally spaced on a circle">
+  <div class="controls">
+    <label>رتبة الجذر <span class="ltr">n = <output data-o="n"></output></span><input type="range" min="2" max="8" value="3" data-i="n" /></label>
+    <label>الطول <span class="ltr">r = <output data-o="r"></output></span><input type="range" min="1" max="64" value="8" data-i="r" /></label>
+    <label>الزاوية <span class="ltr">θ = <output data-o="t"></output>°</span><input type="range" min="0" max="360" step="15" value="90" data-i="t" /></label>
+  </div>
+  <canvas aria-label="العدد المركب وجذوره النونية"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-cr')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -4, xmax: 4, ymin: -3, ymax: 3 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const D = Math.PI / 180;
+  function draw() {
+    const n = v('n'), r = v('r'), t = v('t');
+    for (const k of ['n', 'r', 't']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    const R = r ** (1 / n);
+    const H = Math.max(R, 1) * 1.35;
+    plot.fit(0.62);
+    plot.view = { xmin: -H / 0.62, xmax: H / 0.62, ymin: -H, ymax: H };
+    plot.clear();
+    plot.grid(H > 3 ? 1 : 0.5, 2);
+    plot.param((u) => R * Math.cos(u), (u) => R * Math.sin(u), 0, 2 * Math.PI, css('--muted'), 1.5, [5, 4]);
+    // اتجاه العدد الأصلي (قد يكون خارج الرسم)
+    const s = Math.min(r, H * 0.95);
+    plot.seg(0, 0, s * Math.cos(t * D), s * Math.sin(t * D), css('--line'), 2, [2, 3]);
+    const roots: [number, number, number][] = [];
+    for (let k = 0; k < n; k++) {
+      const a = (t + 360 * k) / n;
+      roots.push([a, R * Math.cos(a * D), R * Math.sin(a * D)]);
+    }
+    const { ctx } = plot;
+    ctx.strokeStyle = css('--plot-curve'); ctx.lineWidth = 1.5; ctx.beginPath();
+    roots.forEach(([, x, y], k) => (k ? ctx.lineTo(plot.X(x), plot.Y(y)) : ctx.moveTo(plot.X(x), plot.Y(y))));
+    ctx.closePath(); ctx.stroke();
+    roots.forEach(([, x, y], k) => { plot.dot(x, y, k ? css('--plot-curve') : css('--plot-hot'), 6); plot.label(x * 1.12, y * 1.12, `w${k}`, css('--ink'), 'center'); });
+    out.innerHTML =
+      `<p>جذور ${tex(`$z = ${r}\\operatorname{cis} ${t}^\\circ$`)} من الرتبة ${n}: ${tex(`$w_k = \\sqrt[${n}]{${r}}\\operatorname{cis}\\left(\\dfrac{${t}^\\circ + 360^\\circ k}{${n}}\\right),\\ k = 0, \\dots, ${n - 1}$`)}</p>` +
+      `<p>كلها على دائرة نصف قطرها ${tex(`$\\sqrt[${n}]{${r}} \\approx ${fmt(R, 3)}$`)}، والزاوية بين كل جذرين متتاليين ${tex(`$\\tfrac{360^\\circ}{${n}} = ${fmt(360 / n, 2)}^\\circ$`)}، فهي رؤوس مضلع منتظم.</p>` +
+      `<p>الزوايا: ${roots.map(([a]) => tex(`$${fmt(a, 2)}^\\circ$`)).join('، ')}.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

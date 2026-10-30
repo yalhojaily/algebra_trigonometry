@@ -1,0 +1,69 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-ssa" title="الحالة الغامضة: زاوية وضلعان" en="SSA: zero, one, or two triangles">
+  <div class="controls">
+    <label>الزاوية <span class="ltr">A = <output data-o="A"></output>°</span><input type="range" min="10" max="150" value="35" data-i="A" /></label>
+    <label>الضلع المجاور <span class="ltr">b = <output data-o="b"></output></span><input type="range" min="2" max="10" step="0.5" value="8" data-i="b" /></label>
+    <label>الضلع المقابل <span class="ltr">a = <output data-o="a"></output></span><input type="range" min="1" max="12" step="0.25" value="5.5" data-i="a" /></label>
+  </div>
+  <canvas aria-label="المثلث أو المثلثان الممكنان"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-ssa')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -1, xmax: 16, ymin: -1, ymax: 9 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const D = Math.PI / 180;
+  function draw() {
+    const A = v('A'), b = v('b'), a = v('a');
+    for (const k of ['A', 'b', 'a']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    // الرأس A عند الأصل، والضلع b من A إلى C بزاوية A
+    const Cx = b * Math.cos(A * D), Cy = b * Math.sin(A * D);
+    plot.fit(0.55);
+    const xmin = Math.min(-1.5, Cx - 1.5);
+    const W = Math.max(14, (Cy + 2) / 0.55, Math.max(Cx, 0) + a + 2 - xmin);
+    plot.view = { xmin, xmax: xmin + W, ymin: -1, ymax: W * 0.55 - 1 };
+    plot.clear();
+    plot.seg(-3, 0, 20, 0, css('--muted'), 1.4);
+    plot.seg(0, 0, Cx, Cy, css('--plot-alt'), 3);
+    // دائرة نصف قطرها a حول C
+    plot.param((t) => Cx + a * Math.cos(t), (t) => Cy + a * Math.sin(t), 0, 2 * Math.PI, css('--line'), 1.4, [4, 4]);
+    const h = b * Math.sin(A * D);
+    plot.seg(Cx, Cy, Cx, 0, css('--muted'), 1, [2, 3]);
+    // تقاطع الدائرة مع محور x: (x − Cx)² + Cy² = a²
+    const disc = a * a - Cy * Cy;
+    const xs: number[] = [];
+    if (disc >= -1e-9) {
+      const r = Math.sqrt(Math.max(0, disc));
+      [Cx - r, Cx + r].forEach((x) => { if (x > 1e-6 && !xs.some((y) => Math.abs(y - x) < 1e-6)) xs.push(x); });
+    }
+    const cols = [css('--plot-curve'), css('--plot-hot')];
+    xs.forEach((x, k) => {
+      plot.seg(0, 0, x, 0, cols[k], 3);
+      plot.seg(Cx, Cy, x, 0, cols[k], 3);
+      plot.dot(x, 0, cols[k], 5);
+      plot.label(x, 0.1, `B${xs.length > 1 ? k + 1 : ''}`, cols[k], 'center');
+    });
+    plot.dot(0, 0, css('--ink'), 4); plot.label(-0.3, 0.1, 'A', css('--ink'), 'right');
+    plot.dot(Cx, Cy, css('--ink'), 4); plot.label(Cx, Cy + 0.2, 'C', css('--ink'), 'center');
+    const sinB = (b * Math.sin(A * D)) / a;
+    let msg = '';
+    if (!xs.length) msg = `<strong>لا يوجد مثلث</strong>: الضلع ${tex(`$a = ${a}$`)} أقصر من الارتفاع ${tex(`$h = b\\sin A \\approx ${fmt(h, 2)}$`)}، فلا يصل إلى القاعدة. وجبريًا ${tex(`$\\sin B \\approx ${fmt(sinB, 3)} > 1$`)}.`;
+    else if (xs.length === 1) {
+      const B = Math.asin(Math.min(1, sinB)) / D;
+      const Bfinal = Math.abs(a - h) < 1e-6 ? 90 : A >= 90 || a >= b ? B : B;
+      msg = Math.abs(a - h) < 1e-6 ? `<strong>مثلث واحد قائم</strong>: ${tex('$a = b\\sin A$')} بالضبط، فـ ${tex('$B = 90^\\circ$')}.` : `<strong>مثلث واحد</strong>: ${tex(`$a = ${a} \\ge b = ${b}$`)}${A >= 90 ? ' (والزاوية A منفرجة)' : ''}، فالقوس يقطع القاعدة مرة واحدة إلى يمين A. ${tex(`$B \\approx ${fmt(Bfinal, 2)}^\\circ$`)}.`;
+    } else {
+      const B1 = Math.asin(sinB) / D, B2 = 180 - B1;
+      msg = `<strong>مثلثان</strong>: ${tex(`$h \\approx ${fmt(h, 2)} < a = ${a} < b = ${b}$`)}، فالقوس يقطع القاعدة مرتين. ${tex(`$\\sin B \\approx ${fmt(sinB, 4)}$`)} يعطي ${tex(`$B_1 \\approx ${fmt(B1, 2)}^\\circ$`)} أو ${tex(`$B_2 = 180^\\circ - B_1 \\approx ${fmt(B2, 2)}^\\circ$`)}، وكلاهما يصلح لأن ${tex(`$A + B_2 = ${fmt(A + B2, 1)}^\\circ < 180^\\circ$`)}.`;
+    }
+    out.innerHTML = `<p>${msg}</p><p>القوس المتقطع هو كل المواضع التي يمكن أن يصل إليها الضلع ${tex('$a$')} من الرأس ${tex('$C$')}. حرّك ${tex('$a$')} ولاحظ الانتقال: لا مثلث ← مثلث قائم ← مثلثان ← مثلث واحد.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

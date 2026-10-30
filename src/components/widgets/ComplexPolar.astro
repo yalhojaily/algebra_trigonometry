@@ -1,0 +1,68 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-cp" title="الضرب في الصيغة القطبية" en="Multiply moduli, add arguments">
+  <div class="controls">
+    <label><span class="ltr">r₁ = <output data-o="r1"></output></span><input type="range" min="0.5" max="3" step="0.25" value="1.5" data-i="r1" /></label>
+    <label><span class="ltr">θ₁ = <output data-o="t1"></output>°</span><input type="range" min="0" max="360" step="15" value="30" data-i="t1" /></label>
+    <label><span class="ltr">r₂ = <output data-o="r2"></output></span><input type="range" min="0.5" max="3" step="0.25" value="2" data-i="r2" /></label>
+    <label><span class="ltr">θ₂ = <output data-o="t2"></output>°</span><input type="range" min="0" max="360" step="15" value="60" data-i="t2" /></label>
+    <label>العملية
+      <span class="seg" dir="ltr" data-i="op"><button type="button" data-v="mul" aria-pressed="true">z₁·z₂</button><button type="button" data-v="div">z₁/z₂</button></span>
+    </label>
+  </div>
+  <canvas aria-label="المستوى المركب والعددان وناتج العملية"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-cp')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -10, xmax: 10, ymin: -7, ymax: 7 });
+  let op = 'mul';
+  root.querySelectorAll<HTMLButtonElement>('[data-i="op"] button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      op = btn.dataset.v!;
+      root.querySelectorAll('[data-i="op"] button').forEach((o) => o.setAttribute('aria-pressed', String(o === btn)));
+      draw();
+    }),
+  );
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const D = Math.PI / 180;
+  const cx = (re: number, im: number) => {
+    const R = fmt(re, 3), I = fmt(Math.abs(im), 3);
+    return `${R} ${im < 0 ? '-' : '+'} ${I}i`;
+  };
+  function draw() {
+    const r1 = v('r1'), t1 = v('t1'), r2 = v('r2'), t2 = v('t2');
+    for (const k of ['r1', 't1', 'r2', 't2']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    const r = op === 'mul' ? r1 * r2 : r1 / r2;
+    const t = op === 'mul' ? t1 + t2 : t1 - t2;
+    const H = Math.max(3.5, r1, r2, r) * 1.15;
+    plot.fit(0.62);
+    plot.view = { xmin: -H / 0.62, xmax: H / 0.62, ymin: -H, ymax: H };
+    plot.clear();
+    plot.grid(H > 6 ? 2 : 1, 1);
+    const pts: [number, number, string, string][] = [[r1, t1, css('--plot-curve'), 'z₁'], [r2, t2, css('--plot-alt'), 'z₂'], [r, t, css('--plot-hot'), op === 'mul' ? 'z₁z₂' : 'z₁/z₂']];
+    for (const [m, a, col, lab] of pts) {
+      const x = m * Math.cos(a * D), y = m * Math.sin(a * D);
+      plot.param((u) => m * Math.cos(u), (u) => m * Math.sin(u), 0, 2 * Math.PI, css('--line'), 1, [2, 4]);
+      plot.seg(0, 0, x, y, col, 3);
+      plot.dot(x, y, col, 6);
+      plot.label(x, y, lab, col, 'center');
+    }
+    plot.param((u) => 0.5 * Math.cos(u), (u) => 0.5 * Math.sin(u), 0, t * D, css('--plot-hot'), 2);
+    const tn = ((t % 360) + 360) % 360;
+    const z = [r * Math.cos(t * D), r * Math.sin(t * D)];
+    out.innerHTML =
+      `<p>${tex(`$z_1 = ${r1}\\operatorname{cis} ${t1}^\\circ,\\quad z_2 = ${r2}\\operatorname{cis} ${t2}^\\circ$`)}</p>` +
+      (op === 'mul'
+        ? `<p>${tex(`$z_1 z_2 = (${r1}\\cdot ${r2})\\operatorname{cis}(${t1}^\\circ + ${t2}^\\circ) = ${fmt(r, 3)}\\operatorname{cis} ${tn}^\\circ$`)}: <strong>اضرب الطولين واجمع الزاويتين</strong>.</p>`
+        : `<p>${tex(`$\\dfrac{z_1}{z_2} = \\dfrac{${r1}}{${r2}}\\operatorname{cis}(${t1}^\\circ - ${t2}^\\circ) = ${fmt(r, 3)}\\operatorname{cis} ${tn}^\\circ$`)}: <strong>اقسم الطولين واطرح الزاويتين</strong>.</p>`) +
+      `<p>بالصيغة الجبرية: ${tex(`$${cx(z[0], z[1])}$`)}. ${op === 'mul' ? 'الضرب في عدد مركب هو تكبير بنسبة طوله ودوران بزاويته.' : 'القسمة دوران عكسي وتصغير.'}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

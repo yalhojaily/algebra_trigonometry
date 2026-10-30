@@ -1,0 +1,114 @@
+---
+section: "8.6"
+summary: "نظرية دي موافر لرفع عدد مركب إلى قوة: [r cis θ]ⁿ = rⁿ cis nθ، ثم استخدامها بالعكس لإيجاد كل الجذور النونية لعدد مركب، ولماذا تقع على دائرة كرؤوس مضلع منتظم، وحل معادلات مثل x³ = −8."
+minutes: 40
+prerequisites: ["8.5"]
+terms:
+  - { ar: "نظرية دي موافر", en: "De Moivre's Theorem", def: "[r(cos θ + i sin θ)]ⁿ = rⁿ(cos nθ + i sin nθ) لكل عدد صحيح موجب n." }
+  - { ar: "الجذر النوني", en: "nth Root", def: "العدد w جذر نوني لـ z إذا كان wⁿ = z؛ ولكل عدد غير صفري n جذرًا مركبًا مختلفًا." }
+  - { ar: "جذور الوحدة", en: "Roots of Unity", def: "حلول المعادلة xⁿ = 1: النقاط cis(360°k/n) على دائرة الوحدة." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import ComplexRoots from '../../components/widgets/ComplexRoots.astro';
+
+احسب $(1 + i)^8$ بفك الأقواس: ثماني عمليات ضرب طويلة. أما بالصيغة القطبية فالأمر سطر واحد: كل ضرب يضرب الطول ويجمع الزاوية، فثمانية ضربات ترفع الطول للقوة 8 وتضرب الزاوية في 8. وبالعكس نحصل على شيء أدهش: لكل عدد مركب ثلاثة جذور تكعيبية، وأربعة جذور رابعة، وهكذا.
+
+## قوى الأعداد المركبة <span class="en" lang="en">Powers of Complex Numbers (De Moivre's Theorem)</span>
+
+<Box kind="rule" title="نظرية دي موافر" en="De Moivre's Theorem">
+لكل عدد صحيح موجب $n$:
+
+$$[r(\cos\theta + i\sin\theta)]^n = r^n(\cos n\theta + i\sin n\theta)$$
+
+أو باختصار $[r\operatorname{cis}\theta]^n = r^n\operatorname{cis}(n\theta)$. وهي تطبيق متكرر لقاعدة الضرب.
+</Box>
+
+<Example n="1" title="قوة كبيرة">
+أوجد $(1 + \sqrt3 i)^8$.
+
+<Solution>
+$r = \sqrt{1 + 3} = 2$ و $\theta = 60^\circ$: $1 + \sqrt3 i = 2\operatorname{cis} 60^\circ$.
+
+$(2\operatorname{cis} 60^\circ)^8 = 256\operatorname{cis} 480^\circ = 256\operatorname{cis} 120^\circ$
+
+$= 256\left(-\tfrac12 + \tfrac{\sqrt3}{2}i\right) = -128 + 128\sqrt3\, i$
+</Solution>
+</Example>
+
+<Example n="2" title="عدد بطول 1">
+أوجد $(\cos 15^\circ + i\sin 15^\circ)^{12}$.
+
+<Solution>
+الطول 1، فالقوة لا تغيّره.
+
+$= \cos 180^\circ + i\sin 180^\circ$
+
+$= -1$
+</Solution>
+</Example>
+
+## جذور الأعداد المركبة <span class="en" lang="en">Roots of Complex Numbers</span>
+
+نبحث عن $w = s\operatorname{cis}\alpha$ بحيث $w^n = r\operatorname{cis}\theta$. بدي موافر: $s^n\operatorname{cis}(n\alpha) = r\operatorname{cis}\theta$. الأطوال متساوية: $s = \sqrt[n]{r}$. والزوايا متساوية **أو تختلف بدورات كاملة**: $n\alpha = \theta + 360^\circ k$.
+
+<Box kind="rule" title="الجذور النونية" en="nth Root Theorem">
+لكل عدد مركب غير صفري $r\operatorname{cis}\theta$ بالضبط $n$ جذرًا نونيًا مختلفًا:
+
+$$w_k = \sqrt[n]{r}\operatorname{cis}\left(\frac{\theta + 360^\circ k}{n}\right), \qquad k = 0, 1, \dots, n - 1$$
+
+(وبالراديان: $\tfrac{\theta + 2\pi k}{n}$.) كلها على دائرة نصف قطرها $\sqrt[n]{r}$، والزاوية بين كل اثنين متتاليين $\tfrac{360^\circ}{n}$.
+</Box>
+
+<ComplexRoots />
+
+<Example n="3" title="الجذور الرابعة">
+أوجد الجذور الرابعة لـ $-8 + 8\sqrt3\, i$.
+
+<Solution>
+$r = \sqrt{64 + 192} = 16$ و $\theta = 120^\circ$. والجذور طولها $\sqrt[4]{16} = 2$.
+
+الزوايا $\dfrac{120^\circ + 360^\circ k}{4} = 30^\circ + 90^\circ k$: أي $30^\circ, 120^\circ, 210^\circ, 300^\circ$.
+
+$w_0 = 2\operatorname{cis} 30^\circ = \sqrt3 + i$، و $w_1 = 2\operatorname{cis} 120^\circ = -1 + \sqrt3 i$، و $w_2 = 2\operatorname{cis} 210^\circ = -\sqrt3 - i$، و $w_3 = 2\operatorname{cis} 300^\circ = 1 - \sqrt3 i$.
+</Solution>
+</Example>
+
+<Example n="4" title="حل معادلة">
+حل $x^3 + 8 = 0$ في الأعداد المركبة.
+
+<Solution>
+$x^3 = -8 = 8\operatorname{cis} 180^\circ$. الطول $\sqrt[3]{8} = 2$، والزوايا $\dfrac{180^\circ + 360^\circ k}{3} = 60^\circ, 180^\circ, 300^\circ$.
+
+$x = 2\operatorname{cis} 60^\circ = 1 + \sqrt3 i$، و $x = 2\operatorname{cis} 180^\circ = -2$، و $x = 2\operatorname{cis} 300^\circ = 1 - \sqrt3 i$.
+
+جذر حقيقي واحد ($-2$) وجذران مركبان مترافقان، كما تتوقع من النظرية الأساسية في الجبر (الدرس 3.3).
+</Solution>
+</Example>
+
+<Box kind="mistake" title="لا تكتفِ بجذر واحد">
+$\sqrt[3]{-8} = -2$ في الأعداد الحقيقية، لكن المعادلة $x^3 = -8$ لها **ثلاثة** حلول مركبة. اكتب كل قيم $k$ من $0$ إلى $n - 1$.
+</Box>
+
+### جذور الوحدة
+
+حلول $x^n = 1$ تسمى <Term ar="جذور الوحدة" en="roots of unity" />: $\operatorname{cis}\tfrac{360^\circ k}{n}$، وهي رؤوس مضلع منتظم داخل دائرة الوحدة يبدأ من $1$. فجذور الوحدة الرابعة $1, i, -1, -i$، والتكعيبية $1, -\tfrac12 \pm \tfrac{\sqrt3}{2}i$.
+
+<Check
+  q="كم جذرًا مركبًا مختلفًا للمعادلة $x^5 = 32i$؟"
+  options={["1", "2", "5", "32"]}
+  answer={2}
+  explain="لكل عدد غير صفري $n$ جذرًا نونيًا بالضبط، فهنا 5 جذور على دائرة نصف قطرها 2."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- دي موافر: $[r\operatorname{cis}\theta]^n = r^n\operatorname{cis} n\theta$.
+- الجذور النونية: $\sqrt[n]{r}\operatorname{cis}\tfrac{\theta + 360^\circ k}{n}$ لـ $k = 0, \dots, n - 1$.
+- هي رؤوس مضلع منتظم على دائرة نصف قطرها $\sqrt[n]{r}$.
+
+<Practice set="8.6" count={5} />

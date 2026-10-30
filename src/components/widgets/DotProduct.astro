@@ -1,0 +1,60 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-dot" title="الضرب النقطي والزاوية بين متجهين" en="u · v = |u||v| cos θ">
+  <div class="controls">
+    <label><span class="ltr">u = ⟨<output data-o="a"></output>, <output data-o="b"></output>⟩</span>
+      <input type="range" min="-6" max="6" value="4" data-i="a" /><input type="range" min="-6" max="6" value="1" data-i="b" /></label>
+    <label><span class="ltr">v = ⟨<output data-o="c"></output>, <output data-o="d"></output>⟩</span>
+      <input type="range" min="-6" max="6" value="1" data-i="c" /><input type="range" min="-6" max="6" value="3" data-i="d" /></label>
+  </div>
+  <canvas aria-label="متجهان والزاوية بينهما والإسقاط"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-dot')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -8, xmax: 8, ymin: -7, ymax: 7 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function arrow(x1: number, y1: number, col: string, w = 3) {
+    plot.seg(0, 0, x1, y1, col, w);
+    const ang = Math.atan2(y1, x1), L = 0.5;
+    plot.seg(x1, y1, x1 - L * Math.cos(ang - 0.4), y1 - L * Math.sin(ang - 0.4), col, w);
+    plot.seg(x1, y1, x1 - L * Math.cos(ang + 0.4), y1 - L * Math.sin(ang + 0.4), col, w);
+  }
+  function draw() {
+    const a = v('a'), b = v('b'), c = v('c'), d = v('d');
+    for (const k of ['a', 'b', 'c', 'd']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    plot.fit(0.62);
+    plot.view = { xmin: -7 / 0.62, xmax: 7 / 0.62, ymin: -7, ymax: 7 };
+    plot.clear();
+    plot.grid(1, 2);
+    const nu = Math.hypot(a, b), nv = Math.hypot(c, d);
+    if (!nu || !nv) { out.innerHTML = '<p>المتجه الصفري ليس له اتجاه. حرّك أحد المنزلقين.</p>'; return; }
+    const dot = a * c + b * d;
+    const cos = dot / (nu * nv);
+    const th = (Math.acos(Math.max(-1, Math.min(1, cos))) * 180) / Math.PI;
+    // إسقاط v على u
+    const k = dot / (nu * nu);
+    plot.seg(c, d, k * a, k * b, css('--muted'), 1.2, [3, 3]);
+    plot.seg(0, 0, k * a, k * b, css('--plot-hot'), 6);
+    arrow(a, b, css('--plot-curve'));
+    arrow(c, d, css('--plot-alt'));
+    const t1 = Math.atan2(b, a), t2 = Math.atan2(d, c);
+    let s = t1, e = t2;
+    let diff = e - s; while (diff > Math.PI) diff -= 2 * Math.PI; while (diff < -Math.PI) diff += 2 * Math.PI;
+    plot.param((u) => 0.9 * Math.cos(u), (u) => 0.9 * Math.sin(u), s, s + diff, css('--ink'), 1.8);
+    plot.label(a, b, 'u', css('--plot-curve'), 'center');
+    plot.label(c, d, 'v', css('--plot-alt'), 'center');
+    const kind = Math.abs(dot) < 1e-9 ? '<strong>متعامدان</strong> (الضرب النقطي صفر)' : dot > 0 ? 'الزاوية <strong>حادة</strong> (الضرب النقطي موجب)' : 'الزاوية <strong>منفرجة</strong> (الضرب النقطي سالب)';
+    out.innerHTML =
+      `<p>${tex(`$\\mathbf{u}\\cdot\\mathbf{v} = (${a})(${c}) + (${b})(${d}) = ${dot}$`)}</p>` +
+      `<p>${tex(`$\\cos\\theta = \\dfrac{\\mathbf{u}\\cdot\\mathbf{v}}{|\\mathbf{u}||\\mathbf{v}|} = \\dfrac{${dot}}{${fmt(nu, 3)}\\cdot ${fmt(nv, 3)}} \\approx ${fmt(cos, 4)}$`)}، إذن ${tex(`$\\theta \\approx ${fmt(th, 2)}^\\circ$`)}: ${kind}.</p>` +
+      `<p>القطعة البرتقالية إسقاط ${tex('$\\mathbf{v}$')} على ${tex('$\\mathbf{u}$')}، وطولها المؤشَّر ${tex(`$\\dfrac{\\mathbf{u}\\cdot\\mathbf{v}}{|\\mathbf{u}|} \\approx ${fmt(dot / nu, 3)}$`)}: الضرب النقطي يقيس «كم يتجه v في اتجاه u».</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

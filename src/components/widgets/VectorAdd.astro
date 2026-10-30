@@ -1,0 +1,60 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-vec" title="جمع المتجهات: قاعدة متوازي الأضلاع" en="Resultant and equilibrant">
+  <div class="controls">
+    <label><span class="ltr">|u| = <output data-o="m1"></output></span><input type="range" min="1" max="8" step="0.5" value="5" data-i="m1" /></label>
+    <label>اتجاه <span class="ltr">u = <output data-o="t1"></output>°</span><input type="range" min="0" max="360" step="5" value="20" data-i="t1" /></label>
+    <label><span class="ltr">|v| = <output data-o="m2"></output></span><input type="range" min="1" max="8" step="0.5" value="4" data-i="m2" /></label>
+    <label>اتجاه <span class="ltr">v = <output data-o="t2"></output>°</span><input type="range" min="0" max="360" step="5" value="95" data-i="t2" /></label>
+    <label class="chk"><input type="checkbox" data-i="eq" /> اعرض القوة الموازنة</label>
+  </div>
+  <canvas aria-label="متجهان ومحصلتهما"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-vec')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -12, xmax: 12, ymin: -8, ymax: 8 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const D = Math.PI / 180;
+  function arrow(x0: number, y0: number, x1: number, y1: number, col: string, w = 3, dash: number[] = []) {
+    plot.seg(x0, y0, x1, y1, col, w, dash);
+    const ang = Math.atan2(y1 - y0, x1 - x0), L = 0.6;
+    plot.seg(x1, y1, x1 - L * Math.cos(ang - 0.4), y1 - L * Math.sin(ang - 0.4), col, w);
+    plot.seg(x1, y1, x1 - L * Math.cos(ang + 0.4), y1 - L * Math.sin(ang + 0.4), col, w);
+  }
+  function draw() {
+    const m1 = v('m1'), t1 = v('t1'), m2 = v('m2'), t2 = v('t2');
+    for (const k of ['m1', 't1', 'm2', 't2']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    const eq = root.querySelector<HTMLInputElement>('[data-i="eq"]')!.checked;
+    plot.fit(0.62);
+    const H = 9;
+    plot.view = { xmin: -H / 0.62, xmax: H / 0.62, ymin: -H, ymax: H };
+    plot.clear();
+    plot.grid(1, 2);
+    const ux = m1 * Math.cos(t1 * D), uy = m1 * Math.sin(t1 * D), vx = m2 * Math.cos(t2 * D), vy = m2 * Math.sin(t2 * D);
+    const rx = ux + vx, ry = uy + vy;
+    plot.seg(ux, uy, rx, ry, css('--plot-alt'), 1.4, [5, 4]);
+    plot.seg(vx, vy, rx, ry, css('--plot-curve'), 1.4, [5, 4]);
+    arrow(0, 0, ux, uy, css('--plot-curve'));
+    arrow(0, 0, vx, vy, css('--plot-alt'));
+    arrow(0, 0, rx, ry, css('--plot-hot'), 3.5);
+    if (eq) arrow(0, 0, -rx, -ry, css('--muted'), 3, [6, 4]);
+    plot.label(ux, uy, 'u', css('--plot-curve'), 'center');
+    plot.label(vx, vy, 'v', css('--plot-alt'), 'center');
+    plot.label(rx, ry, 'u + v', css('--plot-hot'), 'center');
+    const R = Math.hypot(rx, ry);
+    let dir = (Math.atan2(ry, rx) / D + 360) % 360;
+    const between = Math.abs(((t2 - t1 + 540) % 360) - 180);
+    out.innerHTML =
+      `<p>المحصلة ${tex('$\\mathbf{u} + \\mathbf{v}$')} قطر متوازي الأضلاع: ${tex(`$|\\mathbf{u} + \\mathbf{v}| \\approx ${fmt(R, 3)}$`)} باتجاه ${tex(`$${fmt(dir, 1)}^\\circ$`)}.</p>` +
+      `<p>بقانون جيوب التمام: الزاوية بين المتجهين ${tex(`$${fmt(between, 0)}^\\circ$`)}، فزاوية متوازي الأضلاع المقابلة للقطر ${tex(`$${fmt(180 - between, 0)}^\\circ$`)} و ${tex(`$|\\mathbf{u}+\\mathbf{v}|^2 = ${m1}^2 + ${m2}^2 - 2(${m1})(${m2})\\cos ${fmt(180 - between, 0)}^\\circ$`)}.</p>` +
+      `<p>بالمركبات: ${tex(`$\\langle ${fmt(ux, 2)}, ${fmt(uy, 2)}\\rangle + \\langle ${fmt(vx, 2)}, ${fmt(vy, 2)}\\rangle = \\langle ${fmt(rx, 2)}, ${fmt(ry, 2)}\\rangle$`)}.${eq ? ` والقوة <strong>الموازنة</strong> ${tex(`$-(\\mathbf{u} + \\mathbf{v})$`)} لها المقدار نفسه وعكس الاتجاه، فتجعل المجموع صفرًا.` : ''}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

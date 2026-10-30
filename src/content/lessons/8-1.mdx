@@ -1,0 +1,162 @@
+---
+section: "8.1"
+summary: "حل المثلثات غير القائمة: متى تحدد المعطيات مثلثًا واحدًا، واشتقاق قانون الجيوب واستخدامه مع زاويتين وضلع، والحالة الغامضة (ضلعان وزاوية غير محصورة) التي قد تعطي صفرًا أو مثلثًا أو مثلثين، ومساحة المثلث بضلعين وزاوية."
+minutes: 45
+prerequisites: ["5.4", "7.5"]
+terms:
+  - { ar: "مثلث مائل", en: "Oblique Triangle", def: "مثلث ليس فيه زاوية قائمة." }
+  - { ar: "قانون الجيوب", en: "Law of Sines", def: "a/sin A = b/sin B = c/sin C في أي مثلث." }
+  - { ar: "الحالة الغامضة", en: "Ambiguous Case", def: "حالة SSA (ضلعان وزاوية غير محصورة بينهما) التي قد تعطي 0 أو 1 أو 2 مثلث." }
+  - { ar: "مساحة المثلث", en: "Area of a Triangle (SAS)", def: "نصف حاصل ضرب ضلعين في جيب الزاوية المحصورة بينهما: ½bc sin A." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import AmbiguousCase from '../../components/widgets/AmbiguousCase.astro';
+
+في الفصل 5 حللنا المثلثات القائمة بـ SOH-CAH-TOA. لكن معظم المثلثات في المساحة والملاحة والهندسة ليست قائمة. هذا الدرس والدرس القادم يعطيان قانونين يحلّان **أي** مثلث: قانون الجيوب هنا، وقانون جيوب التمام في الدرس التالي.
+
+نرمز للزوايا بـ $A, B, C$ وللأضلاع المقابلة لها بـ $a, b, c$.
+
+## التطابق والمثلثات المائلة <span class="en" lang="en">Congruency and Oblique Triangles</span>
+
+متى تحدد المعطيات مثلثًا واحدًا؟ قواعد التطابق من الهندسة تجيب:
+
+<Box kind="def" title="الحالات الأربع للمعطيات" en="Data that determine a triangle">
+| الحالة | المعطى | القانون المناسب |
+|---|---|---|
+| ASA أو AAS | زاويتان وضلع | قانون الجيوب (مثلث واحد دائمًا) |
+| SSA | ضلعان وزاوية مقابلة لأحدهما | قانون الجيوب (الحالة الغامضة: 0 أو 1 أو 2) |
+| SAS | ضلعان والزاوية بينهما | قانون جيوب التمام (8.2) |
+| SSS | ثلاثة أضلاع | قانون جيوب التمام (8.2) |
+
+أما AAA (ثلاث زوايا) فلا تحدد الحجم: عدد لا نهائي من المثلثات المتشابهة.
+</Box>
+
+## اشتقاق قانون الجيوب <span class="en" lang="en">Derivation of the Law of Sines</span>
+
+ارسم الارتفاع $h$ من الرأس $C$ إلى الضلع $c$. من المثلثين القائمين: $\sin A = \tfrac{h}{b}$ و $\sin B = \tfrac{h}{a}$، أي $h = b\sin A = a\sin B$. اقسم على $\sin A\sin B$:
+
+<Box kind="rule" title="قانون الجيوب" en="Law of Sines">
+في أي مثلث $ABC$:
+
+$$\frac{a}{\sin A} = \frac{b}{\sin B} = \frac{c}{\sin C}$$
+
+أي أن النسبة بين كل ضلع وجيب الزاوية المقابلة له ثابتة. ويمكن قلبها: $\dfrac{\sin A}{a} = \dfrac{\sin B}{b} = \dfrac{\sin C}{c}$.
+</Box>
+
+## استخدام قانون الجيوب <span class="en" lang="en">Using the Law of Sines</span>
+
+<Example n="1" title="زاويتان وضلع (AAS)">
+حل المثلث $ABC$ إذا كان $A = 32.0^\circ$ و $B = 81.8^\circ$ و $a = 42.9$ سم.
+
+<Solution>
+$C = 180^\circ - 32.0^\circ - 81.8^\circ = 66.2^\circ$
+
+$b = \dfrac{a\sin B}{\sin A} = \dfrac{42.9\sin 81.8^\circ}{\sin 32.0^\circ} \approx 80.1$ سم
+
+$c = \dfrac{a\sin C}{\sin A} = \dfrac{42.9\sin 66.2^\circ}{\sin 32.0^\circ} \approx 74.1$ سم
+</Solution>
+</Example>
+
+<Example n="2" title="مسح أرض (ASA)">
+لقياس عرض نهر، اختار مسّاح نقطتين $A$ و $B$ على ضفة واحدة بينهما 112 م، ونقطة $C$ على الضفة الأخرى. قاس $\angle CAB = 31.1^\circ$ و $\angle ABC = 103.4^\circ$. أوجد المسافة $AC$.
+
+<Solution>
+$C = 180^\circ - 31.1^\circ - 103.4^\circ = 45.5^\circ$، والضلع المعلوم $c = AB = 112$ مقابل $C$.
+
+$AC = b = \dfrac{c\sin B}{\sin C} = \dfrac{112\sin 103.4^\circ}{\sin 45.5^\circ}$
+
+$\approx 153$ م.
+</Solution>
+</Example>
+
+## الحالة الغامضة <span class="en" lang="en">Description of the Ambiguous Case</span>
+
+إذا عرفنا $A$ والضلعين $a$ و $b$ (الضلع $a$ مقابل $A$)، فإن $C$ معروف الموقع، والضلع $a$ «يتأرجح» من $C$ كالبندول. قد لا يصل إلى القاعدة، أو يلمسها، أو يقطعها مرتين.
+
+<AmbiguousCase />
+
+<Box kind="rule" title="عدد المثلثات في حالة SSA" en="Number of triangles (A acute)">
+ليكن $h = b\sin A$ (ارتفاع الرأس $C$ عن القاعدة):
+
+| الشرط | عدد المثلثات |
+|---|---|
+| $a < h$ | لا يوجد |
+| $a = h$ | واحد (قائم) |
+| $h < a < b$ | **اثنان** |
+| $a \ge b$ | واحد |
+
+وإذا كانت $A$ منفرجة أو قائمة: مثلث واحد إذا $a > b$، ولا يوجد إذا $a \le b$.
+
+جبريًا: احسب $\sin B = \tfrac{b\sin A}{a}$. إذا كان أكبر من 1 فلا حل. وإلا جرّب $B_1 = \sin^{-1}(\ldots)$ و $B_2 = 180^\circ - B_1$، واقبل كل زاوية تجعل $A + B < 180^\circ$.
+</Box>
+
+<Example n="3" title="لا يوجد مثلث">
+حل المثلث إذا كان $B = 55^\circ 40'$ و $b = 8.94$ و $a = 25.1$.
+
+<Solution>
+$\sin A = \dfrac{a\sin B}{b} = \dfrac{25.1\sin 55^\circ 40'}{8.94} \approx 2.3184$
+
+لا توجد زاوية جيبها أكبر من 1.
+
+لا يوجد مثلث بهذه المعطيات: الضلع $b$ أقصر من أن يصل إلى القاعدة.
+</Solution>
+</Example>
+
+<Example n="4" title="مثلثان">
+حل المثلث إذا كان $A = 55.3^\circ$ و $a = 22.8$ و $b = 24.9$.
+
+<Solution>
+$\sin B = \dfrac{24.9\sin 55.3^\circ}{22.8} \approx 0.89787$، فإن $B_1 \approx 63.9^\circ$ أو $B_2 = 180^\circ - 63.9^\circ = 116.1^\circ$. وكلاهما يصلح لأن $55.3^\circ + 116.1^\circ < 180^\circ$.
+
+المثلث الأول: $C_1 = 180^\circ - 55.3^\circ - 63.9^\circ = 60.8^\circ$ و $c_1 = \dfrac{22.8\sin 60.8^\circ}{\sin 55.3^\circ} \approx 24.2$.
+
+المثلث الثاني: $C_2 = 180^\circ - 55.3^\circ - 116.1^\circ = 8.6^\circ$ و $c_2 = \dfrac{22.8\sin 8.6^\circ}{\sin 55.3^\circ} \approx 4.15$.
+</Solution>
+</Example>
+
+<Box kind="mistake" title="الآلة تعطي زاوية واحدة فقط">
+$\sin^{-1}$ تعطي دائمًا زاوية حادة. في حالة SSA لا تنسَ الاحتمال الثاني $180^\circ - B$، وإلا ضاع منك مثلث كامل.
+</Box>
+
+## مساحة المثلث <span class="en" lang="en">Area of a Triangle</span>
+
+المساحة $\tfrac12 \cdot \text{القاعدة} \cdot \text{الارتفاع} = \tfrac12 c \cdot h$، ورأينا أن $h = b\sin A$:
+
+<Box kind="rule" title="مساحة المثلث بضلعين وزاوية (SAS)" en="Area of a Triangle">
+$$\mathcal{A} = \frac12 bc\sin A = \frac12 ab\sin C = \frac12 ac\sin B$$
+
+نصف حاصل ضرب ضلعين في جيب الزاوية **المحصورة** بينهما.
+</Box>
+
+<Example n="5" title="المساحة">
+أوجد مساحة المثلث الذي فيه $A = 24^\circ 40'$ و $b = 27.3$ سم و $C = 52^\circ 40'$.
+
+<Solution>
+نحتاج ضلعين والزاوية بينهما. $B = 180^\circ - 24^\circ 40' - 52^\circ 40' = 102^\circ 40'$، و $a = \dfrac{27.3\sin 24^\circ 40'}{\sin 102^\circ 40'} \approx 11.7$ سم.
+
+$\mathcal{A} = \tfrac12 ab\sin C = \tfrac12(11.7)(27.3)\sin 52^\circ 40'$
+
+$\approx 127$ سم².
+</Solution>
+</Example>
+
+<Check
+  q="في المثلث: $A = 30^\\circ$ و $b = 10$ و $a = 5$. كم مثلثًا يوجد؟"
+  options={["لا يوجد", "واحد (قائم)", "اثنان", "عدد لا نهائي"]}
+  answer={1}
+  explain="$h = 10\\sin 30^\\circ = 5 = a$ بالضبط، فالضلع يلمس القاعدة: مثلث واحد قائم في $B$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $\dfrac{a}{\sin A} = \dfrac{b}{\sin B} = \dfrac{c}{\sin C}$: يحتاج زوجًا معروفًا (زاوية وضلعها المقابل).
+- ASA و AAS: مثلث واحد دائمًا.
+- SSA: قارن $a$ بـ $h = b\sin A$ وبـ $b$، أو جرّب $B$ و $180^\circ - B$.
+- المساحة $\tfrac12 bc\sin A$.
+
+<Practice set="8.1" count={6} />

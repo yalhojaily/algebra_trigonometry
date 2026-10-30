@@ -1,0 +1,62 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-pf2" title="القطع المكافئ: البؤرة والدليل" en="Distance to focus = distance to directrix">
+  <div class="controls">
+    <label>الاتجاه
+      <span class="seg" dir="ltr" data-i="o"><button type="button" data-v="v" aria-pressed="true">x² = 4py</button><button type="button" data-v="h">y² = 4px</button></span>
+    </label>
+    <label><span class="ltr">p = <output data-o="p"></output></span><input type="range" min="-3" max="3" step="0.25" value="1" data-i="p" /></label>
+    <label>نقطة على المنحنى <span class="ltr">t = <output data-o="t"></output></span><input type="range" min="-5" max="5" step="0.1" value="2.5" data-i="t" /></label>
+  </div>
+  <canvas aria-label="قطع مكافئ وبؤرته ودليله"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-pf2')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -10, xmax: 10, ymin: -6, ymax: 6 });
+  let o = 'v';
+  root.querySelectorAll<HTMLButtonElement>('[data-i="o"] button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      o = btn.dataset.v!;
+      root.querySelectorAll('[data-i="o"] button').forEach((x) => x.setAttribute('aria-pressed', String(x === btn)));
+      draw();
+    }),
+  );
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    let p = v('p');
+    if (p === 0) p = 0.25;
+    const t = v('t');
+    root.querySelector('[data-o="p"]')!.textContent = String(p);
+    root.querySelector('[data-o="t"]')!.textContent = String(t);
+    plot.fit(0.62);
+    plot.view = { xmin: -7 / 0.62, xmax: 7 / 0.62, ymin: -7, ymax: 7 };
+    plot.clear();
+    plot.grid(1, 2);
+    // نقطة على المنحنى بالوسيط t
+    const V = o === 'v';
+    const P: [number, number] = V ? [t, (t * t) / (4 * p)] : [(t * t) / (4 * p), t];
+    const F: [number, number] = V ? [0, p] : [p, 0];
+    const D: [number, number] = V ? [P[0], -p] : [-p, P[1]];
+    if (V) { plot.fn((x) => (x * x) / (4 * p), css('--plot-curve'), 3); plot.seg(-30, -p, 30, -p, css('--plot-alt'), 2.5, [7, 5]); }
+    else { plot.param((s) => (s * s) / (4 * p), (s) => s, -10, 10, css('--plot-curve'), 3); plot.seg(-p, -30, -p, 30, css('--plot-alt'), 2.5, [7, 5]); }
+    plot.seg(P[0], P[1], F[0], F[1], css('--plot-hot'), 2);
+    plot.seg(P[0], P[1], D[0], D[1], css('--plot-hot'), 2, [3, 3]);
+    plot.dot(F[0], F[1], css('--plot-hot'), 6); plot.label(F[0] + 0.2, F[1], 'F', css('--plot-hot'));
+    plot.dot(P[0], P[1], css('--ink'), 5); plot.dot(D[0], D[1], css('--plot-alt'), 4);
+    plot.dot(0, 0, css('--plot-curve'), 4);
+    const dF = Math.hypot(P[0] - F[0], P[1] - F[1]), dD = Math.hypot(P[0] - D[0], P[1] - D[1]);
+    const eq = V ? `x^2 = ${fmt(4 * p, 2)}y` : `y^2 = ${fmt(4 * p, 2)}x`;
+    out.innerHTML =
+      `<p>${tex(`$${eq}$`)}: الرأس ${tex('$(0, 0)$')}، والبؤرة ${tex(`$F(${V ? `0, ${p}` : `${p}, 0`})$`)}، والدليل ${tex(`$${V ? 'y' : 'x'} = ${-p}$`)}، ومحور التماثل ${tex(`$${V ? 'x' : 'y'} = 0$`)}.</p>` +
+      `<p>للنقطة ${tex(`$P(${fmt(P[0], 2)}, ${fmt(P[1], 2)})$`)}: البعد عن البؤرة ${tex(`$${fmt(dF, 3)}$`)} = البعد عن الدليل ${tex(`$${fmt(dD, 3)}$`)}. هذا هو تعريف القطع المكافئ.</p>` +
+      `<p>يفتح نحو ${V ? (p > 0 ? 'الأعلى' : 'الأسفل') : p > 0 ? 'اليمين' : 'اليسار'} لأن ${tex(`$p ${p > 0 ? '> 0' : '< 0'}$`)}. وكلما كبر ${tex('$|p|$')} اتسع الفم. وعرض الوتر البؤري ${tex(`$|4p| = ${fmt(Math.abs(4 * p), 2)}$`)}.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

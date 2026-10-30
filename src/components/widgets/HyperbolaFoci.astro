@@ -1,0 +1,65 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-hyp" title="القطع الزائد: فرق البعدين ثابت" en="|d₁ − d₂| = 2a">
+  <div class="controls">
+    <label>الاتجاه
+      <span class="seg" dir="ltr" data-i="o"><button type="button" data-v="h" aria-pressed="true">x²/a² − y²/b²</button><button type="button" data-v="v">y²/a² − x²/b²</button></span>
+    </label>
+    <label><span class="ltr">a = <output data-o="a"></output></span><input type="range" min="1" max="5" step="0.5" value="3" data-i="a" /></label>
+    <label><span class="ltr">b = <output data-o="b"></output></span><input type="range" min="1" max="5" step="0.5" value="2" data-i="b" /></label>
+    <label>موضع النقطة <span class="ltr">t = <output data-o="t"></output></span><input type="range" min="-2" max="2" step="0.05" value="0.8" data-i="t" /></label>
+  </div>
+  <canvas aria-label="قطع زائد وخطا التقارب والبؤرتان"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-hyp')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -10, xmax: 10, ymin: -6, ymax: 6 });
+  let o = 'h';
+  root.querySelectorAll<HTMLButtonElement>('[data-i="o"] button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      o = btn.dataset.v!;
+      root.querySelectorAll('[data-i="o"] button').forEach((x) => x.setAttribute('aria-pressed', String(x === btn)));
+      draw();
+    }),
+  );
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const a = v('a'), b = v('b'), t = v('t');
+    for (const k of ['a', 'b', 't']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    plot.fit(0.62);
+    plot.view = { xmin: -9 / 0.62, xmax: 9 / 0.62, ymin: -9, ymax: 9 };
+    plot.clear();
+    plot.grid(1, 2);
+    const H = o === 'h';
+    const c = Math.sqrt(a * a + b * b);
+    // المستطيل الأساسي وخطا التقارب
+    const rx = H ? a : b, ry = H ? b : a;
+    [[-rx, -ry, rx, -ry], [rx, -ry, rx, ry], [rx, ry, -rx, ry], [-rx, ry, -rx, -ry]].forEach(([x1, y1, x2, y2]) => plot.seg(x1, y1, x2, y2, css('--muted'), 1.2, [3, 3]));
+    const m = ry / rx;
+    plot.fn((x) => m * x, css('--muted'), 1.5, [7, 5]);
+    plot.fn((x) => -m * x, css('--muted'), 1.5, [7, 5]);
+    const X = (s: number) => (H ? a * Math.cosh(s) : b * Math.sinh(s)), Y = (s: number) => (H ? b * Math.sinh(s) : a * Math.cosh(s));
+    plot.param(X, Y, -3, 3, css('--plot-curve'), 3);
+    plot.param((s) => (H ? -X(s) : X(s)), (s) => (H ? Y(s) : -Y(s)), -3, 3, css('--plot-curve'), 3);
+    const F1: [number, number] = H ? [-c, 0] : [0, -c], F2: [number, number] = H ? [c, 0] : [0, c];
+    const P: [number, number] = [X(t), Y(t)];
+    plot.seg(P[0], P[1], F1[0], F1[1], css('--plot-hot'), 2.2);
+    plot.seg(P[0], P[1], F2[0], F2[1], css('--plot-alt'), 2.2);
+    plot.dot(F1[0], F1[1], css('--plot-hot'), 6); plot.dot(F2[0], F2[1], css('--plot-alt'), 6);
+    plot.dot(P[0], P[1], css('--ink'), 5);
+    const d1 = Math.hypot(P[0] - F1[0], P[1] - F1[1]), d2 = Math.hypot(P[0] - F2[0], P[1] - F2[1]);
+    const eq = H ? `\\dfrac{x^2}{${a * a}} - \\dfrac{y^2}{${b * b}} = 1` : `\\dfrac{y^2}{${a * a}} - \\dfrac{x^2}{${b * b}} = 1`;
+    out.innerHTML =
+      `<p>${tex(`$${eq}$`)}: الرأسان ${tex(`$(${H ? `\\pm ${a}, 0` : `0, \\pm ${a}`})$`)}، والبؤرتان ${tex(`$(${H ? `\\pm ${fmt(c, 3)}, 0` : `0, \\pm ${fmt(c, 3)}`})$`)} حيث ${tex(`$c^2 = a^2 + b^2 = ${a * a + b * b}$`)}.</p>` +
+      `<p>خطا التقارب (المتقطعان، قطرا المستطيل الأساسي): ${tex(`$y = \\pm ${H ? `\\tfrac{${b}}{${a}}` : `\\tfrac{${a}}{${b}}`}x$`)}.</p>` +
+      `<p>للنقطة المختارة: ${tex(`$|d_1 - d_2| = |${fmt(d1, 3)} - ${fmt(d2, 3)}| = ${fmt(Math.abs(d1 - d2), 3)} = 2a$`)}. والاختلاف المركزي ${tex(`$e = \\tfrac{c}{a} \\approx ${fmt(c / a, 3)} > 1$`)}.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

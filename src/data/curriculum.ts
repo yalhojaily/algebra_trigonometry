@@ -183,7 +183,7 @@ export const chapters: Chapter[] = [
     id: '10',
     ar: 'الهندسة التحليلية',
     en: 'Analytic Geometry',
-    status: 'soon',
+    status: 'ready',
     blurb: 'القطوع المخروطية: المكافئ والناقص والزائد وخصائصها.',
     sections: [
       { id: '10.1', ar: 'القطوع المكافئة', en: 'Parabolas', topics: [t('القطوع المخروطية', 'Conic Sections'), t('القطوع المكافئة الأفقية', 'Horizontal Parabolas'), t('التعريف الهندسي والمعادلات', 'Geometric Definition and Equations of Parabolas'), t('تطبيق', 'An Application of Parabolas')] },

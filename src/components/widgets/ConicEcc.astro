@@ -1,0 +1,75 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-ecc" title="تعريف موحّد للقطوع: الاختلاف المركزي" en="PF = e · PD">
+  <div class="controls">
+    <label>الاختلاف المركزي <span class="ltr">e = <output data-o="e"></output></span><input type="range" min="0.1" max="2.5" step="0.05" value="0.6" data-i="e" list="w-ecc-ticks" /><datalist id="w-ecc-ticks"><option value="1"></option></datalist></label>
+    <label>البعد بين البؤرة والدليل <span class="ltr">k = <output data-o="k"></output></span><input type="range" min="1" max="5" step="0.5" value="3" data-i="k" /></label>
+  </div>
+  <canvas aria-label="القطع الناتج من بؤرة ودليل واختلاف مركزي"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-ecc')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -10, xmax: 10, ymin: -6, ymax: 6 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const e = v('e');
+    const k = v('k');
+    root.querySelector('[data-o="e"]')!.textContent = String(e);
+    root.querySelector('[data-o="k"]')!.textContent = String(k);
+    plot.fit(0.62);
+    plot.view = { xmin: -14, xmax: -14 + 24 / 0.62, ymin: -12, ymax: 12 };
+    plot.clear();
+    plot.grid(2, 2);
+    // البؤرة عند الأصل، والدليل x = −k ← r = ek / (1 − e cos θ)
+    plot.seg(-k, -40, -k, 40, css('--plot-alt'), 2.5, [7, 5]);
+    plot.dot(0, 0, css('--plot-hot'), 6);
+    const r = (t: number) => (e * k) / (1 - e * Math.cos(t));
+    const N = 1200;
+    const { ctx } = plot;
+    ctx.strokeStyle = css('--plot-curve'); ctx.lineWidth = 3; ctx.beginPath();
+    let pen = false;
+    for (let j = 0; j <= N; j++) {
+      const t = (2 * Math.PI * j) / N;
+      const rr = r(t);
+      if (!Number.isFinite(rr) || rr <= 0 || rr > 200) { pen = false; continue; }
+      const x = rr * Math.cos(t), y = rr * Math.sin(t);
+      if (pen) ctx.lineTo(plot.X(x), plot.Y(y)); else ctx.moveTo(plot.X(x), plot.Y(y));
+      pen = true;
+    }
+    ctx.stroke();
+    // الفرع الآخر للزائد (r سالب)
+    if (e > 1) {
+      ctx.beginPath(); pen = false;
+      for (let j = 0; j <= N; j++) {
+        const t = (2 * Math.PI * j) / N;
+        const rr = r(t);
+        if (!Number.isFinite(rr) || rr >= 0 || rr < -200) { pen = false; continue; }
+        const x = rr * Math.cos(t), y = rr * Math.sin(t);
+        if (pen) ctx.lineTo(plot.X(x), plot.Y(y)); else ctx.moveTo(plot.X(x), plot.Y(y));
+        pen = true;
+      }
+      ctx.stroke();
+    }
+    // نقطة مثال عند θ = 120°
+    const t0 = (2 * Math.PI) / 3, r0 = r(t0);
+    if (r0 > 0 && r0 < 60) {
+      const P: [number, number] = [r0 * Math.cos(t0), r0 * Math.sin(t0)];
+      plot.dot(P[0], P[1], css('--ink'), 5);
+      plot.seg(P[0], P[1], 0, 0, css('--plot-hot'), 2);
+      plot.seg(P[0], P[1], -k, P[1], css('--plot-alt'), 2, [3, 3]);
+    }
+    const name = Math.abs(e - 1) < 0.001 ? 'قطع مكافئ' : e < 1 ? 'قطع ناقص' : 'قطع زائد';
+    out.innerHTML =
+      `<p>كل نقطة ${tex('$P$')} على المنحنى تحقق ${tex(`$PF = e \\cdot PD$`)}: بعدها عن البؤرة ${tex('$F$')} (عند الأصل) يساوي ${tex(`$${e}$`)} مضروبًا في بعدها عن الدليل ${tex(`$x = ${-k}$`)}.</p>` +
+      `<p><strong>${name}</strong>: ${e < 1 ? tex('$0 < e < 1$') + ' ← قطع ناقص (يقترب من دائرة كلما صغر e).' : Math.abs(e - 1) < 0.001 ? tex('$e = 1$') + ' ← قطع مكافئ (البعدان متساويان).' : tex('$e > 1$') + ' ← قطع زائد بفرعين.'}</p>` +
+      `<p>بالصيغة القطبية (الملحق أ): ${tex(`$r = \\dfrac{ek}{1 - e\\cos\\theta} = \\dfrac{${fmt(e * k, 2)}}{1 - ${e}\\cos\\theta}$`)}.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

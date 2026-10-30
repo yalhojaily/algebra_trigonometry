@@ -1,0 +1,175 @@
+---
+section: "7.6"
+summary: "حل المعادلات المثلثية: الطرق الخطية، والتحليل وخاصية الضرب الصفري، والطرق التربيعية والقانون العام، والتعويض بالمتطابقات، ومعادلات أنصاف الزوايا ومضاعفاتها، والحل العام، وتطبيق على ظاهرة دورية."
+minutes: 50
+prerequisites: ["7.1", "7.4", "7.5", "1.4"]
+terms:
+  - { ar: "معادلة مثلثية", en: "Trigonometric Equation", def: "معادلة فيها دالة مثلثية لمتغير، وتصح لبعض القيم فقط." }
+  - { ar: "الحل العام", en: "General Solution", def: "كل الحلول، بإضافة مضاعفات الدورة إلى الحلول الأساسية: x = x₀ + 2nπ (أو + nπ للظل)." }
+  - { ar: "خاصية الضرب الصفري", en: "Zero-Factor Property", def: "إذا كان ab = 0 فإن a = 0 أو b = 0." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import TrigEquation from '../../components/widgets/TrigEquation.astro';
+
+المتطابقة صحيحة لكل $x$. أما المعادلة المثلثية مثل $2\sin x + 1 = 0$ فصحيحة لقيم محددة فقط، ولأن الدوال دورية فعدد هذه القيم لا نهائي. لذلك نطلب عادة الحلول في دورة واحدة $[0, 2\pi)$ (أو $[0^\circ, 360^\circ)$)، أو نكتب **الحل العام** بإضافة مضاعفات الدورة.
+
+## طرق خطية <span class="en" lang="en">Linear Methods</span>
+
+<Box kind="rule" title="الخطة الأساسية" en="Solving a trigonometric equation">
+1. اعزل الدالة المثلثية في طرف (كما تعزل $x$ في معادلة خطية).
+2. أوجد الزاوية المرجعية من القيمة المطلقة.
+3. حدد الأرباع التي تكون فيها الدالة بهذه الإشارة.
+4. اكتب الحلول في الفترة المطلوبة (أو أضف $2n\pi$ للحل العام، و $n\pi$ للظل).
+</Box>
+
+<Example n="1" title="معادلة خطية">
+حل $2\sin x + 1 = 0$ في $[0, 2\pi)$، ثم اكتب الحل العام.
+
+<Solution>
+$\sin x = -\tfrac12$: المرجع $\tfrac{\pi}{6}$، والجيب سالب في الربعين الثالث والرابع.
+
+$x = \pi + \tfrac{\pi}{6} = \tfrac{7\pi}{6}$ و $x = 2\pi - \tfrac{\pi}{6} = \tfrac{11\pi}{6}$
+
+الحل العام: $x = \tfrac{7\pi}{6} + 2n\pi$ أو $x = \tfrac{11\pi}{6} + 2n\pi$، حيث $n$ عدد صحيح.
+</Solution>
+</Example>
+
+<TrigEquation />
+
+## خاصية الضرب الصفري <span class="en" lang="en">Zero-Factor Property Method</span>
+
+<Example n="2" title="التحليل">
+حل $\sin x\tan x = \sin x$ في $[0^\circ, 360^\circ)$.
+
+<Solution>
+لا تقسم على $\sin x$ (قد يساوي صفرًا فتضيع حلول). انقل وحلّل: $\sin x\tan x - \sin x = 0$ ← $\sin x(\tan x - 1) = 0$.
+
+$\sin x = 0$ ← $x = 0^\circ, 180^\circ$. أو $\tan x = 1$ ← $x = 45^\circ, 225^\circ$.
+
+الحلول: $0^\circ, 45^\circ, 180^\circ, 225^\circ$.
+</Solution>
+</Example>
+
+<Box kind="mistake" title="القسمة على دالة تُضيّع حلولًا">
+لو قسمنا $\sin x\tan x = \sin x$ على $\sin x$ لحصلنا على $\tan x = 1$ فقط، وضاع الحلان $0^\circ$ و $180^\circ$. انقل كل شيء إلى طرف وحلّل.
+</Box>
+
+## طرق تربيعية <span class="en" lang="en">Quadratic Methods</span>
+
+<Example n="3" title="تحليل تربيعي">
+حل $\tan^2 x + \tan x - 2 = 0$ في $[0, 2\pi)$.
+
+<Solution>
+عبارة تربيعية في $\tan x$: $(\tan x - 1)(\tan x + 2) = 0$.
+
+$\tan x = 1$ ← $x = \tfrac{\pi}{4}, \tfrac{5\pi}{4}$. و $\tan x = -2$: $\tan^{-1}(-2) \approx -1.1071$، والظل دورته $\pi$.
+
+$x \approx -1.1071 + \pi \approx 2.0344$ و $x \approx -1.1071 + 2\pi \approx 5.1760$. الحلول الأربعة: $\tfrac{\pi}{4}, 2.0344, \tfrac{5\pi}{4}, 5.1760$.
+</Solution>
+</Example>
+
+<Example n="4" title="القانون العام">
+حل $\cot x(\cot x + 3) = 1$ في $[0, 2\pi)$.
+
+<Solution>
+$\cot^2 x + 3\cot x - 1 = 0$ لا تتحلل، فنستخدم القانون العام: $\cot x = \dfrac{-3 \pm \sqrt{13}}{2}$، أي $\cot x \approx 0.3028$ أو $\cot x \approx -3.3028$.
+
+بالمقلوب: $\tan x \approx 3.3028$ ← $x \approx 1.2768, 4.4184$. و $\tan x \approx -0.3028$ ← $x \approx 2.8476, 5.9892$.
+
+الحلول: $1.2768,\ 2.8476,\ 4.4184,\ 5.9892$ تقريبًا.
+</Solution>
+</Example>
+
+## التعويض بالمتطابقات <span class="en" lang="en">Trigonometric Identity Substitutions</span>
+
+إذا كانت المعادلة تحوي دالتين أو زاويتين، استخدم متطابقة لتحويلها إلى دالة واحدة بزاوية واحدة.
+
+<Example n="5" title="فيثاغورس">
+حل $\tan x + \sqrt3 = \sec x$ في $[0, 2\pi)$.
+
+<Solution>
+لا توجد متطابقة بسيطة تربط $\tan$ و $\sec$ دون تربيع، فنربّع الطرفين: $\tan^2 x + 2\sqrt3\tan x + 3 = \sec^2 x = 1 + \tan^2 x$ ← $2\sqrt3\tan x = -2$ ← $\tan x = -\tfrac{\sqrt3}{3}$.
+
+$x = \tfrac{5\pi}{6}$ أو $x = \tfrac{11\pi}{6}$. التربيع قد يُدخل حلولًا دخيلة، فنتحقق: عند $\tfrac{5\pi}{6}$: $-\tfrac{\sqrt3}{3} + \sqrt3 = \tfrac{2\sqrt3}{3}$ بينما $\sec\tfrac{5\pi}{6} = -\tfrac{2\sqrt3}{3}$ ✗.
+
+عند $\tfrac{11\pi}{6}$: $-\tfrac{\sqrt3}{3} + \sqrt3 = \tfrac{2\sqrt3}{3} = \sec\tfrac{11\pi}{6}$ ✓. الحل الوحيد $x = \tfrac{11\pi}{6}$.
+</Solution>
+</Example>
+
+## معادلات بأنصاف الزوايا ومضاعفاتها <span class="en" lang="en">Equations with Half-Angles and Multiple Angles</span>
+
+<Box kind="rule" title="تغيير الفترة" en="Multiple and half angles">
+إذا كانت المعادلة في $kx$ والحل مطلوب لـ $x \in [0, 2\pi)$، فإن $kx \in [0, 2k\pi)$. حل للزاوية $kx$ في هذه الفترة **الموسعة** ثم اقسم على $k$. وكذلك مع $\tfrac{x}{2}$: الفترة تصير $[0, \pi)$.
+</Box>
+
+<Example n="6" title="زاوية مضاعفة">
+حل $\cos 2x = \tfrac12$ في $[0, 2\pi)$.
+
+<Solution>
+$2x \in [0, 4\pi)$. جيب التمام يساوي $\tfrac12$ عند $\tfrac{\pi}{3}$ و $\tfrac{5\pi}{3}$، ثم بإضافة $2\pi$: $\tfrac{7\pi}{3}$ و $\tfrac{11\pi}{3}$.
+
+اقسم على 2: $x = \tfrac{\pi}{6}, \tfrac{5\pi}{6}, \tfrac{7\pi}{6}, \tfrac{11\pi}{6}$
+
+أربعة حلول: ضعف ما لـ $\cos x = \tfrac12$، لأن $\cos 2x$ تكمل دورتين في $[0, 2\pi)$.
+</Solution>
+</Example>
+
+<Example n="7" title="نصف زاوية">
+حل $2\sin\dfrac{x}{2} = 1$ في $[0, 2\pi)$.
+
+<Solution>
+$\sin\tfrac{x}{2} = \tfrac12$ و $\tfrac{x}{2} \in [0, \pi)$.
+
+$\tfrac{x}{2} = \tfrac{\pi}{6}$ أو $\tfrac{5\pi}{6}$ (كلاهما في الفترة).
+
+$x = \tfrac{\pi}{3}$ أو $x = \tfrac{5\pi}{3}$
+</Solution>
+</Example>
+
+<Example n="8" title="ضعف زاوية مع زاوية مفردة">
+حل $\sin 2x = \cos x$ في $[0, 2\pi)$.
+
+<Solution>
+$2\sin x\cos x - \cos x = 0$ ← $\cos x(2\sin x - 1) = 0$.
+
+$\cos x = 0$ ← $x = \tfrac{\pi}{2}, \tfrac{3\pi}{2}$. أو $\sin x = \tfrac12$ ← $x = \tfrac{\pi}{6}, \tfrac{5\pi}{6}$.
+
+الحلول: $\tfrac{\pi}{6}, \tfrac{\pi}{2}, \tfrac{5\pi}{6}, \tfrac{3\pi}{2}$.
+</Solution>
+</Example>
+
+## تطبيقات <span class="en" lang="en">Applications</span>
+
+<Example n="9" title="ضغط الصوت">
+ضغط موجة صوتية $P = 0.004\sin(2\pi \cdot 261.63\,t)$. متى يساوي $P = 0.002$ لأول مرة ($t > 0$)؟
+
+<Solution>
+$\sin(523.26\pi t) = 0.5$
+
+أول زاوية موجبة: $523.26\pi t = \tfrac{\pi}{6}$
+
+$t = \dfrac{1}{6 \cdot 523.26} \approx 0.000319$ ثانية.
+</Solution>
+</Example>
+
+<Check
+  q="كم حلًا للمعادلة $\\sin 3x = 1$ في $[0, 2\\pi)$؟"
+  options={["1", "2", "3", "6"]}
+  answer={2}
+  explain="$3x \\in [0, 6\\pi)$، و $\\sin = 1$ مرة في كل دورة: $3x = \\tfrac{\\pi}{2}, \\tfrac{5\\pi}{2}, \\tfrac{9\\pi}{2}$، أي ثلاثة حلول."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- اعزل الدالة، ثم الزاوية المرجعية، ثم الأرباع.
+- حلّل بدل القسمة على دالة، واستخدم القانون العام إذا لم تتحلل.
+- حوّل إلى دالة واحدة بزاوية واحدة بالمتطابقات، وتحقق إذا ربّعت.
+- مع $kx$ وسّع الفترة إلى $[0, 2k\pi)$ ثم اقسم على $k$.
+- الحل العام: أضف $2n\pi$ (أو $n\pi$ للظل).
+
+<Practice set="7.6" count={5} />

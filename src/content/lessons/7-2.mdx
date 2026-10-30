@@ -1,0 +1,122 @@
+---
+section: "7.2"
+summary: "كيف تثبت أن معادلة مثلثية متطابقة: قواعد الإثبات، واستراتيجيات مجربة (التحويل إلى sin و cos، وتوحيد المقامات، والضرب في المرافق، والتحليل)، والعمل على طرف واحد أو على الطرفين، مع أداة لاختبار أي متطابقة بالرسم."
+minutes: 40
+prerequisites: ["7.1", "R.4", "R.5"]
+terms:
+  - { ar: "إثبات متطابقة", en: "Verifying an Identity", def: "تحويل أحد الطرفين بخطوات صحيحة حتى يطابق الطرف الآخر." }
+  - { ar: "المرافق", en: "Conjugate", def: "للعبارة a + b مرافقها a − b؛ وضربهما يعطي a² − b²." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import IdentityGraph from '../../components/widgets/IdentityGraph.astro';
+
+الرسم يقنعك بأن المتطابقة صحيحة، والإثبات يؤكد ذلك. إثبات المتطابقة يشبه الألغاز: لديك نقطة بداية (أحد الطرفين) ونقطة نهاية (الطرف الآخر)، وأدواتك المتطابقات الأساسية والجبر. لا توجد خوارزمية واحدة، لكن هناك استراتيجيات تنجح غالبًا.
+
+## استراتيجيات <span class="en" lang="en">Strategies</span>
+
+<Box kind="rule" title="قواعد الإثبات" en="Hints for verifying identities">
+1. **اعمل على طرف واحد**، وغالبًا الأعقد، حتى يصير مثل الآخر.
+2. **لا تعامل المتطابقة كمعادلة**: لا تنقل حدودًا من طرف لآخر، ولا تضرب الطرفين في شيء، ولا تربّعهما. هذا يفترض صحة ما تريد إثباته.
+3. حوّل إلى $\sin$ و $\cos$ إن لم تجد طريقًا أوضح.
+4. وحّد مقامات الكسور، أو افصل كسرًا بسطه مجموع إلى كسرين.
+5. اضرب البسط والمقام في **المرافق** <span class="en" lang="en">(conjugate)</span> مثل $1 - \sin x$، فيظهر $1 - \sin^2 x = \cos^2 x$.
+6. حلّل: العامل المشترك، والفرق بين مربعين، والعبارة التربيعية.
+7. انظر إلى الطرف الآخر وأنت تعمل: هل فيه $\sec$؟ حاول إظهار $\cos$ في المقام.
+</Box>
+
+## الإثبات بالعمل على طرف واحد <span class="en" lang="en">Working with One Side</span>
+
+<Example n="1" title="التحويل إلى جيب وجيب تمام">
+أثبت أن $\cot x + 1 = \csc x(\cos x + \sin x)$.
+
+<Solution>
+نبدأ من الطرف الأيمن (فيه ضرب يمكن توزيعه): $\csc x(\cos x + \sin x) = \dfrac{1}{\sin x}(\cos x + \sin x)$
+
+$= \dfrac{\cos x}{\sin x} + \dfrac{\sin x}{\sin x}$
+
+$= \cot x + 1$ ✓ وهو الطرف الأيسر.
+</Solution>
+</Example>
+
+<Example n="2" title="توحيد المقامات">
+أثبت أن $\dfrac{1}{1 - \sin x} + \dfrac{1}{1 + \sin x} = 2\sec^2 x$.
+
+<Solution>
+الطرف الأيسر: المقام المشترك $(1 - \sin x)(1 + \sin x) = 1 - \sin^2 x$.
+
+$= \dfrac{(1 + \sin x) + (1 - \sin x)}{1 - \sin^2 x} = \dfrac{2}{\cos^2 x}$
+
+$= 2\sec^2 x$ ✓
+</Solution>
+</Example>
+
+<Example n="3" title="الضرب في المرافق">
+أثبت أن $\dfrac{\cos x}{1 + \sin x} = \dfrac{1 - \sin x}{\cos x}$.
+
+<Solution>
+الطرف الأيسر، نضرب البسط والمقام في مرافق المقام $1 - \sin x$: $\dfrac{\cos x(1 - \sin x)}{(1 + \sin x)(1 - \sin x)}$
+
+$= \dfrac{\cos x(1 - \sin x)}{1 - \sin^2 x} = \dfrac{\cos x(1 - \sin x)}{\cos^2 x}$
+
+$= \dfrac{1 - \sin x}{\cos x}$ ✓
+</Solution>
+</Example>
+
+<Example n="4" title="التحليل">
+أثبت أن $\dfrac{\sin^4 x - \cos^4 x}{\sin^2 x - \cos^2 x} = 1$.
+
+<Solution>
+البسط فرق بين مربعين: $\sin^4 x - \cos^4 x = (\sin^2 x - \cos^2 x)(\sin^2 x + \cos^2 x)$.
+
+$\dfrac{(\sin^2 x - \cos^2 x)(\sin^2 x + \cos^2 x)}{\sin^2 x - \cos^2 x} = \sin^2 x + \cos^2 x$
+
+$= 1$ ✓ (حيث المقام لا يساوي صفرًا).
+</Solution>
+</Example>
+
+## الإثبات بالعمل على الطرفين <span class="en" lang="en">Working with Both Sides</span>
+
+إذا كان الطرفان معقدين، حوّل كلًّا منهما **على حدة** إلى صورة ثالثة مشتركة. هذا مشروع لأن كل خطوة متطابقة: إذا كان $A = C$ و $B = C$ فإن $A = B$.
+
+<Example n="5" title="صورة وسطى مشتركة">
+أثبت أن $\dfrac{\sec x + \tan x}{\sec x - \tan x} = \dfrac{1 + 2\sin x + \sin^2 x}{\cos^2 x}$.
+
+<Solution>
+الأيسر: اضرب البسط والمقام في $\cos x$: $\dfrac{1 + \sin x}{1 - \sin x}$. ثم في $1 + \sin x$: $\dfrac{(1 + \sin x)^2}{1 - \sin^2 x} = \dfrac{(1 + \sin x)^2}{\cos^2 x}$.
+
+الأيمن: البسط مربع كامل: $1 + 2\sin x + \sin^2 x = (1 + \sin x)^2$، فالطرف $\dfrac{(1 + \sin x)^2}{\cos^2 x}$.
+
+الطرفان يساويان العبارة نفسها، فالمتطابقة صحيحة ✓
+</Solution>
+</Example>
+
+<Box kind="mistake" title="القيمة الواحدة لا تُثبت شيئًا">
+إذا تحققت المعادلة عند $x = \tfrac{\pi}{4}$ فهذا لا يعني أنها متطابقة. لكن قيمة واحدة لا تتحقق عندها **تكفي لنفيها**. مثلًا $(\sin x + \cos x)^2 = 1$ تفشل عند $x = \tfrac{\pi}{4}$: الطرف الأيسر $2$.
+</Box>
+
+## اختبر بنفسك <span class="en" lang="en">Test any identity</span>
+
+اكتب أي طرفين (بالمتغير $x$، مثل `sec(x)^2 - tan(x)^2` و `1`)، وسترسم الأداة الطرفين وتقارنهما عند مئات النقاط. استخدمها قبل الإثبات لتعرف هل تستحق المحاولة.
+
+<IdentityGraph mode="custom" />
+
+<Check
+  q="أي خطوة **غير** مسموحة في إثبات متطابقة؟"
+  options={["الضرب في $\\tfrac{\\cos x}{\\cos x}$ داخل طرف واحد", "تربيع الطرفين", "توحيد مقامات أحد الطرفين", "استخدام $\\sin^2 x = 1 - \\cos^2 x$"]}
+  answer={1}
+  explain="تربيع الطرفين عملية على معادلة تفترض صحتها، وقد يحوّل عبارة خاطئة إلى صحيحة (مثل $-1 = 1$ تصير $1 = 1$)."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- اعمل على طرف واحد (الأعقد)، أو حوّل الطرفين إلى صورة ثالثة مشتركة.
+- لا تنقل حدودًا ولا تضرب الطرفين ولا تربّعهما.
+- الأدوات: التحويل إلى $\sin$ و $\cos$، وتوحيد المقامات، والمرافق، والتحليل، وفيثاغورس.
+- مثال مضاد واحد ينفي المتطابقة، والإثبات يحتاج جبرًا لكل $x$.
+
+<Practice set="7.2" count={5} />

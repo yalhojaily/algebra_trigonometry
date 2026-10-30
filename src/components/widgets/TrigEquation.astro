@@ -1,0 +1,81 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-teq" title="حلول المعادلة المثلثية في دورة واحدة" en="Solving a·sin(bx) + c = k graphically">
+  <div class="controls">
+    <label>الدالة
+      <span class="seg" dir="ltr" data-i="f"><button type="button" data-v="sin" aria-pressed="true">sin</button><button type="button" data-v="cos">cos</button><button type="button" data-v="tan">tan</button></span>
+    </label>
+    <label><span class="ltr">b = <output data-o="b"></output></span><input type="range" min="1" max="4" step="1" value="1" data-i="b" /></label>
+    <label><span class="ltr">k = <output data-o="k"></output></span><input type="range" min="-1.5" max="1.5" step="0.05" value="0.5" data-i="k" /></label>
+  </div>
+  <canvas aria-label="المنحنى والمستقيم الأفقي ونقاط التقاطع"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-teq')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -0.5, xmax: 7, ymin: -2, ymax: 2 });
+  let f = 'sin';
+  root.querySelectorAll<HTMLButtonElement>('[data-i="f"] button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      f = btn.dataset.v!;
+      root.querySelectorAll('[data-i="f"] button').forEach((o) => o.setAttribute('aria-pressed', String(o === btn)));
+      draw();
+    }),
+  );
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const P = Math.PI;
+  // تسمية الحل بمضاعفات π/12 إن أمكن
+  const piName = (x: number) => {
+    const k = (x / P) * 12;
+    if (Math.abs(k - Math.round(k)) > 1e-6) return null;
+    const n = Math.round(k);
+    if (n === 0) return '0';
+    const g = (a: number, b: number): number => (b === 0 ? a : g(b, a % b));
+    const d = g(n, 12), nn = n / d, dd = 12 / d;
+    return dd === 1 ? `${nn === 1 ? '' : nn}\\pi` : `\\tfrac{${nn === 1 ? '' : nn}\\pi}{${dd}}`;
+  };
+  function draw() {
+    const b = v('b'), k = v('k');
+    root.querySelector('[data-o="b"]')!.textContent = String(b);
+    root.querySelector('[data-o="k"]')!.textContent = String(k);
+    const g = (x: number) => (f === 'sin' ? Math.sin(b * x) : f === 'cos' ? Math.cos(b * x) : Math.tan(b * x));
+    plot.fit(0.45);
+    plot.view = { xmin: -0.4, xmax: 2 * P + 0.4, ymin: -2, ymax: 2 };
+    plot.clear();
+    plot.piGrid(4, 1);
+    const { ctx } = plot;
+    ctx.fillStyle = css('--accent-soft');
+    ctx.globalAlpha = 0.5;
+    ctx.fillRect(plot.X(0), 0, plot.X(2 * P) - plot.X(0), plot.h);
+    ctx.globalAlpha = 1;
+    plot.fn((x) => (f === 'tan' && Math.abs(Math.cos(b * x)) < 0.04 ? NaN : g(x)), css('--plot-curve'), 3);
+    plot.seg(-1, k, 8, k, css('--plot-alt'), 2);
+    // الحلول: حل الأساس ثم أضف مضاعفات الدورة
+    const sols: number[] = [];
+    const per = f === 'tan' ? P / b : (2 * P) / b;
+    let base: number[] = [];
+    if (f === 'tan') base = [Math.atan(k)];
+    else if (Math.abs(k) <= 1) {
+      const a = f === 'sin' ? Math.asin(k) : Math.acos(k);
+      base = f === 'sin' ? [a, P - a] : [a, -a];
+    }
+    for (const u of base) for (let j = -2 * b - 2; j <= 2 * b + 2; j++) {
+      const x = (u + j * (f === 'tan' ? P : 2 * P)) / b;
+      if (x >= -1e-9 && x < 2 * P - 1e-9 && !sols.some((s) => Math.abs(s - x) < 1e-7)) sols.push(Math.max(0, x));
+    }
+    sols.sort((p, q) => p - q);
+    sols.forEach((x) => { plot.dot(x, k, css('--plot-hot'), 6); plot.seg(x, 0, x, k, css('--plot-hot'), 1.2, [3, 3]); });
+    const eq = `\\${f}${b === 1 ? ' x' : ` ${b}x`} = ${k}`;
+    out.innerHTML =
+      `<p>${tex(`$${eq}$`)}: ${sols.length ? `${sols.length === 1 ? 'حل واحد' : sols.length === 2 ? 'حلّان' : sols.length + ' حلول'} في ${tex('$[0, 2\\pi)$')}` : 'لا حلول، لأن ' + tex(`$|${k}| > 1$`) + ' خارج مدى ' + (f === 'sin' ? 'الجيب' : 'جيب التمام')}.</p>` +
+      (sols.length ? `<p>${tex(`$x ${sols.every((x) => piName(x)) ? '=' : '\\approx'} ${sols.map((x) => { const n = piName(x); return n ? `${n}` : fmt(x, 3); }).join(',\\ ')}$`)}</p>` : '') +
+      `<p>${b > 1 ? `مع ${tex(`$${b}x$`)} تتكرر الدالة ${b} مرات في ${tex('$[0, 2\\pi)$')}، فيتضاعف عدد الحلول. لذلك نحل لـ ${tex(`$${b}x$`)} في ${tex(`$[0, ${b * 2}\\pi)$`)} ثم نقسم على ${b}.` : `الحل العام: أضف مضاعفات الدورة ${tex(f === 'tan' ? '$\\pi$' : '$2\\pi$')} إلى كل حل أساسي.`}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

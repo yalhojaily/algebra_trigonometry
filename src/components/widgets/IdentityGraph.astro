@@ -1,0 +1,86 @@
+---
+import Frame from './Frame.astro';
+interface Props { mode?: 'presets' | 'custom' }
+const { mode = 'presets' } = Astro.props;
+const presets: [string, string, string][] = [
+  ['sin(x)^2 + cos(x)^2', '1', 'متطابقة فيثاغورس'],
+  ['tan(x)^2 + 1', 'sec(x)^2', 'متطابقة فيثاغورس الثانية'],
+  ['sin(-x)', '-sin(x)', 'الجيب دالة فردية'],
+  ['cos(-x)', 'cos(x)', 'جيب التمام دالة زوجية'],
+  ['tan(x)*cos(x)', 'sin(x)', 'متطابقة القسمة'],
+  ['(sin(x)+cos(x))^2', '1', 'خطأ شائع: ليست متطابقة'],
+  ['sin(2x)', '2sin(x)', 'خطأ شائع: ليست متطابقة'],
+  ['sqrt(1-cos(x)^2)', 'sin(x)', 'صحيحة في بعض الفترات فقط'],
+];
+---
+<Frame id="w-idg" title={mode === 'custom' ? 'اختبر متطابقتك بالرسم' : 'هل الطرفان متطابقان؟'} en="Graphing both sides of an identity">
+  <div class="controls">
+    {mode === 'presets' && (
+      <label class="wide">اختر
+        <select data-i="p">
+          {presets.map(([l, r, why], k) => <option value={k} data-l={l} data-r={r}>{why}: {l} = {r}</option>)}
+        </select>
+      </label>
+    )}
+    <label class="wide">الطرف الأيسر <input type="text" dir="ltr" data-i="l" value={presets[0][0]} spellcheck="false" /></label>
+    <label class="wide">الطرف الأيمن <input type="text" dir="ltr" data-i="r" value={presets[0][1]} spellcheck="false" /></label>
+  </div>
+  <canvas aria-label="منحنيا الطرفين"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--plot-curve)"></i>الطرف الأيسر</span>
+    <span><i style="background:var(--plot-hot)"></i>الطرف الأيمن (متقطع)</span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  import { parse, evalNode, toTex, type Node } from '../../lib/answer';
+  const root = document.getElementById('w-idg')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -7, xmax: 7, ymin: -3, ymax: 3 });
+  const L = root.querySelector<HTMLInputElement>('[data-i="l"]')!;
+  const Rr = root.querySelector<HTMLInputElement>('[data-i="r"]')!;
+  const sel = root.querySelector<HTMLSelectElement>('[data-i="p"]');
+  sel?.addEventListener('change', () => {
+    const o = sel.selectedOptions[0];
+    L.value = o.dataset.l!; Rr.value = o.dataset.r!;
+    draw();
+  });
+  const fnOf = (n: Node) => (x: number) => { try { const v = evalNode(n, { x }); return Math.abs(v.im) > 1e-9 ? NaN : v.re; } catch { return NaN; } };
+  function draw() {
+    plot.fit(0.5);
+    plot.view = { xmin: -2.2 * Math.PI, xmax: 2.2 * Math.PI, ymin: -3, ymax: 3 };
+    plot.clear();
+    plot.piGrid(2, 1);
+    let a: Node, b: Node;
+    try { a = parse(L.value); b = parse(Rr.value); } catch (e) { out.innerHTML = `<p>لم أفهم أحد الطرفين: ${(e as Error).message}</p>`; return; }
+    const f = fnOf(a), g = fnOf(b);
+    plot.fn(f, css('--plot-curve'), 4);
+    plot.fn(g, css('--plot-hot'), 2.4, [7, 6]);
+    // مقارنة عددية
+    let bad = 0, tested = 0, worst = 0, worstX = 0;
+    for (let k = 0; k < 400; k++) {
+      const x = -2 * Math.PI + (4 * Math.PI * k) / 399 + 0.0137;
+      const u = f(x), w = g(x);
+      if (!Number.isFinite(u) || !Number.isFinite(w) || Math.abs(u) > 1e6 || Math.abs(w) > 1e6) continue;
+      tested++;
+      const d = Math.abs(u - w);
+      if (d > 1e-6 * Math.max(1, Math.abs(u))) { bad++; if (d > worst) { worst = d; worstX = x; } }
+    }
+    const lt = toTex(a), rt = toTex(b);
+    let verdict = '';
+    if (!tested) verdict = 'لا توجد قيم مشتركة معرّفة للطرفين في هذه الفترة.';
+    else if (!bad) verdict = `<strong style="color:var(--ok)">يبدو أنها متطابقة</strong>: المنحنيان منطبقان عند كل النقاط المختبرة (${tested} نقطة). الرسم دليل وليس برهانًا؛ البرهان جبري (الدرس 7.2).`;
+    else if (bad < tested) verdict = `<strong style="color:var(--err)">ليست متطابقة</strong>: يتساوى الطرفان عند بعض القيم فقط. عند ${tex(`$x \\approx ${fmt(worstX, 2)}$`)} الأيسر ${tex(`$${fmt(f(worstX), 3)}$`)} والأيمن ${tex(`$${fmt(g(worstX), 3)}$`)}.`;
+    else verdict = `<strong style="color:var(--err)">ليست متطابقة</strong>: الطرفان مختلفان، مثلًا عند ${tex(`$x \\approx ${fmt(worstX, 2)}$`)}.`;
+    out.innerHTML = `<p>${tex(`$${lt} \\overset{?}{=} ${rt}$`)}</p><p>${verdict}</p>`;
+  }
+  [L, Rr].forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>
+<style>
+  .wide { grid-column: 1 / -1; }
+  .wide input, .wide select { width: 100%; font: 1rem var(--font-mono); padding: 0.4rem 0.6rem; border: 1px solid var(--line); border-radius: var(--radius-s); background: var(--paper); color: var(--ink); margin-top: 0.25rem; }
+</style>

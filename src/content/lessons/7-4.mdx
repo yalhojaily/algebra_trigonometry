@@ -1,0 +1,180 @@
+---
+section: "7.4"
+summary: "متطابقات ضعف الزاوية (sin 2A و cos 2A بصيغها الثلاث و tan 2A)، وصيغ خفض القوة، وتحويل الضرب إلى مجموع وبالعكس، ومتطابقات نصف الزاوية مع اختيار الإشارة، وإثبات متطابقات بها."
+minutes: 45
+prerequisites: ["7.3"]
+terms:
+  - { ar: "متطابقات ضعف الزاوية", en: "Double-Angle Identities", def: "sin 2A = 2 sin A cos A ، cos 2A = cos²A − sin²A ، tan 2A = 2tan A/(1 − tan²A)." }
+  - { ar: "متطابقات نصف الزاوية", en: "Half-Angle Identities", def: "sin(A/2) = ±√((1 − cos A)/2) ، cos(A/2) = ±√((1 + cos A)/2) ، tan(A/2) = (1 − cos A)/sin A." }
+  - { ar: "خفض القوة", en: "Power Reducing", def: "sin²x = (1 − cos 2x)/2 و cos²x = (1 + cos 2x)/2." }
+  - { ar: "تحويل الضرب إلى مجموع", en: "Product-to-Sum", def: "صيغ تكتب حاصل ضرب دالتين مجموعًا، مثل sin A cos B = ½[sin(A+B) + sin(A−B)]." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import DoubleAngle from '../../components/widgets/DoubleAngle.astro';
+
+ضع $B = A$ في متطابقات المجموع، فتحصل مباشرة على صيغ **ضعف الزاوية**. واقلبها، فتحصل على صيغ **نصف الزاوية**. هذا الدرس ليس قوانين جديدة بقدر ما هو قراءات مختلفة لقوانين الدرس السابق.
+
+## متطابقات ضعف الزاوية <span class="en" lang="en">Double-Angle Identities</span>
+
+<Box kind="rule" title="ضعف الزاوية" en="Double-Angle Identities">
+$$\sin 2A = 2\sin A\cos A$$
+
+$$\cos 2A = \cos^2 A - \sin^2 A = 1 - 2\sin^2 A = 2\cos^2 A - 1$$
+
+$$\tan 2A = \frac{2\tan A}{1 - \tan^2 A}$$
+
+الصيغتان الأخيرتان لـ $\cos 2A$ من الأولى بتعويض $\cos^2 A = 1 - \sin^2 A$ أو $\sin^2 A = 1 - \cos^2 A$. اختر منها ما يناسب المعطيات.
+</Box>
+
+<Box kind="mistake" title="sin 2A ليست 2 sin A">
+$\sin 60^\circ = \tfrac{\sqrt3}{2} \approx 0.87$، بينما $2\sin 30^\circ = 1$. المضاعفة داخل الدالة تغيّر **الدورة**، لا الارتفاع.
+</Box>
+
+<DoubleAngle />
+
+<Example n="1" title="من دالة إلى ضعف الزاوية">
+إذا كان $\cos\theta = \tfrac35$ و $\sin\theta < 0$، فأوجد $\sin 2\theta$ و $\cos 2\theta$ و $\tan 2\theta$.
+
+<Solution>
+$\theta$ في الربع الرابع، و $\sin\theta = -\tfrac45$.
+
+$\sin 2\theta = 2\left(-\tfrac45\right)\left(\tfrac35\right) = -\tfrac{24}{25}$، و $\cos 2\theta = \tfrac{9}{25} - \tfrac{16}{25} = -\tfrac{7}{25}$
+
+$\tan 2\theta = \dfrac{\sin 2\theta}{\cos 2\theta} = \dfrac{-24/25}{-7/25} = \dfrac{24}{7}$
+</Solution>
+</Example>
+
+<Example n="2" title="ثلاثة أضعاف الزاوية">
+اكتب $\sin 3x$ بدلالة $\sin x$.
+
+<Solution>
+$\sin 3x = \sin(2x + x) = \sin 2x\cos x + \cos 2x\sin x$
+
+$= 2\sin x\cos^2 x + (1 - 2\sin^2 x)\sin x = 2\sin x(1 - \sin^2 x) + \sin x - 2\sin^3 x$
+
+$= 3\sin x - 4\sin^3 x$
+</Solution>
+</Example>
+
+### خفض القوة
+
+حل $\cos 2x = 1 - 2\sin^2 x$ و $\cos 2x = 2\cos^2 x - 1$ لـ $\sin^2 x$ و $\cos^2 x$:
+
+<Box kind="rule" title="صيغ خفض القوة" en="Power-Reducing Identities">
+$$\sin^2 x = \frac{1 - \cos 2x}{2} \qquad \cos^2 x = \frac{1 + \cos 2x}{2}$$
+
+تحوّل المربع إلى دالة من الدرجة الأولى بزاوية مضاعفة، وهي مفيدة جدًا في التفاضل والتكامل.
+</Box>
+
+## تطبيق <span class="en" lang="en">An Application</span>
+
+<Example n="3" title="مدى المقذوف">
+مقذوف أُطلق بسرعة $v_0$ وزاوية $\theta$ يقطع أفقيًا المسافة $R = \dfrac{2v_0^2\sin\theta\cos\theta}{g}$. ما الزاوية التي تعطي أكبر مدى؟
+
+<Solution>
+$2\sin\theta\cos\theta = \sin 2\theta$، فإن $R = \dfrac{v_0^2\sin 2\theta}{g}$.
+
+أكبر قيمة لـ $\sin 2\theta$ هي 1 عندما $2\theta = 90^\circ$.
+
+$\theta = 45^\circ$. والصيغة المبسطة تبيّن أيضًا أن $30^\circ$ و $60^\circ$ تعطيان المدى نفسه، لأن $\sin 60^\circ = \sin 120^\circ$.
+</Solution>
+</Example>
+
+## تحويل الضرب إلى مجموع وبالعكس <span class="en" lang="en">Product-to-Sum and Sum-to-Product</span>
+
+اجمع واطرح صيغ $\sin(A \pm B)$ و $\cos(A \pm B)$:
+
+<Box kind="rule" title="الضرب إلى مجموع" en="Product-to-Sum Identities">
+$$\cos A\cos B = \tfrac12[\cos(A - B) + \cos(A + B)] \qquad \sin A\sin B = \tfrac12[\cos(A - B) - \cos(A + B)]$$
+
+$$\sin A\cos B = \tfrac12[\sin(A + B) + \sin(A - B)] \qquad \cos A\sin B = \tfrac12[\sin(A + B) - \sin(A - B)]$$
+</Box>
+
+<Box kind="rule" title="المجموع إلى ضرب" en="Sum-to-Product Identities">
+$$\sin A + \sin B = 2\sin\frac{A + B}{2}\cos\frac{A - B}{2} \qquad \cos A + \cos B = 2\cos\frac{A + B}{2}\cos\frac{A - B}{2}$$
+
+$$\sin A - \sin B = 2\cos\frac{A + B}{2}\sin\frac{A - B}{2} \qquad \cos A - \cos B = -2\sin\frac{A + B}{2}\sin\frac{A - B}{2}$$
+</Box>
+
+<Example n="4" title="ضرب إلى مجموع">
+اكتب $4\cos 75^\circ\sin 25^\circ$ مجموعًا، ثم $\sin 2\theta - \sin 4\theta$ حاصل ضرب.
+
+<Solution>
+$4\cos 75^\circ\sin 25^\circ = 4\cdot\tfrac12[\sin 100^\circ - \sin 50^\circ] = 2\sin 100^\circ - 2\sin 50^\circ$
+
+$\sin 2\theta - \sin 4\theta = 2\cos\dfrac{6\theta}{2}\sin\dfrac{-2\theta}{2} = 2\cos 3\theta\sin(-\theta)$
+
+$= -2\cos 3\theta\sin\theta$
+</Solution>
+</Example>
+
+## متطابقات نصف الزاوية <span class="en" lang="en">Half-Angle Identities</span>
+
+ضع $x = \tfrac{A}{2}$ في صيغ خفض القوة وخذ الجذر:
+
+<Box kind="rule" title="نصف الزاوية" en="Half-Angle Identities">
+$$\sin\frac{A}{2} = \pm\sqrt{\frac{1 - \cos A}{2}} \qquad \cos\frac{A}{2} = \pm\sqrt{\frac{1 + \cos A}{2}}$$
+
+$$\tan\frac{A}{2} = \frac{1 - \cos A}{\sin A} = \frac{\sin A}{1 + \cos A}$$
+
+الإشارة $\pm$ يحددها **ربع الزاوية $\tfrac{A}{2}$**. وصيغتا الظل لا تحتاجان إشارة.
+</Box>
+
+<Example n="5" title="قيمة دقيقة بنصف الزاوية">
+أوجد القيمة الدقيقة لـ $\cos 112.5^\circ$.
+
+<Solution>
+$112.5^\circ = \tfrac{225^\circ}{2}$ في الربع الثاني، فجيب التمام **سالب**.
+
+$\cos 112.5^\circ = -\sqrt{\dfrac{1 + \cos 225^\circ}{2}} = -\sqrt{\dfrac{1 - \tfrac{\sqrt2}{2}}{2}}$
+
+$= -\dfrac{\sqrt{2 - \sqrt2}}{2} \approx -0.3827$
+</Solution>
+</Example>
+
+<Example n="6" title="نصف زاوية من معطيات">
+إذا كان $\cos s = \tfrac23$ و $\tfrac{3\pi}{2} < s < 2\pi$، فأوجد $\sin\tfrac{s}{2}$.
+
+<Solution>
+اقسم حدود الفترة على 2: $\tfrac{3\pi}{4} < \tfrac{s}{2} < \pi$، أي الربع الثاني، والجيب **موجب**.
+
+$\sin\dfrac{s}{2} = \sqrt{\dfrac{1 - \tfrac23}{2}} = \sqrt{\dfrac16}$
+
+$= \dfrac{\sqrt6}{6}$
+</Solution>
+</Example>
+
+## إثبات متطابقة <span class="en" lang="en">Verifying an Identity</span>
+
+<Example n="7" title="ضعف زاوية في متطابقة">
+أثبت أن $\cot x\sin 2x = 1 + \cos 2x$.
+
+<Solution>
+الأيسر: $\dfrac{\cos x}{\sin x}\cdot 2\sin x\cos x = 2\cos^2 x$
+
+والأيمن: $1 + (2\cos^2 x - 1) = 2\cos^2 x$
+
+الطرفان متساويان ✓
+</Solution>
+</Example>
+
+<Check
+  q="إذا كان $\\sin A = \\tfrac35$ و $A$ حادة، فما $\\cos 2A$؟"
+  options={["$\\tfrac{7}{25}$", "$\\tfrac{24}{25}$", "$-\\tfrac{7}{25}$", "$\\tfrac65$"]}
+  answer={0}
+  explain="$\\cos 2A = 1 - 2\\sin^2 A = 1 - 2\\cdot\\tfrac{9}{25} = \\tfrac{7}{25}$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $\sin 2A = 2\sin A\cos A$، و $\cos 2A$ بثلاث صيغ، و $\tan 2A = \tfrac{2\tan A}{1 - \tan^2 A}$.
+- خفض القوة: $\sin^2 x = \tfrac{1 - \cos 2x}{2}$ و $\cos^2 x = \tfrac{1 + \cos 2x}{2}$.
+- الضرب إلى مجموع وبالعكس من جمع صيغ المجموع والفرق وطرحها.
+- نصف الزاوية: الإشارة من ربع $\tfrac{A}{2}$.
+
+<Practice set="7.4" count={6} />

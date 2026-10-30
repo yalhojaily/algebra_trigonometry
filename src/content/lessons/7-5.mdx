@@ -1,0 +1,147 @@
+---
+section: "7.5"
+summary: "الدوال الدائرية العكسية: لماذا نقيّد مجال الجيب وجيب التمام والظل، وتعريف sin⁻¹ و cos⁻¹ و tan⁻¹ ومجالاتها ومداها ورسومها، والدوال العكسية الثلاث الأخرى، وإيجاد القيم الدقيقة والتقريبية، وحساب عبارات مثل sin(cos⁻¹ ¾)."
+minutes: 45
+prerequisites: ["4.1", "6.2"]
+terms:
+  - { ar: "الدالة العكسية للجيب", en: "Inverse Sine Function", def: "y = sin⁻¹x = arcsin x تعني x = sin y مع −π/2 ≤ y ≤ π/2." }
+  - { ar: "الدالة العكسية لجيب التمام", en: "Inverse Cosine Function", def: "y = cos⁻¹x = arccos x تعني x = cos y مع 0 ≤ y ≤ π." }
+  - { ar: "الدالة العكسية للظل", en: "Inverse Tangent Function", def: "y = tan⁻¹x = arctan x تعني x = tan y مع −π/2 < y < π/2." }
+  - { ar: "القيمة الرئيسية", en: "Principal Value", def: "القيمة الوحيدة التي تعطيها الدالة العكسية، من مداها المقيّد." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import InverseTrig from '../../components/widgets/InverseTrig.astro';
+
+نعرف أن $\sin\tfrac{\pi}{6} = \tfrac12$. والسؤال العكسي: ما الزاوية التي جيبها $\tfrac12$؟ هناك عدد لا نهائي منها: $\tfrac{\pi}{6}$ و $\tfrac{5\pi}{6}$ و $\tfrac{13\pi}{6}$ وغيرها. والدالة لا يمكن أن تعطي إلا جوابًا واحدًا. الحل الذي رأيناه مع $x^2$ في الدرس 4.1: نقيّد المجال ونأخذ جزءًا واحدًا لواحد.
+
+## مراجعة الدوال العكسية <span class="en" lang="en">Review of Inverse Functions</span>
+
+- للدالة معكوس إذا كانت **واحدًا لواحد** (اختبار المستقيم الأفقي).
+- مجال $f^{-1}$ هو مدى $f$، ومداها مجال $f$.
+- منحنى $f^{-1}$ انعكاس منحنى $f$ حول $y = x$.
+- $f(f^{-1}(x)) = x$ و $f^{-1}(f(x)) = x$ في المجالات المناسبة.
+
+الدوال المثلثية دورية، فتفشل اختبار المستقيم الأفقي فشلًا ذريعًا. لذلك نقيّد كل دالة على فترة تأخذ فيها **كل قيمها مرة واحدة**.
+
+## معكوس الجيب <span class="en" lang="en">Inverse Sine Function</span>
+
+<Box kind="def" title="الدالة العكسية للجيب" en="Inverse Sine Function">
+نقيّد $\sin x$ على $\left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$ (متزايدة وتأخذ كل القيم من $-1$ إلى $1$). عندئذ
+
+$$y = \sin^{-1}x \ \ (\text{or } \arcsin x) \quad\iff\quad x = \sin y,\ \ -\frac{\pi}{2} \le y \le \frac{\pi}{2}$$
+
+المجال $[-1, 1]$، والمدى $\left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$. وهي فردية ومتزايدة.
+</Box>
+
+اقرأ $\sin^{-1}x$ هكذا: «الزاوية (أو العدد) في $\left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$ التي جيبها $x$».
+
+<Box kind="mistake" title="الرمز ⁻¹ ليس مقلوبًا">
+$\sin^{-1}x \ne \dfrac{1}{\sin x}$. المقلوب هو $\csc x$. ولهذا يفضل كثيرون الرمز $\arcsin x$ تجنبًا للبس.
+</Box>
+
+## معكوس جيب التمام <span class="en" lang="en">Inverse Cosine Function</span>
+
+على $\left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$ يكرر جيب التمام قيمه، فنختار له فترة أخرى: $[0, \pi]$.
+
+<Box kind="def" title="الدالة العكسية لجيب التمام" en="Inverse Cosine Function">
+$$y = \cos^{-1}x \ \ (\text{or } \arccos x) \quad\iff\quad x = \cos y,\ \ 0 \le y \le \pi$$
+
+المجال $[-1, 1]$، والمدى $[0, \pi]$. وهي متناقصة، وليست فردية ولا زوجية.
+</Box>
+
+## معكوس الظل <span class="en" lang="en">Inverse Tangent Function</span>
+
+<Box kind="def" title="الدالة العكسية للظل" en="Inverse Tangent Function">
+$$y = \tan^{-1}x \ \ (\text{or } \arctan x) \quad\iff\quad x = \tan y,\ \ -\frac{\pi}{2} < y < \frac{\pi}{2}$$
+
+المجال كل الأعداد الحقيقية، والمدى $\left(-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right)$، وخطا التقارب **أفقيان**: $y = \pm\tfrac{\pi}{2}$.
+</Box>
+
+<InverseTrig />
+
+## دوال عكسية أخرى <span class="en" lang="en">Other Inverse Circular Functions</span>
+
+<Box kind="rule" title="cot⁻¹ و sec⁻¹ و csc⁻¹" en="Inverse cotangent, secant, cosecant">
+| الدالة | المجال | المدى |
+|---|---|---|
+| $\cot^{-1}x$ | $(-\infty, \infty)$ | $(0, \pi)$ |
+| $\sec^{-1}x$ | $(-\infty, -1] \cup [1, \infty)$ | $\left[0, \tfrac{\pi}{2}\right) \cup \left(\tfrac{\pi}{2}, \pi\right]$ |
+| $\csc^{-1}x$ | $(-\infty, -1] \cup [1, \infty)$ | $\left[-\tfrac{\pi}{2}, 0\right) \cup \left(0, \tfrac{\pi}{2}\right]$ |
+
+ولحسابها بالآلة: $\sec^{-1}x = \cos^{-1}\tfrac{1}{x}$ و $\csc^{-1}x = \sin^{-1}\tfrac1x$. أما $\cot^{-1}x$ فتساوي $\tan^{-1}\tfrac1x$ إذا $x > 0$، وتساوي $\tan^{-1}\tfrac1x + \pi$ إذا $x < 0$.
+</Box>
+
+## قيم الدوال العكسية <span class="en" lang="en">Inverse Function Values</span>
+
+<Example n="1" title="قيم دقيقة">
+أوجد: $\sin^{-1}\left(-\tfrac{\sqrt2}{2}\right)$، $\cos^{-1}\left(-\tfrac{\sqrt3}{2}\right)$، $\tan^{-1}\sqrt3$.
+
+<Solution>
+$\sin^{-1}\left(-\tfrac{\sqrt2}{2}\right)$: الزاوية في $\left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$ جيبها $-\tfrac{\sqrt2}{2}$ هي $-\tfrac{\pi}{4}$ (وليست $\tfrac{5\pi}{4}$ لأنها خارج المدى).
+
+$\cos^{-1}\left(-\tfrac{\sqrt3}{2}\right)$: الزاوية في $[0, \pi]$ جيب تمامها $-\tfrac{\sqrt3}{2}$ هي $\tfrac{5\pi}{6}$.
+
+$\tan^{-1}\sqrt3 = \tfrac{\pi}{3}$.
+</Solution>
+</Example>
+
+<Example n="2" title="الآلة الحاسبة">
+احسب $\cos^{-1}(-0.3)$ بالدرجات، و $\cot^{-1}(-2)$ بالراديان.
+
+<Solution>
+$\cos^{-1}(-0.3) \approx 107.46^\circ$ (الآلة على DEG).
+
+$\cot^{-1}(-2)$: المدخل سالب، فإن $\tan^{-1}\left(-\tfrac12\right) + \pi \approx -0.4636 + 3.1416$
+
+$\approx 2.6779$، وهي في المدى $(0, \pi)$ كما يجب.
+</Solution>
+</Example>
+
+<Example n="3" title="دالة لدالة عكسية">
+أوجد القيمة الدقيقة: $\sin\left(\tan^{-1}\left(-\tfrac34\right)\right)$، ثم $\cos\left(2\sin^{-1}\tfrac13\right)$.
+
+<Solution>
+ضع $\theta = \tan^{-1}\left(-\tfrac34\right)$: الظل سالب و $\theta \in \left(-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right)$، فهي في الربع الرابع، والنقطة $(4, -3)$ و $r = 5$. إذن $\sin\theta = -\tfrac35$.
+
+ضع $\theta = \sin^{-1}\tfrac13$، فإن $\sin\theta = \tfrac13$.
+
+$\cos 2\theta = 1 - 2\sin^2\theta = 1 - \tfrac29 = \tfrac79$
+</Solution>
+</Example>
+
+<Example n="4" title="عبارة جبرية">
+اكتب $\cos(\sin^{-1}u)$ عبارة جبرية في $u$، حيث $-1 \le u \le 1$.
+
+<Solution>
+ضع $\theta = \sin^{-1}u$، فإن $\sin\theta = u$ و $\theta \in \left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$ حيث $\cos\theta \ge 0$.
+
+$\cos\theta = \sqrt{1 - \sin^2\theta}$
+
+$\cos(\sin^{-1}u) = \sqrt{1 - u^2}$
+</Solution>
+</Example>
+
+<Box kind="mistake" title="الإلغاء ليس دائمًا">
+$\sin(\sin^{-1}x) = x$ لكل $x \in [-1, 1]$. أما $\sin^{-1}(\sin x) = x$ فصحيحة فقط إذا كان $x \in \left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$. مثلًا $\sin^{-1}\left(\sin\tfrac{5\pi}{6}\right) = \sin^{-1}\tfrac12 = \tfrac{\pi}{6}$، لا $\tfrac{5\pi}{6}$.
+</Box>
+
+<Check
+  q="ما قيمة $\\cos^{-1}(-1)$؟"
+  options={["$-\\tfrac{\\pi}{2}$", "$0$", "$\\pi$", "$-\\pi$"]}
+  answer={2}
+  explain="الزاوية الوحيدة في $[0, \\pi]$ التي جيب تمامها $-1$ هي $\\pi$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $\sin^{-1}$: مجال $[-1, 1]$ ومدى $\left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$.
+- $\cos^{-1}$: مجال $[-1, 1]$ ومدى $[0, \pi]$.
+- $\tan^{-1}$: مجال كل الأعداد ومدى $\left(-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right)$.
+- لحساب $f(g^{-1}(x))$: ضع $\theta = g^{-1}(x)$ وارسم مثلثها في الربع الصحيح.
+
+<Practice set="7.5" count={6} />

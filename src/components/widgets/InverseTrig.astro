@@ -1,0 +1,75 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-arc" title="الدوال المثلثية العكسية" en="arcsin, arccos, arctan">
+  <div class="controls">
+    <label>الدالة
+      <span class="seg" dir="ltr" data-i="f"><button type="button" data-v="sin" aria-pressed="true">sin⁻¹</button><button type="button" data-v="cos">cos⁻¹</button><button type="button" data-v="tan">tan⁻¹</button></span>
+    </label>
+    <label><span class="ltr">x = <output data-o="x"></output></span><input type="range" min="-1" max="1" step="0.01" value="0.5" data-i="x" /></label>
+    <label class="chk"><input type="checkbox" data-i="full" checked /> اعرض الدالة الأصلية كاملة</label>
+  </div>
+  <canvas aria-label="الدالة المقيدة ومعكوسها"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--muted)"></i>الدالة الأصلية</span>
+    <span><i style="background:var(--plot-alt)"></i>الجزء المقيّد</span>
+    <span><i style="background:var(--plot-curve)"></i>الدالة العكسية</span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-arc')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -4, xmax: 4, ymin: -3.5, ymax: 3.5 });
+  const inp = root.querySelector<HTMLInputElement>('[data-i="x"]')!;
+  let f = 'sin';
+  root.querySelectorAll<HTMLButtonElement>('[data-i="f"] button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      f = btn.dataset.v!;
+      root.querySelectorAll('[data-i="f"] button').forEach((o) => o.setAttribute('aria-pressed', String(o === btn)));
+      inp.min = f === 'tan' ? '-4' : '-1'; inp.max = f === 'tan' ? '4' : '1';
+      draw();
+    }),
+  );
+  const EXACT: Record<string, Record<string, string>> = {
+    sin: { '0': '0', '0.5': '\\tfrac{\\pi}{6}', '-0.5': '-\\tfrac{\\pi}{6}', '1': '\\tfrac{\\pi}{2}', '-1': '-\\tfrac{\\pi}{2}' },
+    cos: { '0': '\\tfrac{\\pi}{2}', '0.5': '\\tfrac{\\pi}{3}', '-0.5': '\\tfrac{2\\pi}{3}', '1': '0', '-1': '\\pi' },
+    tan: { '0': '0', '1': '\\tfrac{\\pi}{4}', '-1': '-\\tfrac{\\pi}{4}' },
+  };
+  function draw() {
+    const x = Number(inp.value);
+    root.querySelector('[data-o="x"]')!.textContent = fmt(x, 2);
+    plot.fit(0.62);
+    const half = 3.6 / 0.62;
+    plot.view = { xmin: -half, xmax: half, ymin: -3.6, ymax: 3.6 };
+    plot.clear();
+    plot.grid(1, 1);
+    plot.fn((u) => u, css('--line'), 1.4, [5, 5]);
+    const full = root.querySelector<HTMLInputElement>('[data-i="full"]')!.checked;
+    const P = Math.PI;
+    let base: (u: number) => number, inv: (u: number) => number, lo: number, hi: number, dom: string, rng: string;
+    if (f === 'sin') { base = Math.sin; inv = Math.asin; lo = -P / 2; hi = P / 2; dom = '[-1, 1]'; rng = '\\left[-\\tfrac{\\pi}{2}, \\tfrac{\\pi}{2}\\right]'; }
+    else if (f === 'cos') { base = Math.cos; inv = Math.acos; lo = 0; hi = P; dom = '[-1, 1]'; rng = '[0, \\pi]'; }
+    else { base = Math.tan; inv = Math.atan; lo = -P / 2 + 0.001; hi = P / 2 - 0.001; dom = '(-\\infty, \\infty)'; rng = '\\left(-\\tfrac{\\pi}{2}, \\tfrac{\\pi}{2}\\right)'; }
+    const cut = (g: (u: number) => number) => (u: number) => { const y = g(u); return f === 'tan' && Math.abs(Math.cos(u)) < 0.03 ? NaN : y; };
+    if (full) plot.fn(cut(base), css('--muted'), 1.5);
+    plot.fn((u) => (u >= lo && u <= hi ? base(u) : NaN), css('--plot-alt'), 3.5);
+    plot.fn((u) => (f === 'tan' || Math.abs(u) <= 1 ? inv(u) : NaN), css('--plot-curve'), 3.5);
+    const y = inv(x);
+    plot.dot(x, y, css('--plot-hot'), 6);
+    plot.dot(y, x, css('--plot-alt'), 5);
+    plot.seg(x, y, y, x, css('--plot-hot'), 1.2, [3, 3]);
+    const key = String(+x.toFixed(2));
+    const ex = EXACT[f][key];
+    out.innerHTML =
+      `<p>${tex(`$\\${f}^{-1}(${fmt(x, 2)}) = ${ex ? ex + ' \\approx ' : '\\approx '}${fmt(y, 4)}$`)} راديان ${tex(`$\\approx ${fmt((y * 180) / P, 2)}^\\circ$`)}.</p>` +
+      `<p>معناها: الزاوية الوحيدة في ${tex(`$${rng}$`)} التي ${f === 'sin' ? 'جيبها' : f === 'cos' ? 'جيب تمامها' : 'ظلها'} ${tex(`$${fmt(x, 2)}$`)}.</p>` +
+      `<p>الدالة الأصلية ليست واحدًا لواحد، فقيّدناها على ${tex(`$${rng}$`)} (الجزء الأزرق) ثم عكسناها حول ${tex('$y = x$')}. مجال المعكوس ${tex(`$${dom}$`)} ومداه ${tex(`$${rng}$`)}.</p>`;
+  }
+  inp.addEventListener('input', draw);
+  root.querySelector('[data-i="full"]')!.addEventListener('change', draw);
+  onRedraw(canvas, draw);
+</script>

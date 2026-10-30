@@ -1,0 +1,117 @@
+---
+section: "7.1"
+summary: "المتطابقات الأساسية في مكان واحد (المقلوب، والقسمة، وفيثاغورس، والزوجية والفردية)، واستخدامها لإيجاد قيم الدوال، وكتابة دالة بدلالة أخرى، وتبسيط العبارات المثلثية."
+minutes: 35
+prerequisites: ["5.2", "6.2"]
+terms:
+  - { ar: "متطابقة", en: "Identity", def: "معادلة صحيحة لكل قيمة يكون فيها الطرفان معرّفين." }
+  - { ar: "متطابقات الزوجية والفردية", en: "Even-Odd (Negative-Angle) Identities", def: "sin(−x) = −sin x ، cos(−x) = cos x ، tan(−x) = −tan x." }
+  - { ar: "المتطابقات الأساسية", en: "Fundamental Identities", def: "متطابقات المقلوب والقسمة وفيثاغورس والزوايا السالبة." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import IdentityGraph from '../../components/widgets/IdentityGraph.astro';
+
+المعادلة $2x + 3 = 7$ صحيحة لقيمة واحدة. أما $\sin^2 x + \cos^2 x = 1$ فصحيحة **لكل** $x$. هذا النوع من المعادلات يسمى <Term ar="متطابقة" en="identity" />. والمتطابقات أداة تحويل: تكتب العبارة المعقدة في صورة أبسط، أو تحوّل معادلة صعبة إلى معادلة نعرف حلها. هذا الفصل كله مبني على مجموعة صغيرة منها تجمعها في هذا الدرس.
+
+## المتطابقات الأساسية <span class="en" lang="en">Fundamental Identities</span>
+
+<Box kind="rule" title="المتطابقات الأساسية" en="Fundamental Identities">
+**المقلوب** <span class="en" lang="en">(Reciprocal)</span>:
+
+$$\csc x = \frac{1}{\sin x} \qquad \sec x = \frac{1}{\cos x} \qquad \cot x = \frac{1}{\tan x}$$
+
+**القسمة** <span class="en" lang="en">(Quotient)</span>:
+
+$$\tan x = \frac{\sin x}{\cos x} \qquad \cot x = \frac{\cos x}{\sin x}$$
+
+**فيثاغورس** <span class="en" lang="en">(Pythagorean)</span>:
+
+$$\sin^2 x + \cos^2 x = 1 \qquad \tan^2 x + 1 = \sec^2 x \qquad 1 + \cot^2 x = \csc^2 x$$
+
+**الزوايا السالبة** <span class="en" lang="en">(Even-Odd)</span>:
+
+$$\sin(-x) = -\sin x \qquad \cos(-x) = \cos x \qquad \tan(-x) = -\tan x$$
+
+وكذلك $\csc(-x) = -\csc x$، $\sec(-x) = \sec x$، $\cot(-x) = -\cot x$.
+</Box>
+
+<Box kind="tip" title="لا تحفظ الثلاث كلها">
+تكفي $\sin^2 x + \cos^2 x = 1$: اقسمها على $\cos^2 x$ تحصل على الثانية، وعلى $\sin^2 x$ تحصل على الثالثة. وكل صيغة تُقرأ بطرق متعددة: $\sin^2 x = 1 - \cos^2 x$، و $\cos^2 x = 1 - \sin^2 x$، و $\sec^2 x - \tan^2 x = 1$.
+</Box>
+
+<IdentityGraph />
+
+## استخدامات المتطابقات <span class="en" lang="en">Uses of the Fundamental Identities</span>
+
+### إيجاد بقية الدوال
+
+<Example n="1" title="من دالة إلى أخرى">
+إذا كان $\tan\theta = -\tfrac53$ و $\theta$ في الربع الثاني، فأوجد $\sin\theta$ و $\cos\theta$.
+
+<Solution>
+$\sec^2\theta = 1 + \tan^2\theta = 1 + \tfrac{25}{9} = \tfrac{34}{9}$ ← $\sec\theta = \pm\tfrac{\sqrt{34}}{3}$. في الربع الثاني $\cos$ سالب، فـ $\sec\theta = -\tfrac{\sqrt{34}}{3}$.
+
+$\cos\theta = \dfrac{1}{\sec\theta} = -\dfrac{3}{\sqrt{34}} = -\dfrac{3\sqrt{34}}{34}$
+
+$\sin\theta = \tan\theta\cos\theta = \left(-\tfrac53\right)\left(-\tfrac{3\sqrt{34}}{34}\right) = \dfrac{5\sqrt{34}}{34}$ (موجب كما يجب في الربع الثاني).
+</Solution>
+</Example>
+
+### كتابة دالة بدلالة أخرى
+
+<Example n="2" title="بدلالة الجيب">
+اكتب $\cot^2 x + \sec^2 x$ بدلالة $\sin x$ فقط.
+
+<Solution>
+$\cot^2 x = \dfrac{\cos^2 x}{\sin^2 x} = \dfrac{1 - \sin^2 x}{\sin^2 x}$، و $\sec^2 x = \dfrac{1}{1 - \sin^2 x}$.
+
+$\cot^2 x + \sec^2 x = \dfrac{1 - \sin^2 x}{\sin^2 x} + \dfrac{1}{1 - \sin^2 x}$
+
+بتوحيد المقامات: $\dfrac{(1 - \sin^2 x)^2 + \sin^2 x}{\sin^2 x(1 - \sin^2 x)} = \dfrac{1 - \sin^2 x + \sin^4 x}{\sin^2 x - \sin^4 x}$
+</Solution>
+</Example>
+
+### تبسيط العبارات
+
+<Box kind="rule" title="استراتيجية التبسيط" en="Simplifying">
+1. حوّل كل شيء إلى $\sin$ و $\cos$.
+2. وحّد المقامات واضرب.
+3. ابحث عن $\sin^2 x + \cos^2 x$ أو $1 - \sin^2 x$ أو أي صورة من صور فيثاغورس.
+4. اختصر.
+</Box>
+
+<Example n="3" title="تبسيط">
+بسّط $\cos x(\tan x + \cot x)$.
+
+<Solution>
+$= \cos x\left(\dfrac{\sin x}{\cos x} + \dfrac{\cos x}{\sin x}\right) = \sin x + \dfrac{\cos^2 x}{\sin x}$
+
+$= \dfrac{\sin^2 x + \cos^2 x}{\sin x} = \dfrac{1}{\sin x}$
+
+$= \csc x$
+</Solution>
+</Example>
+
+<Box kind="mistake" title="sin²x ليست sin(x²)">
+$\sin^2 x$ تعني $(\sin x)^2$. أما $\sin x^2$ فتعني جيب العدد $x^2$، وهي دالة مختلفة تمامًا. وعند الكتابة في التمارين اكتب `sin(x)^2` أو `sin^2(x)`.
+</Box>
+
+<Check
+  q="إذا كان $\\cos(-\\theta) = 0.3$، فما $\\cos\\theta$؟"
+  options={["$-0.3$", "$0.3$", "$0.7$", "$\\tfrac{1}{0.3}$"]}
+  answer={1}
+  explain="جيب التمام دالة زوجية: $\\cos(-\\theta) = \\cos\\theta$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- المقلوب والقسمة وفيثاغورس والزوايا السالبة هي أدوات الفصل كله.
+- $\cos$ و $\sec$ زوجيتان، والبقية فردية.
+- للتبسيط: إلى $\sin$ و $\cos$، ثم وحّد، ثم فيثاغورس.
+
+<Practice set="7.1" count={6} />

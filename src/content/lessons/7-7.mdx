@@ -1,0 +1,126 @@
+---
+section: "7.7"
+summary: "استخدام الدوال العكسية في الاتجاهين: حل معادلة مثل y = 3 cos 2x لـ x بدلالة y مع الانتباه للمجال، وحل معادلات تظهر فيها الدوال العكسية نفسها، مثل sin⁻¹x = cos⁻¹(3/5)."
+minutes: 30
+prerequisites: ["7.5", "7.6"]
+terms:
+  - { ar: "معادلة مثلثية عكسية", en: "Inverse Trigonometric Equation", def: "معادلة يظهر فيها المتغير داخل دالة مثلثية عكسية، مثل 2 sin⁻¹x = π." }
+  - { ar: "حل لـ x بدلالة y", en: "Solving for x in Terms of y", def: "إعادة كتابة y = f(x) على صورة x = f⁻¹(y) مع تقييد المجال المناسب." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import InverseTrig from '../../components/widgets/InverseTrig.astro';
+
+في الدرس السابق حللنا معادلات لأعداد محددة. هنا خطوتان أبعد: (1) نكتب الحل **صيغة عامة** بدلالة متغير آخر، كما نكتب $x = \tfrac{y - b}{a}$ من $y = ax + b$. (2) نحل معادلات تكون فيها الدوال العكسية نفسها هي المشكلة.
+
+## الحل لـ x بدلالة y <span class="en" lang="en">Solution for x in Terms of y Using Inverse Functions</span>
+
+<Box kind="rule" title="الخطوات" en="Solving y = a·f(bx − c) + d for x">
+1. اعزل الدالة المثلثية: $\dfrac{y - d}{a} = f(bx - c)$.
+2. طبّق الدالة العكسية: $bx - c = f^{-1}\left(\dfrac{y - d}{a}\right)$.
+3. حل الناتج الخطي لـ $x$.
+4. اذكر قيد المجال: الخطوة 2 صحيحة فقط إذا كانت $bx - c$ في **مدى** $f^{-1}$.
+</Box>
+
+<Example n="1" title="جيب تمام مع معامل">
+حل $y = 3\cos 2x$ لـ $x$، حيث $0 \le x \le \tfrac{\pi}{2}$.
+
+<Solution>
+$\dfrac{y}{3} = \cos 2x$. والقيد $0 \le x \le \tfrac{\pi}{2}$ يجعل $0 \le 2x \le \pi$، وهو بالضبط مدى $\cos^{-1}$.
+
+$2x = \cos^{-1}\dfrac{y}{3}$
+
+$x = \dfrac12\cos^{-1}\dfrac{y}{3}$، حيث $-3 \le y \le 3$.
+</Solution>
+</Example>
+
+<Example n="2" title="إزاحة وجيب">
+حل $y = 4\sin(x - \pi) + 1$ لـ $x$، حيث $\tfrac{\pi}{2} \le x \le \tfrac{3\pi}{2}$.
+
+<Solution>
+$\dfrac{y - 1}{4} = \sin(x - \pi)$. والقيد يجعل $-\tfrac{\pi}{2} \le x - \pi \le \tfrac{\pi}{2}$، وهو مدى $\sin^{-1}$.
+
+$x - \pi = \sin^{-1}\dfrac{y - 1}{4}$
+
+$x = \pi + \sin^{-1}\dfrac{y - 1}{4}$، حيث $-3 \le y \le 5$.
+</Solution>
+</Example>
+
+<InverseTrig />
+
+## حل المعادلات المثلثية العكسية <span class="en" lang="en">Solution of Inverse Trigonometric Equations</span>
+
+<Box kind="rule" title="الفكرة" en="Strategy">
+اعزل الدالة العكسية، ثم طبّق الدالة الأصلية على الطرفين: $\sin^{-1}x = \theta$ تعني $x = \sin\theta$، **بشرط** أن تكون $\theta$ في مدى $\sin^{-1}$. وإن لم تكن، فلا حل.
+</Box>
+
+<Example n="3" title="عزل ثم تطبيق">
+حل $-2\sin^{-1}x = \pi$.
+
+<Solution>
+$\sin^{-1}x = -\tfrac{\pi}{2}$، وهي في مدى $\sin^{-1}$ (طرفه الأيسر).
+
+$x = \sin\left(-\tfrac{\pi}{2}\right)$
+
+$x = -1$
+</Solution>
+</Example>
+
+<Example n="4" title="دالتان عكسيتان">
+حل $\cos^{-1}x = \sin^{-1}\tfrac12$.
+
+<Solution>
+$\sin^{-1}\tfrac12 = \tfrac{\pi}{6}$، فإن $\cos^{-1}x = \tfrac{\pi}{6}$ ($\tfrac{\pi}{6}$ في $[0, \pi]$ ✓).
+
+$x = \cos\tfrac{\pi}{6}$
+
+$x = \tfrac{\sqrt3}{2}$
+</Solution>
+</Example>
+
+<Example n="5" title="باستخدام مثلث">
+حل $\sin^{-1}x = \cos^{-1}\tfrac35$.
+
+<Solution>
+ضع $\theta = \cos^{-1}\tfrac35$، فهي في الربع الأول، ومثلثها: مجاور 3 ووتر 5، فالمقابل 4.
+
+$\sin^{-1}x = \theta$ ← $x = \sin\theta$
+
+$x = \tfrac45$
+</Solution>
+</Example>
+
+<Example n="6" title="باستخدام متطابقة مجموع">
+حل $\sin^{-1}x - \tan^{-1}1 = -\dfrac{\pi}{6}$.
+
+<Solution>
+$\tan^{-1}1 = \tfrac{\pi}{4}$، فإن $\sin^{-1}x = \tfrac{\pi}{4} - \tfrac{\pi}{6} = \tfrac{\pi}{12}$.
+
+$x = \sin\tfrac{\pi}{12} = \sin\left(\tfrac{\pi}{3} - \tfrac{\pi}{4}\right) = \tfrac{\sqrt3}{2}\cdot\tfrac{\sqrt2}{2} - \tfrac12\cdot\tfrac{\sqrt2}{2}$
+
+$x = \dfrac{\sqrt6 - \sqrt2}{4} \approx 0.2588$
+</Solution>
+</Example>
+
+<Box kind="mistake" title="تحقق من المدى">
+$\sin^{-1}x = \tfrac{2\pi}{3}$ **لا حل لها**، رغم أن $\sin\tfrac{2\pi}{3} = \tfrac{\sqrt3}{2}$ موجود. السبب أن $\sin^{-1}$ لا تعطي أبدًا زاوية أكبر من $\tfrac{\pi}{2}$، فالتحقق ينفي $x = \tfrac{\sqrt3}{2}$: $\sin^{-1}\tfrac{\sqrt3}{2} = \tfrac{\pi}{3} \ne \tfrac{2\pi}{3}$.
+</Box>
+
+<Check
+  q="ما حل $\\tan^{-1}x = \\dfrac{\\pi}{3}$؟"
+  options={["$\\tfrac{\\sqrt3}{3}$", "$\\sqrt3$", "$\\tfrac12$", "لا يوجد حل"]}
+  answer={1}
+  explain="$\\tfrac{\\pi}{3}$ في مدى $\\tan^{-1}$، فإن $x = \\tan\\tfrac{\\pi}{3} = \\sqrt3$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- لحل $y = a f(bx) + d$ لـ $x$: اعزل الدالة، وطبّق المعكوس، وحل خطيًا، واذكر القيد.
+- لحل معادلة فيها $f^{-1}$: اعزلها، وطبّق $f$ على الطرفين.
+- تحقق دائمًا أن الزاوية الناتجة في مدى الدالة العكسية، وإلا فلا حل.
+
+<Practice set="7.7" count={5} />

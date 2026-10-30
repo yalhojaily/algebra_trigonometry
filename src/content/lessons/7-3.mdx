@@ -1,0 +1,145 @@
+---
+section: "7.3"
+summary: "متطابقات جيب التمام والجيب والظل لمجموع زاويتين والفرق بينهما، ومنها متطابقات الدوال المتتامة، وحساب القيم الدقيقة لزوايا مثل 15° و 75°، وإيجاد sin(A + B) من معطيات، وتبسيط الإزاحات."
+minutes: 45
+prerequisites: ["7.1", "5.3"]
+terms:
+  - { ar: "متطابقة المجموع", en: "Sum Identity", def: "صيغة لـ f(A + B) بدلالة دوال A و B، مثل sin(A + B) = sin A cos B + cos A sin B." }
+  - { ar: "متطابقة الفرق", en: "Difference Identity", def: "صيغة لـ f(A − B)، مثل cos(A − B) = cos A cos B + sin A sin B." }
+  - { ar: "متطابقات الدوال المتتامة", en: "Cofunction Identities", def: "cos(90° − θ) = sin θ ، sin(90° − θ) = cos θ ، tan(90° − θ) = cot θ." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import SumAngle from '../../components/widgets/SumAngle.astro';
+
+هل $\sin(30^\circ + 60^\circ) = \sin 30^\circ + \sin 60^\circ$؟ الطرف الأيسر $\sin 90^\circ = 1$، والأيمن $\tfrac12 + \tfrac{\sqrt3}{2} \approx 1.37$. الدوال المثلثية **لا تتوزع** على الجمع. فكيف نحسب جيب مجموع زاويتين؟ هذا الدرس يعطي القوانين الصحيحة، ومنها تُشتق كل متطابقات الفصل تقريبًا.
+
+## جيب التمام للمجموع والفرق <span class="en" lang="en">Cosine Sum and Difference Identities</span>
+
+<Box kind="rule" title="جيب التمام" en="Cosine of a Sum or Difference">
+$$\cos(A - B) = \cos A\cos B + \sin A\sin B$$
+
+$$\cos(A + B) = \cos A\cos B - \sin A\sin B$$
+
+لاحظ أن الإشارة في الوسط **عكس** الإشارة داخل القوس.
+</Box>
+
+<details class="derive">
+<summary>من أين جاءت صيغة cos(A − B)؟</summary>
+
+ضع $A$ و $B$ على دائرة الوحدة: النقطتان $P = (\cos A, \sin A)$ و $Q = (\cos B, \sin B)$، والزاوية بينهما $A - B$. احسب مربع المسافة $PQ$ بطريقتين:
+
+بقانون المسافة: $(\cos A - \cos B)^2 + (\sin A - \sin B)^2 = 2 - 2(\cos A\cos B + \sin A\sin B)$.
+
+ولو دوّرنا الشكل حتى تصبح $Q$ عند $(1, 0)$ تصير $P$ عند $(\cos(A - B), \sin(A - B))$، ومربع المسافة $(\cos(A - B) - 1)^2 + \sin^2(A - B) = 2 - 2\cos(A - B)$.
+
+المسافة لا تتغير بالدوران، فبمساواة الصيغتين نحصل على القانون. وصيغة المجموع تأتي من كتابة $A + B = A - (-B)$.
+</details>
+
+<Example n="1" title="قيمة دقيقة">
+أوجد القيمة الدقيقة لـ $\cos 15^\circ$.
+
+<Solution>
+$15^\circ = 45^\circ - 30^\circ$
+
+$\cos 15^\circ = \cos 45^\circ\cos 30^\circ + \sin 45^\circ\sin 30^\circ = \dfrac{\sqrt2}{2}\cdot\dfrac{\sqrt3}{2} + \dfrac{\sqrt2}{2}\cdot\dfrac12$
+
+$= \dfrac{\sqrt6 + \sqrt2}{4} \approx 0.9659$
+</Solution>
+</Example>
+
+## متطابقات الدوال المتتامة <span class="en" lang="en">Cofunction Identities</span>
+
+ضع $A = 90^\circ$ في صيغة الفرق: $\cos(90^\circ - B) = 0 \cdot \cos B + 1 \cdot \sin B = \sin B$.
+
+<Box kind="rule" title="الدوال المتتامة" en="Cofunction Identities">
+$$\cos(90^\circ - \theta) = \sin\theta \qquad \sin(90^\circ - \theta) = \cos\theta \qquad \tan(90^\circ - \theta) = \cot\theta$$
+
+وكذلك $\cot$ و $\sec$ و $\csc$. وبالراديان استبدل $90^\circ$ بـ $\tfrac{\pi}{2}$. وهي صحيحة لأي $\theta$، لا للزوايا الحادة فقط.
+</Box>
+
+## الجيب والظل للمجموع والفرق <span class="en" lang="en">Sine and Tangent Sum and Difference Identities</span>
+
+<Box kind="rule" title="الجيب والظل" en="Sine and Tangent of a Sum or Difference">
+$$\sin(A + B) = \sin A\cos B + \cos A\sin B$$
+
+$$\sin(A - B) = \sin A\cos B - \cos A\sin B$$
+
+$$\tan(A + B) = \frac{\tan A + \tan B}{1 - \tan A\tan B} \qquad \tan(A - B) = \frac{\tan A - \tan B}{1 + \tan A\tan B}$$
+
+في الجيب الإشارة **كما هي**، وفي جيب التمام تنعكس.
+</Box>
+
+<SumAngle />
+
+<Example n="2" title="تبسيط إزاحة">
+اكتب $\sin\left(x + \tfrac{3\pi}{2}\right)$ بدلالة دالة واحدة.
+
+<Solution>
+$\sin x\cos\tfrac{3\pi}{2} + \cos x\sin\tfrac{3\pi}{2}$
+
+$= \sin x \cdot 0 + \cos x\cdot(-1)$
+
+$= -\cos x$
+</Solution>
+</Example>
+
+## تطبيقات <span class="en" lang="en">Applications</span>
+
+<Example n="3" title="من المعطيات">
+إذا كان $\sin A = \tfrac45$ و $A$ في الربع الثاني، و $\cos B = -\tfrac{5}{13}$ و $B$ في الربع الثالث، فأوجد $\sin(A + B)$ و $\cos(A - B)$، وفي أي ربع تقع $A + B$؟
+
+<Solution>
+$\cos A = -\tfrac35$ (الربع الثاني) و $\sin B = -\tfrac{12}{13}$ (الربع الثالث).
+
+$\sin(A + B) = \tfrac45\left(-\tfrac{5}{13}\right) + \left(-\tfrac35\right)\left(-\tfrac{12}{13}\right) = \tfrac{-20 + 36}{65} = \tfrac{16}{65}$، و $\cos(A - B) = \left(-\tfrac35\right)\left(-\tfrac{5}{13}\right) + \tfrac45\left(-\tfrac{12}{13}\right) = \tfrac{15 - 48}{65} = -\tfrac{33}{65}$.
+
+ولتحديد ربع $A + B$ نحسب $\cos(A + B) = \tfrac{15}{65} + \tfrac{48}{65} = \tfrac{63}{65} > 0$. الجيب موجب وجيب التمام موجب، فـ $A + B$ في الربع الأول (بعد طرح دورة كاملة).
+</Solution>
+</Example>
+
+<Example n="4" title="جهد كهربائي">
+جهد التيار المتردد $V = 163\sin(120\pi t)$. اكتبه بدلالة جيب التمام.
+
+<Solution>
+$\sin\theta = \cos\left(\tfrac{\pi}{2} - \theta\right) = \cos\left(\theta - \tfrac{\pi}{2}\right)$ (جيب التمام زوجي).
+
+$V = 163\cos\left(120\pi t - \tfrac{\pi}{2}\right)$
+
+أي أن موجة الجيب هي موجة جيب تمام متأخرة بربع دورة.
+</Solution>
+</Example>
+
+## إثبات متطابقة <span class="en" lang="en">Verifying an Identity</span>
+
+<Example n="5" title="متطابقة بمجموع">
+أثبت أن $\dfrac{\sin(A + B)}{\cos A\cos B} = \tan A + \tan B$.
+
+<Solution>
+$\dfrac{\sin A\cos B + \cos A\sin B}{\cos A\cos B}$
+
+$= \dfrac{\sin A\cos B}{\cos A\cos B} + \dfrac{\cos A\sin B}{\cos A\cos B}$
+
+$= \tan A + \tan B$ ✓
+</Solution>
+</Example>
+
+<Check
+  q="ما قيمة $\\cos 50^\\circ\\cos 10^\\circ - \\sin 50^\\circ\\sin 10^\\circ$؟"
+  options={["$\\cos 40^\\circ$", "$\\tfrac12$", "$\\sin 60^\\circ$", "$\\cos 50^\\circ$"]}
+  answer={1}
+  explain="هذه صيغة $\\cos(A + B)$: $\\cos 60^\\circ = \\tfrac12$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $\cos(A \pm B) = \cos A\cos B \mp \sin A\sin B$ (الإشارة تنعكس).
+- $\sin(A \pm B) = \sin A\cos B \pm \cos A\sin B$ (الإشارة كما هي).
+- $\tan(A \pm B) = \dfrac{\tan A \pm \tan B}{1 \mp \tan A\tan B}$.
+- الدوال المتتامة: $f(90^\circ - \theta) = \text{co-}f(\theta)$.
+
+<Practice set="7.3" count={6} />

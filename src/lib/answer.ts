@@ -56,7 +56,8 @@ export function normalize(s: string) {
 
 // ===== شجرة التعبير =====
 const TRIG = ['sin', 'cos', 'tan', 'sec', 'csc', 'cot'] as const;
-type Fn = 'ln' | 'log' | 'exp' | 'abs' | (typeof TRIG)[number];
+const ARC = ['arcsin', 'arccos', 'arctan'] as const;
+type Fn = 'ln' | 'log' | 'exp' | 'abs' | (typeof TRIG)[number] | (typeof ARC)[number];
 export type Node =
   | { t: 'num'; v: number }
   | { t: 'i' }
@@ -67,7 +68,7 @@ export type Node =
   | { t: 'fn'; f: Fn; base?: number; a: Node }
   | { t: 'const'; v: 'e' | 'pi' };
 
-type Tok = { t: 'num'; v: number } | { t: 'i' } | { t: 'var'; v: string } | { t: 'op'; v: string } | { t: 'fn'; f?: Fn; base?: number } | { t: 'const'; v: 'e' | 'pi' };
+type Tok = { t: 'num'; v: number } | { t: 'i' } | { t: 'var'; v: string } | { t: 'op'; v: string } | { t: 'fn'; f?: Fn; base?: number; pow?: number } | { t: 'const'; v: 'e' | 'pi' };
 
 function tokenize(s: string): Tok[] {
   const out: Tok[] = [];
@@ -91,10 +92,20 @@ function tokenize(s: string): Tok[] {
       if (!(base > 0) || base === 1) throw new Error('أساس اللوغاريتم غير صالح');
       out.push({ t: 'fn', f: 'log', base });
       k = j;
-    } else if ((['ln', 'log', 'exp', 'abs', ...TRIG] as const).some((name) => s.startsWith(name, k))) {
-      const f = (['ln', 'log', 'exp', 'abs', ...TRIG] as const).find((name) => s.startsWith(name, k))!;
-      out.push({ t: 'fn', f });
+    } else if ((['arcsin', 'arccos', 'arctan', 'ln', 'log', 'exp', 'abs', ...TRIG] as const).some((name) => s.startsWith(name, k))) {
+      const f = (['arcsin', 'arccos', 'arctan', 'ln', 'log', 'exp', 'abs', ...TRIG] as const).find((name) => s.startsWith(name, k))!;
       k += f.length;
+      // sin^2(x) تعني (sin x)^2 ، و sin^-1(x) تعني arcsin
+      let pow: number | undefined;
+      const m = /^\^\(?(-?\d+)\)?/.exec(s.slice(k));
+      let ff: Fn = f;
+      if (m && (TRIG as readonly string[]).includes(f)) {
+        const e = Number(m[1]);
+        if (e === -1 && ['sin', 'cos', 'tan'].includes(f)) ff = ('arc' + f) as Fn;
+        else pow = e;
+        k += m[0].length;
+      }
+      out.push({ t: 'fn', f: ff, pow });
     } else if (s.startsWith('pi', k) || ch === 'π') {
       out.push({ t: 'const', v: 'pi' });
       k += ch === 'π' ? 1 : 2;
@@ -164,7 +175,13 @@ export function parse(input: string): Node {
     if (tk.t === 'i') return { t: 'i' };
     if (tk.t === 'var') return { t: 'var', v: tk.v };
     if (tk.t === 'const') return { t: 'const', v: tk.v };
-    if (tk.t === 'fn') return tk.f ? { t: 'fn', f: tk.f, base: tk.base, a: power() } : { t: 'sqrt', a: power() };
+    if (tk.t === 'fn') {
+      // f(x)^2 تعني (f(x))^2: إذا جاء المدخل بين قوسين فالأس يطبَّق على ناتج الدالة
+      const arg = (): Node => (isOp('(') ? atom() : power());
+      if (!tk.f) return { t: 'sqrt', a: arg() };
+      const node: Node = { t: 'fn', f: tk.f, base: tk.base, a: arg() };
+      return tk.pow != null ? { t: 'pow', a: node, b: { t: 'num', v: tk.pow } } : node;
+    }
     if (tk.t === 'op' && tk.v === '(') {
       const v = expr();
       if (!isOp(')')) throw new Error('قوس غير مغلق');
@@ -192,6 +209,12 @@ export function evalNode(n: Node, vars: Record<string, number> = {}): C {
       const a = evalNode(n.a, vars);
       if (n.f === 'abs') return c(Math.hypot(a.re, a.im));
       if (n.f === 'exp') { const m = Math.exp(a.re); return c(m * Math.cos(a.im), m * Math.sin(a.im)); }
+      if ((ARC as readonly string[]).includes(n.f)) {
+        if (a.im !== 0) throw new Error('دالة عكسية لعدد مركب');
+        if (n.f !== 'arctan' && Math.abs(a.re) > 1 + 1e-12) throw new Error('خارج مجال الدالة العكسية');
+        const x = Math.max(-1, Math.min(1, a.re));
+        return c(n.f === 'arcsin' ? Math.asin(x) : n.f === 'arccos' ? Math.acos(x) : Math.atan(a.re));
+      }
       if ((TRIG as readonly string[]).includes(n.f)) {
         if (a.im !== 0) throw new Error('دالة مثلثية لعدد مركب');
         const x = a.re, sn = Math.sin(x), cs = Math.cos(x);
@@ -228,6 +251,7 @@ export function toTex(n: Node): string {
       if (n.f === 'exp') return `e^{${toTex(n.a)}}`;
       if (n.f === 'abs') return `\\left|${toTex(n.a)}\\right|`;
       if ((TRIG as readonly string[]).includes(n.f)) return `\\${n.f}\\left(${toTex(n.a)}\\right)`;
+      if ((ARC as readonly string[]).includes(n.f)) return `\\${n.f.slice(3)}^{-1}\\left(${toTex(n.a)}\\right)`;
       return `${n.f === 'ln' ? '\\ln' : n.base ? `\\log_{${n.base}}` : '\\log'}\\left(${toTex(n.a)}\\right)`;
     case 'add': return `${toTex(n.a)} + ${toTex(n.b)}`;
     case 'sub': return `${toTex(n.a)} - ${prec(n.b) <= 1 || n.b.t === 'neg' ? wrap(toTex(n.b)) : toTex(n.b)}`;
@@ -365,3 +389,11 @@ export function equivalent(given: Node, expected: Node, vars: string[], positive
   }
   return ok >= 3;
 }
+
+/** عدد مرات ظهور الدوال المثلثية في التعبير */
+export function trigCount(n: Node): number {
+  const own = n.t === 'fn' && (TRIG as readonly string[]).includes(n.f) ? 1 : 0;
+  return own + ('a' in n ? trigCount((n as any).a) : 0) + ('b' in n ? trigCount((n as any).b) : 0);
+}
+/** إجابة مبسطة: دالة مثلثية واحدة على الأكثر */
+export const isOneTrig = (n: Node) => trigCount(n) <= 1;

@@ -1,0 +1,70 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-dbl" title="ضعف الزاوية ونصفها" en="Double-angle and half-angle">
+  <div class="controls">
+    <label>المقارنة
+      <select data-i="m">
+        <option value="s2">sin 2x مقابل 2 sin x</option>
+        <option value="c2">cos 2x بثلاث صيغ</option>
+        <option value="half">sin(x/2) والإشارة ±</option>
+      </select>
+    </label>
+    <label><span class="ltr">x = <output data-o="x"></output></span><input type="range" min="-6.28" max="6.28" step="0.01" value="1" data-i="x" /></label>
+  </div>
+  <canvas aria-label="مقارنة منحنيات ضعف الزاوية أو نصفها"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-dbl')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -7, xmax: 7, ymin: -2.5, ymax: 2.5 });
+  const sel = root.querySelector<HTMLSelectElement>('[data-i="m"]')!;
+  const inp = root.querySelector<HTMLInputElement>('[data-i="x"]')!;
+  function draw() {
+    const m = sel.value, x = Number(inp.value);
+    root.querySelector('[data-o="x"]')!.textContent = fmt(x, 2);
+    plot.fit(0.5);
+    plot.view = { xmin: -2.2 * Math.PI, xmax: 2.2 * Math.PI, ymin: -2.5, ymax: 2.5 };
+    plot.clear();
+    plot.piGrid(2, 1);
+    const S = Math.sin, C = Math.cos;
+    if (m === 's2') {
+      plot.fn((u) => 2 * S(u), css('--err'), 2, [6, 5]);
+      plot.fn((u) => S(2 * u), css('--plot-curve'), 4);
+      plot.fn((u) => 2 * S(u) * C(u), css('--plot-hot'), 2, [3, 4]);
+      plot.dot(x, S(2 * x), css('--plot-curve'), 6);
+      out.innerHTML =
+        `<p>المنحنى المتصل ${tex('$\\sin 2x$')} والمنقط ${tex('$2\\sin x\\cos x$')} متطابقان تمامًا، أما المتقطع الأحمر ${tex('$2\\sin x$')} فمختلف: سعته 2 ودورته ${tex('$2\\pi$')}.</p>` +
+        `<p>عند ${tex(`$x = ${fmt(x, 2)}$`)}: ${tex(`$\\sin 2x \\approx ${fmt(S(2 * x), 4)}$`)}، و ${tex(`$2\\sin x\\cos x \\approx ${fmt(2 * S(x) * C(x), 4)}$`)}، بينما ${tex(`$2\\sin x \\approx ${fmt(2 * S(x), 4)}$`)}.</p>`;
+    } else if (m === 'c2') {
+      plot.fn((u) => C(2 * u), css('--plot-curve'), 5);
+      plot.fn((u) => C(u) ** 2 - S(u) ** 2, css('--plot-hot'), 2, [6, 5]);
+      plot.fn((u) => 1 - 2 * S(u) ** 2, css('--plot-alt'), 2, [2, 4]);
+      plot.fn((u) => C(u) ** 2, css('--muted'), 1.5, [1, 3]);
+      plot.dot(x, C(2 * x), css('--plot-curve'), 6);
+      out.innerHTML =
+        `<p>${tex('$\\cos 2x = \\cos^2 x - \\sin^2 x = 1 - 2\\sin^2 x = 2\\cos^2 x - 1$')}: الصيغ الثلاث منطبقة على المنحنى نفسه.</p>` +
+        `<p>والمنحنى الرمادي ${tex('$\\cos^2 x = \\dfrac{1 + \\cos 2x}{2}$')}: موجة بين 0 و 1 دورتها ${tex('$\\pi$')}. هذه صيغة «خفض القوة» التي تحوّل المربع إلى ضعف زاوية.</p>` +
+        `<p>عند ${tex(`$x = ${fmt(x, 2)}$`)}: ${tex(`$\\cos 2x \\approx ${fmt(C(2 * x), 4)}$`)}.</p>`;
+    } else {
+      plot.fn((u) => S(u / 2), css('--plot-curve'), 4);
+      plot.fn((u) => Math.sqrt((1 - C(u)) / 2), css('--plot-hot'), 2, [6, 5]);
+      plot.fn((u) => -Math.sqrt((1 - C(u)) / 2), css('--plot-alt'), 2, [6, 5]);
+      plot.dot(x, S(x / 2), css('--plot-curve'), 6);
+      const h = x / 2;
+      const q = ((h % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      const sign = S(h) >= 0 ? '+' : '-';
+      out.innerHTML =
+        `<p>${tex('$\\sin\\dfrac{x}{2} = \\pm\\sqrt{\\dfrac{1 - \\cos x}{2}}$')}: الجذر يعطي القيمة الموجبة دائمًا (المتقطع البرتقالي)، فلا يكفي وحده.</p>` +
+        `<p>عند ${tex(`$x = ${fmt(x, 2)}$`)} تقع ${tex(`$\\tfrac{x}{2} \\approx ${fmt(h, 2)}$`)} في الربع ${['الأول', 'الثاني', 'الثالث', 'الرابع'][Math.min(3, Math.floor(q / (Math.PI / 2)))]}، فنختار الإشارة ${tex(`$${sign}$`)}: ${tex(`$\\sin\\tfrac{x}{2} \\approx ${fmt(S(h), 4)}$`)}.</p>` +
+        `<p>القاعدة: الإشارة تحددها <strong>الزاوية النصفية ${tex('$\\tfrac{x}{2}$')}</strong> لا الزاوية ${tex('$x$')}.</p>`;
+    }
+  }
+  sel.addEventListener('change', draw);
+  inp.addEventListener('input', draw);
+  onRedraw(canvas, draw);
+</script>

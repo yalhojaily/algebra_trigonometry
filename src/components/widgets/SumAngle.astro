@@ -1,0 +1,79 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-sum" title="جيب مجموع زاويتين" en="sin(A + B) ≠ sin A + sin B">
+  <div class="controls">
+    <label><span class="ltr">A = <output data-o="a"></output>°</span><input type="range" min="0" max="360" step="15" value="45" data-i="a" /></label>
+    <label><span class="ltr">B = <output data-o="b"></output>°</span><input type="range" min="0" max="360" step="15" value="30" data-i="b" /></label>
+    <label>الدالة
+      <span class="seg" dir="ltr" data-i="f"><button type="button" data-v="sin" aria-pressed="true">sin</button><button type="button" data-v="cos">cos</button><button type="button" data-v="tan">tan</button></span>
+    </label>
+  </div>
+  <canvas aria-label="دائرة الوحدة والزوايا A و B و A + B"></canvas>
+  <div class="bars" dir="ltr"></div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-sum')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const bars = root.querySelector<HTMLElement>('.bars')!;
+  const plot = new Plot(canvas, { xmin: -2, xmax: 2, ymin: -1.3, ymax: 1.3 });
+  let f = 'sin';
+  root.querySelectorAll<HTMLButtonElement>('[data-i="f"] button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      f = btn.dataset.v!;
+      root.querySelectorAll('[data-i="f"] button').forEach((o) => o.setAttribute('aria-pressed', String(o === btn)));
+      draw();
+    }),
+  );
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const D = Math.PI / 180;
+  function draw() {
+    const A = v('a'), B = v('b');
+    root.querySelector('[data-o="a"]')!.textContent = String(A);
+    root.querySelector('[data-o="b"]')!.textContent = String(B);
+    plot.fit(0.5);
+    const half = 1.3 / 0.5;
+    plot.view = { xmin: -half, xmax: half, ymin: -1.3, ymax: 1.3 };
+    plot.clear();
+    plot.grid(0.5, 2);
+    plot.param(Math.cos, Math.sin, 0, 2 * Math.PI, css('--muted'), 1.5);
+    const pts: [number, string, string][] = [[A, css('--plot-alt'), 'A'], [A + B, css('--plot-hot'), 'A+B'], [B, css('--plot-curve'), 'B']];
+    plot.param((u) => 0.3 * Math.cos(u), (u) => 0.3 * Math.sin(u), 0, A * D, css('--plot-alt'), 2.5);
+    plot.param((u) => 0.45 * Math.cos(u), (u) => 0.45 * Math.sin(u), A * D, (A + B) * D, css('--plot-curve'), 2.5);
+    for (const [t, col, lab] of pts) {
+      const c = Math.cos(t * D), s = Math.sin(t * D);
+      plot.seg(0, 0, c, s, col, 2.5);
+      plot.dot(c, s, col, 5);
+      plot.label(1.12 * c, 1.12 * s - 0.05, lab, col, 'center');
+    }
+    const sA = Math.sin(A * D), cA = Math.cos(A * D), sB = Math.sin(B * D), cB = Math.cos(B * D);
+    let exact = 0, naive = 0, formula = '', naiveT = '';
+    if (f === 'sin') { exact = Math.sin((A + B) * D); naive = sA + sB; formula = '\\sin A\\cos B + \\cos A\\sin B'; naiveT = '\\sin A + \\sin B'; }
+    else if (f === 'cos') { exact = Math.cos((A + B) * D); naive = cA + cB; formula = '\\cos A\\cos B - \\sin A\\sin B'; naiveT = '\\cos A + \\cos B'; }
+    else { exact = Math.tan((A + B) * D); naive = Math.tan(A * D) + Math.tan(B * D); formula = '\\dfrac{\\tan A + \\tan B}{1 - \\tan A\\tan B}'; naiveT = '\\tan A + \\tan B'; }
+    const ok = (x: number) => Number.isFinite(x) && Math.abs(x) < 1e6;
+    const viaF = f === 'sin' ? sA * cB + cA * sB : f === 'cos' ? cA * cB - sA * sB : (Math.tan(A * D) + Math.tan(B * D)) / (1 - Math.tan(A * D) * Math.tan(B * D));
+    const bar = (lab: string, val: number, col: string) => {
+      const w = ok(val) ? Math.min(100, Math.abs(val) * 25) : 0;
+      return `<div class="row"><span class="lab">${lab}</span><span class="track"><i style="width:${w}%;background:${col};${val < 0 ? 'margin-inline-start:auto' : ''}"></i></span><span class="val">${ok(val) ? fmt(val, 4) : 'undefined'}</span></div>`;
+    };
+    bars.innerHTML = bar(`${f}(A+B)`, exact, 'var(--plot-hot)') + bar('formula', viaF, 'var(--ok)') + bar(`${f} A + ${f} B`, naive, 'var(--err)');
+    out.innerHTML =
+      `<p>القانون: ${tex(`$\\${f}(A + B) = ${formula}$`)} يعطي ${ok(viaF) ? tex(`$${fmt(viaF, 4)}$`) : 'غير معرّف'}، وهو مطابق للقيمة الفعلية.</p>` +
+      `<p>أما ${tex(`$${naiveT}$`)} فيعطي ${ok(naive) ? tex(`$${fmt(naive, 4)}$`) : 'غير معرّف'}${Math.abs(naive - exact) > 1e-9 ? '، وهو خطأ: الدوال المثلثية لا توزَّع على الجمع.' : ' (تساوى هنا صدفة لهذه الزوايا فقط).'}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>
+<style>
+  .bars { margin-top: 0.8rem; display: grid; gap: 0.35rem; font: 0.9rem var(--font-mono); }
+  .bars :global(.row) { display: grid; grid-template-columns: 8.5rem 1fr 5.5rem; gap: 0.6rem; align-items: center; }
+  .bars :global(.track) { display: flex; height: 0.8rem; background: var(--paper); border-radius: 4px; overflow: hidden; }
+  .bars :global(.track i) { display: block; height: 100%; }
+  .bars :global(.val) { text-align: right; }
+  @media (max-width: 480px) { .bars :global(.row) { grid-template-columns: 6.5rem 1fr 4.5rem; font-size: 0.8rem; } }
+</style>

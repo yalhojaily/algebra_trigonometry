@@ -133,7 +133,7 @@ export const chapters: Chapter[] = [
     id: '7',
     ar: 'المتطابقات والمعادلات المثلثية',
     en: 'Trigonometric Identities and Equations',
-    status: 'soon',
+    status: 'ready',
     blurb: 'المتطابقات الأساسية وإثباتها، متطابقات المجموع وضعف الزاوية، والدوال العكسية والمعادلات.',
     sections: [
       { id: '7.1', ar: 'المتطابقات الأساسية', en: 'Fundamental Identities', topics: [t('المتطابقات الأساسية', 'Fundamental Identities'), t('استخدامات المتطابقات', 'Uses of the Fundamental Identities')] },

@@ -88,7 +88,7 @@ export type Problem =
       /** قيم موجبة فقط للمتغيرات (عند وجود جذور زوجية أو أسس كسرية) */
       positive?: boolean;
       /** شروط على شكل الإجابة */
-      require?: ('factored' | 'noRadicalDenominator' | 'noNegativeExponent' | 'expanded' | 'monomial' | 'logsExpanded' | 'logsCondensed')[];
+      require?: ('factored' | 'noRadicalDenominator' | 'noNegativeExponent' | 'expanded' | 'monomial' | 'logsExpanded' | 'logsCondensed' | 'oneTrig')[];
       hint: string;
       solution: string[];
       placeholder?: string;

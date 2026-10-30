@@ -1,0 +1,57 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-pas" title="مثلث باسكال ومفكوك ذات الحدين" en="Pascal's triangle and (x + y)ⁿ">
+  <div class="controls">
+    <label>الأس <span class="ltr">n = <output data-o="n"></output></span><input type="range" min="0" max="10" value="4" data-i="n" /></label>
+    <label>الحد <span class="ltr">k = <output data-o="k"></output></span><input type="range" min="0" max="10" value="1" data-i="k" /></label>
+  </div>
+  <div class="tri" dir="ltr"></div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-pas')!;
+  const tri = root.querySelector<HTMLElement>('.tri')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const nI = root.querySelector<HTMLInputElement>('[data-i="n"]')!, kI = root.querySelector<HTMLInputElement>('[data-i="k"]')!;
+  const C = (n: number, k: number) => { let r = 1; for (let i = 1; i <= k; i++) r = (r * (n - k + i)) / i; return Math.round(r); };
+  function draw() {
+    const n = Number(nI.value);
+    kI.max = String(n);
+    let k = Math.min(Number(kI.value), n);
+    root.querySelector('[data-o="n"]')!.textContent = String(n);
+    root.querySelector('[data-o="k"]')!.textContent = String(k);
+    let html = '';
+    for (let r = 0; r <= 10; r++) {
+      html += `<div class="row${r === n ? ' on' : ''}">` + Array.from({ length: r + 1 }, (_, j) => {
+        const cls = r === n && j === k ? 'hk' : r === n - 1 && n > 0 && (j === k || j === k - 1) ? 'par' : '';
+        return `<span class="${cls}">${C(r, j)}</span>`;
+      }).join('') + '</div>';
+    }
+    tri.innerHTML = html;
+    const terms = Array.from({ length: n + 1 }, (_, j) => {
+      const c = C(n, j), px = n - j, py = j;
+      const coef = c === 1 && (px || py) ? '' : String(c);
+      const xs = px === 0 ? '' : px === 1 ? 'x' : `x^{${px}}`, ys = py === 0 ? '' : py === 1 ? 'y' : `y^{${py}}`;
+      const tt = `${coef}${xs}${ys}`;
+      return j === k ? `\\textcolor{orange}{${tt}}` : tt;
+    }).join(' + ');
+    out.innerHTML =
+      `<p>${tex(`$(x + y)^{${n}} = ${n === 0 ? '1' : terms}$`)}</p>` +
+      `<p>المعاملات هي الصف ${n} من مثلث باسكال. وكل عدد مجموع العددين فوقه${n > 0 && k > 0 && k < n ? `: ${tex(`$${C(n - 1, k - 1)} + ${C(n - 1, k)} = ${C(n, k)}$`)}` : ''}.</p>` +
+      `<p>الحد رقم ${k + 1} (البرتقالي): ${tex(`$\\dbinom{${n}}{${k}}x^{${n - k}}y^{${k}} = \\dfrac{${n}!}{${k}!\\,${n - k}!}x^{${n - k}}y^{${k}} = ${C(n, k)}x^{${n - k}}y^{${k}}$`)}. ومجموع معاملات الصف ${tex(`$2^{${n}} = ${2 ** n}$`)}.</p>`;
+  }
+  nI.addEventListener('input', draw);
+  kI.addEventListener('input', draw);
+  draw();
+</script>
+<style>
+  .tri { display: grid; gap: 0.2rem; justify-items: center; font: 600 0.9rem var(--font-en); overflow-x: auto; padding: 0.4rem 0; }
+  .tri :global(.row) { display: flex; gap: 0.25rem; color: var(--muted); }
+  .tri :global(.row span) { min-width: 2.1rem; text-align: center; padding: 0.15rem 0; border-radius: 4px; }
+  .tri :global(.row.on span) { background: var(--accent-soft); color: var(--ink); }
+  .tri :global(span.hk) { background: var(--plot-hot) !important; color: #fff !important; }
+  .tri :global(span.par) { outline: 2px solid var(--plot-hot); color: var(--ink); }
+  @media (max-width: 560px) { .tri :global(.row span) { min-width: 1.6rem; font-size: 0.72rem; } }
+</style>

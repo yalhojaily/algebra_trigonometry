@@ -1,0 +1,65 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-seq" title="الحدود والمجاميع الجزئية" en="Terms aₙ and partial sums Sₙ">
+  <div class="controls">
+    <label>المتتابعة
+      <select data-i="f">
+        <option value="0">aₙ = 1/n</option>
+        <option value="1">aₙ = 1/2ⁿ</option>
+        <option value="2">aₙ = (−1)ⁿ⁺¹/n</option>
+        <option value="3">aₙ = 2n − 1</option>
+        <option value="4">aₙ = (n + 1)/n</option>
+      </select>
+    </label>
+    <label>عدد الحدود <span class="ltr">n = <output data-o="n"></output></span><input type="range" min="1" max="30" value="10" data-i="n" /></label>
+  </div>
+  <canvas aria-label="حدود المتتابعة ومجاميعها الجزئية"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--plot-curve)"></i>الحد aₙ</span>
+    <span><i style="background:var(--plot-hot)"></i>المجموع الجزئي Sₙ</span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-seq')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: 0, xmax: 31, ymin: -1, ymax: 4 });
+  const sel = root.querySelector<HTMLSelectElement>('[data-i="f"]')!;
+  const inp = root.querySelector<HTMLInputElement>('[data-i="n"]')!;
+  const F: { f: (n: number) => number; t: string; note: string; lim?: number }[] = [
+    { f: (n) => 1 / n, t: '\\dfrac{1}{n}', note: 'الحدود تقترب من 0 (متقاربة)، لكن المجموع يكبر بلا حد ببطء: المتسلسلة التوافقية متباعدة.' },
+    { f: (n) => 1 / 2 ** n, t: '\\dfrac{1}{2^n}', note: 'الحدود تتناقص بسرعة، والمجاميع تقترب من 1: متسلسلة متقاربة (هندسية، الدرس 11.3).', lim: 1 },
+    { f: (n) => (n % 2 ? 1 : -1) / n, t: '\\dfrac{(-1)^{n+1}}{n}', note: 'متناوبة: المجاميع تتأرجح وتقترب من ln 2 ≈ 0.693.', lim: Math.LN2 },
+    { f: (n) => 2 * n - 1, t: '2n - 1', note: 'متتابعة حسابية (الدرس 11.2)، والمجموع n²: مجموع أول n عددًا فرديًا مربع كامل.' },
+    { f: (n) => (n + 1) / n, t: '\\dfrac{n + 1}{n}', note: 'الحدود تقترب من 1 لا من 0، فالمجموع يكبر بلا حد تقريبًا بمقدار 1 في كل خطوة.' },
+  ];
+  function draw() {
+    const p = F[Number(sel.value)], N = Number(inp.value);
+    root.querySelector('[data-o="n"]')!.textContent = String(N);
+    const a = Array.from({ length: N }, (_, k) => p.f(k + 1));
+    const S: number[] = []; a.reduce((s, x) => (S.push(s + x), s + x), 0);
+    const all = [...a, ...S, 0];
+    const lo = Math.min(...all), hi = Math.max(...all);
+    const pad = (hi - lo) * 0.12 || 1;
+    plot.view = { xmin: -0.5, xmax: Math.max(N, 5) + 1, ymin: lo - pad, ymax: hi + pad };
+    plot.fit(0.5);
+    plot.clear();
+    const step = hi - lo > 200 ? 100 : hi - lo > 40 ? 10 : hi - lo > 8 ? 2 : hi - lo > 2 ? 0.5 : 0.25;
+    plot.grid(N > 15 ? 5 : 1, 1, step);
+    if (p.lim !== undefined) { plot.seg(0, p.lim, N + 2, p.lim, css('--muted'), 1.2, [5, 4]); }
+    S.forEach((s, k) => plot.dot(k + 1, s, css('--plot-hot'), 4));
+    a.forEach((x, k) => { plot.seg(k + 1, 0, k + 1, x, css('--plot-curve'), 2); plot.dot(k + 1, x, css('--plot-curve'), 4); });
+    const first = a.slice(0, 5).map((x) => fmt(x, 3)).join(',\\ ');
+    out.innerHTML =
+      `<p>${tex(`$a_n = ${p.t}$`)}: الحدود ${tex(`$${first}${N > 5 ? ',\\ \\dots' : ''}$`)}</p>` +
+      `<p>${tex(`$S_{${N}} = \\sum_{i=1}^{${N}} a_i \\approx ${fmt(S[N - 1], 4)}$`)}</p>` +
+      `<p>${p.note}</p>`;
+  }
+  sel.addEventListener('change', draw);
+  inp.addEventListener('input', draw);
+  onRedraw(canvas, draw);
+</script>

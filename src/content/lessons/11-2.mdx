@@ -1,0 +1,116 @@
+---
+section: "11.2"
+summary: "المتتابعة الحسابية: الأساس d والحد العام aₙ = a₁ + (n − 1)d، وإيجادها من حدين، ومجموع أول n حدًا بحيلة غاوس Sₙ = n(a₁ + aₙ)/2، وتطبيقات."
+minutes: 30
+prerequisites: ["11.1"]
+terms:
+  - { ar: "المتتابعة الحسابية", en: "Arithmetic Sequence", def: "متتابعة الفرق بين كل حد والذي قبله ثابت." }
+  - { ar: "الأساس", en: "Common Difference", def: "الفرق الثابت d = aₙ − aₙ₋₁ في المتتابعة الحسابية." }
+  - { ar: "المتسلسلة الحسابية", en: "Arithmetic Series", def: "مجموع حدود متتابعة حسابية." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import ArithSeries from '../../components/widgets/ArithSeries.astro';
+
+راتب يزيد 500 ريال كل سنة، وصفوف مسرح يزيد كل منها مقعدين عن الذي قبله: حين نضيف **العدد نفسه** في كل خطوة نحصل على متتابعة حسابية. رسمها نقاط على مستقيم، فهي النسخة المتقطعة من الدالة الخطية.
+
+## المتتابعات الحسابية <span class="en" lang="en">Arithmetic Sequences</span>
+
+<Box kind="def" title="المتتابعة الحسابية" en="Arithmetic sequence">
+<Term ar="المتتابعة الحسابية" en="arithmetic sequence" /> متتابعة يكون فيها $a_n - a_{n-1} = d$ ثابتًا لكل $n \ge 2$. العدد $d$ هو <Term ar="الأساس" en="common difference" />.
+
+$$a_n = a_1 + (n - 1)d$$
+</Box>
+
+لماذا $n - 1$؟ للوصول إلى الحد رقم $n$ من الحد الأول نخطو $n - 1$ خطوة، وكل خطوة تضيف $d$.
+
+<Example n="1" title="الحد العام">
+أوجد الحد العام والحد الخامس والعشرين للمتتابعة $2, 6, 10, 14, \dots$
+
+<Solution>
+$d = 6 - 2 = 4$، و $a_1 = 2$.
+
+$a_n = 2 + (n - 1)4 = 4n - 2$.
+
+$a_{25} = 4(25) - 2 = 98$.
+</Solution>
+</Example>
+
+<Example n="2" title="من حدين معلومين">
+في متتابعة حسابية $a_3 = 20$ و $a_8 = 50$. أوجد $a_1$ و $d$ والحد العام.
+
+<Solution>
+من $a_3$ إلى $a_8$ خمس خطوات: $50 - 20 = 5d$، إذن $d = 6$.
+
+$a_1 = a_3 - 2d = 20 - 12 = 8$.
+
+$a_n = 8 + (n - 1)6 = 6n + 2$. تحقق: $a_8 = 48 + 2 = 50$.
+</Solution>
+</Example>
+
+<Box kind="tip" title="هل هي حسابية؟">
+اطرح كل حد من الذي بعده. إن ثبت الفرق فهي حسابية. مثلًا $1, 4, 9, 16$ فروقها $3, 5, 7$ غير ثابتة، فليست حسابية.
+</Box>
+
+## المتسلسلات الحسابية <span class="en" lang="en">Arithmetic Series</span>
+
+يُروى أن معلم غاوس الصغير طلب من التلاميذ جمع الأعداد من 1 إلى 100، فأجاب غاوس فورًا: اكتب المجموع مرتين، مرة تصاعديًا ومرة تنازليًا، واجمع عموديًا:
+
+$$\begin{aligned} S &= 1 + 2 + \cdots + 100 \\ S &= 100 + 99 + \cdots + 1 \\ 2S &= 101 + 101 + \cdots + 101 = 100 \times 101 \end{aligned}$$
+
+فالمجموع $S = 5050$. والفكرة تعمل لكل متسلسلة حسابية لأن مجموع كل حدين متقابلين ثابت.
+
+<ArithSeries />
+
+<Box kind="rule" title="مجموع متسلسلة حسابية" en="Sum of an arithmetic series">
+$$S_n = \frac{n(a_1 + a_n)}{2} = \frac{n}{2}\big[2a_1 + (n - 1)d\big]$$
+
+أي: عدد الحدود × متوسط الحدين الأول والأخير.
+</Box>
+
+<Example n="3" title="مجموع بالرمز Σ">
+احسب $\displaystyle\sum_{i=1}^{40}(3i + 1)$.
+
+<Solution>
+الحدود $4, 7, 10, \dots$ حسابية بأساس 3. الحد الأول $3(1) + 1 = 4$ والأخير $3(40) + 1 = 121$.
+
+$S_{40} = \dfrac{40(4 + 121)}{2} = 20 \times 125 = 2500$.
+
+(تحقق بالصيغ: $3 \cdot \tfrac{40 \cdot 41}{2} + 40 = 2460 + 40 = 2500$.)
+</Solution>
+</Example>
+
+<Example n="4" title="مقاعد المسرح">
+في الصف الأول من مسرح 20 مقعدًا، وكل صف يزيد مقعدين عن الذي أمامه. في المسرح 30 صفًا. كم مقعدًا فيه؟
+
+<Solution>
+$a_1 = 20$، $d = 2$، $n = 30$.
+
+الصف الأخير $a_{30} = 20 + 29(2) = 78$ مقعدًا.
+
+المجموع $S_{30} = \dfrac{30(20 + 78)}{2} = 1470$ مقعدًا.
+</Solution>
+</Example>
+
+<Box kind="mistake" title="عدد الحدود">
+في الأعداد الزوجية من 10 إلى 50 ليس عدد الحدود 40 ولا 20. استخدم $a_n = a_1 + (n - 1)d$: $50 = 10 + (n - 1)2$ ← $n = 21$.
+</Box>
+
+<Check
+  q="ما مجموع أول 20 عددًا فرديًا $1 + 3 + 5 + \\cdots$؟"
+  options={["200", "400", "390", "441"]}
+  answer={1}
+  explain="$a_{20} = 1 + 19(2) = 39$، و $S_{20} = \\tfrac{20(1 + 39)}{2} = 400 = 20^2$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- حسابية: فرق ثابت $d$، و $a_n = a_1 + (n - 1)d$.
+- من حدين: الفرق بينهما = عدد الخطوات × $d$.
+- $S_n = \tfrac{n(a_1 + a_n)}{2}$: عدد الحدود × متوسط الطرفين.
+
+<Practice set="11.2" count={4} />

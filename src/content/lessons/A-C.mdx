@@ -1,0 +1,79 @@
+---
+section: "A.C"
+summary: "مرجع سريع لقوانين الهندسة المستخدمة في الكتاب: المحيط والمساحة للأشكال المستوية، وحجوم المجسمات ومساحات سطوحها، ونظرية فيثاغورس وخصائص المثلثات."
+minutes: 15
+prerequisites: []
+terms:
+  - { ar: "المحيط", en: "Perimeter", def: "طول حدود الشكل المستوي، ويسمى في الدائرة طول المحيط (Circumference)." }
+  - { ar: "المساحة", en: "Area", def: "مقدار ما يغطيه الشكل المستوي بالوحدات المربعة." }
+  - { ar: "الحجم", en: "Volume", def: "مقدار الحيز الذي يشغله المجسم بالوحدات المكعبة." }
+  - { ar: "مساحة السطح", en: "Surface Area", def: "مجموع مساحات أوجه المجسم أو سطحه." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Practice from '../../components/Practice.astro';
+
+هذا الملحق مرجع تعود إليه حين تحتاج قانونًا هندسيًا في مسألة تطبيقية: الأمثلة الكلامية في الفصول 1 و 3 و 5 و 8 تعتمد عليها كثيرًا.
+
+## الأشكال المستوية <span class="en" lang="en">Plane Figures</span>
+
+<Box kind="rule" title="المحيط والمساحة" en="Perimeter P and area A">
+| الشكل | <Term ar="المحيط" en="perimeter" /> | <Term ar="المساحة" en="area" /> |
+|---|---|---|
+| مربع ضلعه $s$ | $P = 4s$ | $A = s^2$ |
+| مستطيل $L \times W$ | $P = 2L + 2W$ | $A = LW$ |
+| مثلث قاعدته $b$ وارتفاعه $h$ | $P = a + b + c$ | $A = \tfrac12bh$ |
+| متوازي أضلاع | $P = 2a + 2b$ | $A = bh$ |
+| شبه منحرف قاعدتاه $b_1, b_2$ | $P = $ مجموع الأضلاع | $A = \tfrac12(b_1 + b_2)h$ |
+| دائرة نصف قطرها $r$ | $C = 2\pi r$ | $A = \pi r^2$ |
+</Box>
+
+## المجسمات <span class="en" lang="en">Solids</span>
+
+<Box kind="rule" title="الحجم ومساحة السطح" en="Volume V and surface area S">
+| المجسم | <Term ar="الحجم" en="volume" /> | <Term ar="مساحة السطح" en="surface area" /> |
+|---|---|---|
+| مكعب حرفه $s$ | $V = s^3$ | $S = 6s^2$ |
+| متوازي مستطيلات $L, W, H$ | $V = LWH$ | $S = 2LW + 2WH + 2LH$ |
+| أسطوانة دائرية قائمة | $V = \pi r^2h$ | $S = 2\pi r^2 + 2\pi rh$ |
+| مخروط دائري قائم | $V = \tfrac13\pi r^2h$ | $S = \pi r^2 + \pi r\sqrt{r^2 + h^2}$ |
+| كرة نصف قطرها $r$ | $V = \tfrac43\pi r^3$ | $S = 4\pi r^2$ |
+| هرم مساحة قاعدته $B$ | $V = \tfrac13Bh$ | مجموع الأوجه |
+</Box>
+
+## المثلثات <span class="en" lang="en">Triangles</span>
+
+<Box kind="rule" title="حقائق عن المثلثات" en="Triangle facts">
+- مجموع زوايا المثلث $180^\circ$.
+- **فيثاغورس**: في مثلث قائم وتره $c$: $a^2 + b^2 = c^2$.
+- المثلث $30^\circ$-$60^\circ$-$90^\circ$ أضلاعه بنسبة $1 : \sqrt3 : 2$، والمثلث $45^\circ$-$45^\circ$-$90^\circ$ بنسبة $1 : 1 : \sqrt2$.
+- المثلثات المتشابهة: الزوايا المتناظرة متساوية، والأضلاع المتناظرة متناسبة.
+</Box>
+
+<Example n="1" title="صهريج أسطواني">
+صهريج أسطواني نصف قطره 2 م وارتفاعه 5 م. ما حجمه؟ وكم مترًا مربعًا من الطلاء يحتاج سطحه الخارجي كاملًا؟
+
+<Solution>
+$V = \pi r^2 h = \pi(2)^2(5) = 20\pi \approx 62.8$ م³.
+
+$S = 2\pi r^2 + 2\pi rh = 2\pi(4) + 2\pi(2)(5)$.
+
+$= 8\pi + 20\pi = 28\pi \approx 88.0$ م².
+</Solution>
+</Example>
+
+<Example n="2" title="قطر شاشة">
+شاشة عرضها 48 سم وارتفاعها 36 سم. ما طول قطرها؟
+
+<Solution>
+القطر وتر مثلث قائم ضلعاه 48 و 36.
+
+$d^2 = 48^2 + 36^2 = 2304 + 1296 = 3600$.
+
+$d = 60$ سم (وهو المثلث $3, 4, 5$ مضروبًا في 12).
+</Solution>
+</Example>
+
+<Practice set="A.C" count={4} />

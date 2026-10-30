@@ -1,0 +1,116 @@
+---
+section: "11.4"
+summary: "نظرية ذات الحدين: أنماط مفكوك (x + y)ⁿ، ومثلث باسكال، والمضروب، ومعاملات ذات الحدين C(n, k)، والنظرية العامة، وإيجاد حد معين دون نشر المفكوك كاملًا."
+minutes: 35
+prerequisites: ["R.3", "11.1"]
+terms:
+  - { ar: "مثلث باسكال", en: "Pascal's Triangle", def: "مثلث أعداد كل عدد فيه مجموع العددين فوقه، وصفوفه معاملات (x + y)ⁿ." }
+  - { ar: "المضروب", en: "Factorial", def: "n! = n(n − 1)⋯2·1، و 0! = 1." }
+  - { ar: "معامل ذات الحدين", en: "Binomial Coefficient", def: "C(n, k) = n! / (k!(n − k)!)، ويُكتب أيضًا (n فوق k)." }
+  - { ar: "نظرية ذات الحدين", en: "Binomial Theorem", def: "(x + y)ⁿ = Σ C(n, k) xⁿ⁻ᵏ yᵏ من k = 0 إلى n." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import Pascal from '../../components/widgets/Pascal.astro';
+
+نشر $(x + y)^2$ سهل، و $(x + y)^3$ يحتاج دقيقة. لكن $(x + y)^{10}$ بالضرب المتكرر مرهق. نظرية ذات الحدين تعطي المفكوك مباشرة، بل تعطي أي حد فيه وحده.
+
+## مفكوك ذات الحدين <span class="en" lang="en">Binomial Expansion</span>
+
+$$\begin{aligned} (x + y)^1 &= x + y \\ (x + y)^2 &= x^2 + 2xy + y^2 \\ (x + y)^3 &= x^3 + 3x^2y + 3xy^2 + y^3 \\ (x + y)^4 &= x^4 + 4x^3y + 6x^2y^2 + 4xy^3 + y^4 \end{aligned}$$
+
+<Box kind="note" title="أنماط المفكوك" en="Patterns">
+في $(x + y)^n$: عدد الحدود $n + 1$. قوة $x$ تبدأ من $n$ وتنقص 1 كل حد، وقوة $y$ تبدأ من 0 وتزيد 1. ومجموع القوتين في كل حد $n$. والمعاملات متماثلة.
+</Box>
+
+## مثلث باسكال <span class="en" lang="en">Pascal's Triangle</span>
+
+اكتب المعاملات صفوفًا فتحصل على <Term ar="مثلث باسكال" en="Pascal's triangle" />: كل صف يبدأ وينتهي بـ 1، وكل عدد داخلي **مجموع العددين فوقه**.
+
+<Pascal />
+
+<Example n="1" title="باستخدام مثلث باسكال">
+انشر $(2x - 1)^4$.
+
+<Solution>
+الصف 4: $1, 4, 6, 4, 1$. الحد الأول $2x$ والثاني $-1$.
+
+$(2x)^4 + 4(2x)^3(-1) + 6(2x)^2(-1)^2 + 4(2x)(-1)^3 + (-1)^4$
+
+$= 16x^4 - 32x^3 + 24x^2 - 8x + 1$. الإشارات تتناوب لأن الحد الثاني سالب.
+</Solution>
+</Example>
+
+## المضروب ومعاملات ذات الحدين <span class="en" lang="en">Factorials and Binomial Coefficients</span>
+
+<Box kind="def" title="المضروب" en="Factorial">
+لعدد صحيح موجب $n$: $\;n! = n(n - 1)(n - 2)\cdots 2 \cdot 1$، ونعرّف $0! = 1$.
+
+مثلًا $5! = 120$. ولاحظ $n! = n \cdot (n - 1)!$، وهذا يسهّل القسمة: $\tfrac{8!}{6!} = 8 \cdot 7 = 56$.
+</Box>
+
+<Box kind="def" title="معامل ذات الحدين" en="Binomial coefficient">
+$$\binom{n}{k} = \frac{n!}{k!\,(n - k)!}, \qquad 0 \le k \le n$$
+
+وهو العدد رقم $k$ (بدءًا من 0) في الصف $n$ من مثلث باسكال. ومن التعريف: $\binom{n}{0} = \binom{n}{n} = 1$ و $\binom{n}{k} = \binom{n}{n - k}$ (التماثل).
+</Box>
+
+<Example n="2" title="حساب معامل">
+احسب $\dbinom{8}{3}$.
+
+<Solution>
+$\dbinom{8}{3} = \dfrac{8!}{3!\,5!}$. اختصر $5!$: $= \dfrac{8 \cdot 7 \cdot 6}{3 \cdot 2 \cdot 1}$
+
+$= \dfrac{336}{6} = 56$.
+
+وبالتماثل $\dbinom{8}{5} = 56$ أيضًا.
+</Solution>
+</Example>
+
+## نظرية ذات الحدين <span class="en" lang="en">The Binomial Theorem</span>
+
+<Box kind="rule" title="نظرية ذات الحدين" en="Binomial Theorem">
+$$(x + y)^n = \sum_{k=0}^{n}\binom{n}{k}x^{\,n-k}y^{\,k} = \binom{n}{0}x^n + \binom{n}{1}x^{n-1}y + \cdots + \binom{n}{n}y^n$$
+</Box>
+
+<Box kind="rule" title="حد معين" en="The (k + 1)th term">
+الحد رقم $k + 1$ في مفكوك $(x + y)^n$ هو
+
+$$\binom{n}{k}x^{\,n-k}y^{\,k}$$
+</Box>
+
+<Example n="3" title="الحد الخامس">
+أوجد الحد الخامس في مفكوك $(a + 2b)^7$.
+
+<Solution>
+الحد الخامس يعني $k + 1 = 5$، أي $k = 4$.
+
+$\dbinom{7}{4}a^{3}(2b)^{4} = 35 \cdot a^3 \cdot 16b^4$
+
+$= 560a^3b^4$.
+</Solution>
+</Example>
+
+<Box kind="mistake" title="الحد رقم k يقابل k − 1">
+الحد الخامس ليس $\binom{7}{5}$. العدّ في النظرية يبدأ من $k = 0$ (الحد الأول)، فالحد الخامس $k = 4$.
+</Box>
+
+<Check
+  q="ما معامل $x^2y^3$ في مفكوك $(x + y)^5$؟"
+  options={["5", "10", "15", "20"]}
+  answer={1}
+  explain="$k = 3$ (قوة $y$)، فالمعامل $\\binom{5}{3} = \\tfrac{5 \\cdot 4}{2} = 10$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $(x + y)^n$ فيه $n + 1$ حدًا، وقوة $x$ تنقص وقوة $y$ تزيد.
+- مثلث باسكال: كل عدد مجموع العددين فوقه.
+- $\binom{n}{k} = \tfrac{n!}{k!(n - k)!}$، و $0! = 1$.
+- الحد رقم $k + 1$: $\binom{n}{k}x^{n-k}y^k$.
+
+<Practice set="11.4" count={5} />

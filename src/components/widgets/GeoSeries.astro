@@ -1,0 +1,50 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-geo" title="المتسلسلة الهندسية: هل للمجموع حد؟" en="Sₙ → a₁/(1 − r) when |r| < 1">
+  <div class="controls">
+    <label>الحد الأول <span class="ltr">a₁ = <output data-o="a"></output></span><input type="range" min="1" max="10" value="4" data-i="a" /></label>
+    <label>النسبة <span class="ltr">r = <output data-o="r"></output></span><input type="range" min="-1.5" max="1.5" step="0.05" value="0.5" data-i="r" /></label>
+    <label>عدد الحدود <span class="ltr">n = <output data-o="n"></output></span><input type="range" min="1" max="25" value="10" data-i="n" /></label>
+  </div>
+  <canvas aria-label="المجاميع الجزئية لمتسلسلة هندسية"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-geo')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: 0, xmax: 26, ymin: -5, ymax: 10 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const a = v('a'), r = +v('r').toFixed(2), n = v('n');
+    root.querySelector('[data-o="a"]')!.textContent = String(a);
+    root.querySelector('[data-o="r"]')!.textContent = String(r);
+    root.querySelector('[data-o="n"]')!.textContent = String(n);
+    const S: number[] = [];
+    let s = 0;
+    for (let k = 0; k < n; k++) { s += a * r ** k; S.push(s); }
+    const conv = Math.abs(r) < 1;
+    const L = conv ? a / (1 - r) : NaN;
+    const vals = [...S, 0, conv ? L : 0];
+    let lo = Math.min(...vals), hi = Math.max(...vals);
+    hi = Math.min(hi, 1e4); lo = Math.max(lo, -1e4);
+    const pad = (hi - lo) * 0.1 || 1;
+    plot.view = { xmin: -0.5, xmax: Math.max(n, 5) + 1, ymin: lo - pad, ymax: hi + pad };
+    plot.fit(0.5);
+    plot.clear();
+    const span = hi - lo;
+    plot.grid(n > 12 ? 5 : 1, 1, span > 2000 ? 1000 : span > 200 ? 100 : span > 40 ? 10 : span > 8 ? 2 : 0.5);
+    if (conv) plot.seg(0, L, n + 2, L, css('--plot-hot'), 2, [6, 4]);
+    S.forEach((y, k) => { if (Math.abs(y) < 1e4) { plot.seg(k + 1, 0, k + 1, y, css('--plot-curve'), 2); plot.dot(k + 1, y, css('--plot-curve'), 4); } });
+    const Sn = r === 1 ? a * n : (a * (1 - r ** n)) / (1 - r);
+    out.innerHTML =
+      `<p>${tex(`$a_1 = ${a},\\ r = ${r}$`)}: الحدود ${tex(`$${Array.from({ length: Math.min(n, 5) }, (_, k) => fmt(a * r ** k, 3)).join(',\\ ')}${n > 5 ? ',\\ \\dots' : ''}$`)}</p>` +
+      `<p>${tex(r === 1 ? `$S_{${n}} = na_1 = ${a * n}$` : `$S_{${n}} = \\dfrac{a_1(1 - r^n)}{1 - r} = \\dfrac{${a}(1 - ${r}^{${n}})}{${fmt(1 - r, 2)}} \\approx ${fmt(Sn, 4)}$`)}</p>` +
+      `<p>${conv ? `${tex(`$|r| < 1$`)}: الحد ${tex(`$r^n \\to 0$`)}، فالمجاميع تقترب من ${tex(`$S = \\dfrac{a_1}{1 - r} = \\dfrac{${a}}{${fmt(1 - r, 2)}} \\approx ${fmt(L, 4)}$`)} (الخط المتقطع). المتسلسلة اللانهائية <strong>متقاربة</strong>.` : `${tex(`$|r| \\ge 1$`)}: الحدود لا تصغر، فالمجاميع لا تستقر: المتسلسلة اللانهائية <strong>متباعدة</strong> وليس لها مجموع.`}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

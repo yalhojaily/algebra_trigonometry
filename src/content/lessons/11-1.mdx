@@ -1,0 +1,144 @@
+---
+section: "11.1"
+summary: "المتتابعات: الحد العام والتعريف التراجعي (متتابعة فيبوناتشي)، والمتسلسلات والمجاميع الجزئية، ورمز المجموع Σ وخصائصه وصيغ مجموع الثوابت والأعداد ومربعاتها."
+minutes: 35
+prerequisites: ["2.1"]
+terms:
+  - { ar: "المتتابعة", en: "Sequence", def: "دالة مجالها الأعداد الصحيحة الموجبة، تُكتب حدودها a₁, a₂, a₃, …" }
+  - { ar: "الحد العام", en: "General Term", def: "الصيغة aₙ التي تعطي أي حد بدلالة رتبته n." }
+  - { ar: "تعريف تراجعي", en: "Recursive Definition", def: "تعريف يعطي الحد الأول (أو أكثر) وقاعدة تحسب كل حد من الحدود السابقة له." }
+  - { ar: "المتسلسلة", en: "Series", def: "مجموع حدود متتابعة." }
+  - { ar: "المجموع الجزئي", en: "Partial Sum", def: "Sₙ = a₁ + a₂ + ⋯ + aₙ، مجموع أول n حدًا." }
+  - { ar: "رمز المجموع", en: "Summation Notation", def: "Σ: اختصار لكتابة مجموع حدود ذات نمط واحد." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import SequencePlot from '../../components/widgets/SequencePlot.astro';
+
+رصيد حساب ادخار شهرًا بعد شهر، وعدد الخلايا بعد كل انقسام، ومقاعد صفوف مسرح: كلها قوائم أعداد مرتبة لها نمط. هذه **المتتابعات**، ومجموع حدودها **متسلسلة**. هذا الفصل يبدأ بلغتها ورموزها.
+
+## المتتابعات <span class="en" lang="en">Sequences</span>
+
+<Box kind="def" title="المتتابعة" en="Sequence">
+<Term ar="المتتابعة" en="sequence" /> دالة مجالها الأعداد الصحيحة الموجبة $\{1, 2, 3, \dots\}$. بدل $f(n)$ نكتب $a_n$، فالحدود $a_1, a_2, a_3, \dots$. وتكون **منتهية** إذا كان مجالها $\{1, 2, \dots, n\}$، و**غير منتهية** إذا لم يكن لها آخر.
+</Box>
+
+<Example n="1" title="حدود من الحد العام">
+اكتب الحدود الأربعة الأولى والحد المئة للمتتابعة $a_n = \dfrac{n}{n + 1}$.
+
+<Solution>
+عوّض $n = 1, 2, 3, 4$: $a_1 = \tfrac12$، $a_2 = \tfrac23$، $a_3 = \tfrac34$، $a_4 = \tfrac45$.
+
+$a_{100} = \tfrac{100}{101}$.
+
+لاحظ أن الحدود تقترب من 1 كلما كبر $n$ لكنها لا تبلغه.
+</Solution>
+</Example>
+
+<Example n="2" title="إيجاد الحد العام">
+اكتب <Term ar="الحد العام" en="general term" /> لكل متتابعة: (أ) $3, 5, 7, 9, \dots$ (ب) $\tfrac12, -\tfrac14, \tfrac18, -\tfrac1{16}, \dots$
+
+<Solution>
+(أ) الحدود أعداد فردية تبدأ من 3، وكل حد يزيد 2: $a_n = 2n + 1$. تحقق: $a_1 = 3$.
+
+(ب) المقامات قوى 2: $2^n$. والإشارة تتناوب وتبدأ موجبة، فنضرب في $(-1)^{n+1}$.
+
+$a_n = \dfrac{(-1)^{n+1}}{2^n}$. العامل $(-1)^{n+1}$ أداة شائعة لصنع إشارات متناوبة.
+</Solution>
+</Example>
+
+<Box kind="mistake" title="الحدود الأولى لا تحدد المتتابعة وحدها">
+القائمة $2, 4, 8, \dots$ قد تكون $a_n = 2^n$ (فالحد التالي 16) أو $a_n = n^2 - n + 2$ (فالحد التالي 14). لذلك نطلب «حدًا عامًا» أو قاعدة صريحة، لا مجرد بضعة حدود.
+</Box>
+
+### المتتابعات التراجعية <span class="en" lang="en">Recursively Defined Sequences</span>
+
+<Box kind="def" title="تعريف تراجعي" en="Recursive definition">
+في <Term ar="التعريف التراجعي" en="recursive definition" /> نعطي الحد الأول (أو أكثر)، وقاعدة تحسب $a_n$ من الحدود التي قبله. مثل $a_1 = 4$ و $a_n = 2a_{n-1} - 1$: الحدود $4, 7, 13, 25, \dots$
+</Box>
+
+<Example n="3" title="متتابعة فيبوناتشي">
+$a_1 = 1$، $a_2 = 1$، و $a_n = a_{n-1} + a_{n-2}$ لـ $n \ge 3$. اكتب الحدود الثمانية الأولى.
+
+<Solution>
+كل حد مجموع الحدين قبله: $a_3 = 1 + 1 = 2$، $a_4 = 1 + 2 = 3$، $a_5 = 2 + 3 = 5$.
+
+ثم $a_6 = 8$، $a_7 = 13$، $a_8 = 21$.
+
+المتتابعة $1, 1, 2, 3, 5, 8, 13, 21, \dots$ تظهر في عدد بتلات الأزهار وترتيب بذور دوار الشمس. وعيب التعريف التراجعي أن حساب $a_{100}$ يحتاج كل الحدود قبله.
+</Solution>
+</Example>
+
+## المتسلسلات <span class="en" lang="en">Series</span>
+
+<Box kind="def" title="المتسلسلة والمجموع الجزئي" en="Series and partial sums">
+<Term ar="المتسلسلة" en="series" /> مجموع حدود متتابعة. و<Term ar="المجموع الجزئي" en="partial sum" /> رقم $n$ هو
+
+$$S_n = a_1 + a_2 + \cdots + a_n$$
+
+فالمجاميع الجزئية $S_1, S_2, S_3, \dots$ متتابعة جديدة.
+</Box>
+
+<SequencePlot />
+
+جرّب في الأداة: حدود $\tfrac1{2^n}$ تصغر والمجاميع الجزئية تستقر عند 1، أما حدود $\tfrac1n$ فتصغر أيضًا لكن مجاميعها تكبر بلا حد (ببطء شديد). أن تقترب الحدود من الصفر لا يكفي ليكون للمجموع حد.
+
+## رمز المجموع <span class="en" lang="en">Summation Notation</span>
+
+<Box kind="def" title="رمز Σ" en="Summation notation">
+$$\sum_{i=1}^{n} a_i = a_1 + a_2 + \cdots + a_n$$
+
+$i$ **دليل المجموع** (يمكن تسميته أي حرف)، و1 الحد الأدنى، و $n$ الحد الأعلى. يُقرأ: «مجموع $a_i$ من $i = 1$ إلى $n$».
+</Box>
+
+<Example n="4" title="حساب مجموع">
+احسب $\displaystyle\sum_{i=1}^{5}(2i - 1)$ و $\displaystyle\sum_{k=3}^{6}\frac{1}{k}$.
+
+<Solution>
+$\sum_{i=1}^{5}(2i - 1) = 1 + 3 + 5 + 7 + 9 = 25$.
+
+$\sum_{k=3}^{6}\tfrac1k = \tfrac13 + \tfrac14 + \tfrac15 + \tfrac16 = \tfrac{20 + 15 + 12 + 10}{60} = \tfrac{57}{60} = \tfrac{19}{20}$.
+
+لاحظ أن الدليل في الثاني يبدأ من 3، فعدد الحدود $6 - 3 + 1 = 4$.
+</Solution>
+</Example>
+
+<Box kind="rule" title="خصائص المجموع وصيغ مفيدة" en="Properties of sums">
+$$\sum_{i=1}^{n}(a_i \pm b_i) = \sum_{i=1}^{n}a_i \pm \sum_{i=1}^{n}b_i \qquad \sum_{i=1}^{n}c\,a_i = c\sum_{i=1}^{n}a_i$$
+
+$$\sum_{i=1}^{n}c = nc \qquad \sum_{i=1}^{n}i = \frac{n(n+1)}{2} \qquad \sum_{i=1}^{n}i^2 = \frac{n(n+1)(2n+1)}{6}$$
+
+سنثبت صيغتي $\sum i$ و $\sum i^2$ في الدرسين 11.2 و 11.5.
+</Box>
+
+<Example n="5" title="باستخدام الصيغ">
+احسب $\displaystyle\sum_{i=1}^{10}(3i^2 + 2)$.
+
+<Solution>
+وزّع: $3\sum_{i=1}^{10}i^2 + \sum_{i=1}^{10}2$.
+
+$\sum_{i=1}^{10}i^2 = \tfrac{10 \cdot 11 \cdot 21}{6} = 385$، و $\sum_{i=1}^{10}2 = 10 \cdot 2 = 20$.
+
+المجموع $3(385) + 20 = 1175$، بدل جمع عشرة حدود يدويًا.
+</Solution>
+</Example>
+
+<Check
+  q="كم حدًا في $\\displaystyle\\sum_{i=4}^{12} i^2$؟"
+  options={["8", "9", "12", "16"]}
+  answer={1}
+  explain="عدد الحدود = الحد الأعلى − الحد الأدنى + 1 $= 12 - 4 + 1 = 9$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- المتتابعة دالة على الأعداد الصحيحة الموجبة، تُعطى بحد عام $a_n$ أو تراجعيًا.
+- $(-1)^{n}$ أو $(-1)^{n+1}$ يصنع إشارات متناوبة.
+- المتسلسلة مجموع الحدود، و $S_n$ مجموع أول $n$ حدًا.
+- $\sum c = nc$، $\sum i = \tfrac{n(n+1)}{2}$، $\sum i^2 = \tfrac{n(n+1)(2n+1)}{6}$.
+
+<Practice set="11.1" count={4} />

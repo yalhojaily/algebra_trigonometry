@@ -1,0 +1,161 @@
+---
+section: "11.7"
+summary: "مبادئ الاحتمال: فضاء العينة والحدث، والاحتمال للنتائج المتساوية، ومتمم الحدث، وقاعدة الجمع والأحداث المتنافية، والأرجحية، واستخدام طرق العد، واحتمال ذات الحدين."
+minutes: 40
+prerequisites: ["11.6"]
+terms:
+  - { ar: "التجربة", en: "Experiment", def: "عملية نتائجها محددة لكن لا نعرف مسبقًا أيها سيقع." }
+  - { ar: "فضاء العينة", en: "Sample Space", def: "مجموعة كل النتائج الممكنة للتجربة، ويرمز لها S." }
+  - { ar: "الحدث", en: "Event", def: "مجموعة جزئية من فضاء العينة." }
+  - { ar: "المتمم", en: "Complement", def: "E′: كل نتائج فضاء العينة التي ليست في E." }
+  - { ar: "أحداث متنافية", en: "Mutually Exclusive Events", def: "أحداث لا يمكن وقوعها معًا: E ∩ F = ∅." }
+  - { ar: "الأرجحية", en: "Odds", def: "نسبة عدد النتائج المواتية إلى غير المواتية." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import BinomialDist from '../../components/widgets/BinomialDist.astro';
+
+لا نعرف نتيجة رمية نرد واحدة، لكننا نعرف أن الستة تظهر في نحو سدس الرميات على المدى الطويل. **الاحتمال** يقيس هذا اليقين الجزئي بعدد بين 0 (مستحيل) و 1 (مؤكد)، وأدوات العد من الدرس السابق هي وسيلتنا لحسابه.
+
+## المفاهيم الأساسية <span class="en" lang="en">Basic Concepts</span>
+
+<Box kind="def" title="فضاء العينة والحدث" en="Sample space and events">
+<Term ar="فضاء العينة" en="sample space" /> $S$: مجموعة كل النتائج الممكنة لـ<Term ar="تجربة" en="experiment" />. و<Term ar="الحدث" en="event" /> $E$ مجموعة جزئية منه. فعند رمي نرد: $S = \{1, 2, 3, 4, 5, 6\}$، وحدث «عدد زوجي» هو $E = \{2, 4, 6\}$.
+</Box>
+
+<Box kind="rule" title="احتمال حدث (نتائج متساوية الاحتمال)" en="Probability of an event">
+إذا كانت نتائج $S$ متساوية الإمكان:
+
+$$P(E) = \frac{n(E)}{n(S)} = \frac{\text{favorable outcomes}}{\text{total outcomes}}$$
+
+ودائمًا $0 \le P(E) \le 1$، و $P(\emptyset) = 0$، و $P(S) = 1$.
+</Box>
+
+<Example n="1" title="حجرا نرد">
+رُمي حجرا نرد. ما احتمال أن يكون المجموع 7؟
+
+<Solution>
+فضاء العينة أزواج مرتبة $(a, b)$: $6 \cdot 6 = 36$ نتيجة متساوية الإمكان.
+
+المجموع 7: $(1,6), (2,5), (3,4), (4,3), (5,2), (6,1)$، ستة أزواج.
+
+$P = \tfrac{6}{36} = \tfrac16$. وهو أكثر مجموع احتمالًا.
+</Solution>
+</Example>
+
+## المتمم وقاعدة الجمع <span class="en" lang="en">Complements and the Union Rule</span>
+
+<Box kind="rule" title="المتمم" en="Complement rule">
+$$P(E') = 1 - P(E)$$
+
+مفيد جدًا مع عبارة «على الأقل واحد»: احسب احتمال «ولا واحد» واطرحه من 1.
+</Box>
+
+<Example n="2" title="على الأقل صورة">
+رُميت قطعة نقود 4 مرات. ما احتمال ظهور صورة واحدة على الأقل؟
+
+<Solution>
+فضاء العينة $2^4 = 16$ نتيجة. حساب «على الأقل واحدة» مباشرة يحتاج جمع 4 حالات.
+
+المتمم: «ولا صورة»، أي كتابة في الرميات الأربع، نتيجة واحدة: $P(E') = \tfrac1{16}$.
+
+$P(E) = 1 - \tfrac1{16} = \tfrac{15}{16}$.
+</Solution>
+</Example>
+
+<Box kind="rule" title="قاعدة الجمع" en="Union rule">
+$$P(E \cup F) = P(E) + P(F) - P(E \cap F)$$
+
+نطرح $P(E \cap F)$ لأن النتائج المشتركة عُدّت مرتين. وإذا كان الحدثان <Term ar="متنافيين" en="mutually exclusive" /> ($E \cap F = \emptyset$) فإن $P(E \cup F) = P(E) + P(F)$.
+
+يساعد **شكل فن** (<span lang="en">Venn diagram</span>) على رؤية ذلك: دائرتان داخل مستطيل $S$، ومنطقة التقاطع هي التي تُعدّ مرتين.
+</Box>
+
+<Example n="3" title="بطاقة من مجموعة الورق">
+سُحبت بطاقة من مجموعة 52 بطاقة. ما احتمال أن تكون قلبًا أو ملكًا؟
+
+<Solution>
+$P(\text{heart}) = \tfrac{13}{52}$، و $P(\text{king}) = \tfrac{4}{52}$.
+
+ملك القلب في الحدثين معًا: $P(\text{heart} \cap \text{king}) = \tfrac1{52}$.
+
+$P = \tfrac{13}{52} + \tfrac{4}{52} - \tfrac{1}{52} = \tfrac{16}{52} = \tfrac{4}{13}$.
+</Solution>
+</Example>
+
+## الأرجحية <span class="en" lang="en">Odds</span>
+
+<Box kind="def" title="الأرجحية" en="Odds">
+<Term ar="أرجحية" en="odds" /> الحدث $E$ (لصالحه) هي $\dfrac{P(E)}{P(E')}$، وتُكتب «$a$ إلى $b$». وإذا كانت الأرجحية $a$ إلى $b$ فإن $P(E) = \dfrac{a}{a + b}$.
+</Box>
+
+<Example n="4" title="من الأرجحية إلى الاحتمال">
+أرجحية فوز فريق 3 إلى 5. ما احتمال فوزه؟ وما أرجحية خسارته؟
+
+<Solution>
+من كل $3 + 5 = 8$ حالات متساوية، 3 مواتية.
+
+$P(\text{win}) = \tfrac38$.
+
+وأرجحية الخسارة بعكس الترتيب: 5 إلى 3.
+</Solution>
+</Example>
+
+## الاحتمال وطرق العد <span class="en" lang="en">Probability and Counting</span>
+
+<Example n="5" title="بطاقتان">
+سُحبت بطاقتان معًا من مجموعة 52 بطاقة. ما احتمال أن تكونا آسين؟
+
+<Solution>
+السحب معًا لا ترتيب فيه: $n(S) = C(52, 2) = 1326$.
+
+عدد طرق اختيار آسين من 4: $C(4, 2) = 6$.
+
+$P = \tfrac{6}{1326} = \tfrac{1}{221} \approx 0.0045$.
+</Solution>
+</Example>
+
+## احتمال ذات الحدين <span class="en" lang="en">Binomial Probability</span>
+
+<Box kind="rule" title="احتمال ذات الحدين" en="Binomial probability">
+إذا كررنا تجربة $n$ مرات مستقلة، واحتمال النجاح في كل مرة $p$، فاحتمال $k$ نجاحات بالضبط:
+
+$$P(X = k) = \binom{n}{k}p^{\,k}(1 - p)^{\,n-k}$$
+
+$\binom{n}{k}$ يعدّ مواضع النجاحات بين المحاولات، و $p^k(1 - p)^{n-k}$ احتمال كل ترتيب منها.
+</Box>
+
+<BinomialDist />
+
+<Example n="6" title="اختبار بالتخمين">
+اختبار من 10 أسئلة اختيار من متعدد لكل منها 4 خيارات. طالب يخمّن كل الإجابات. ما احتمال أن يجيب 3 أسئلة صحيحة بالضبط؟
+
+<Solution>
+$n = 10$، $k = 3$، $p = \tfrac14 = 0.25$، و $1 - p = 0.75$.
+
+$P = \dbinom{10}{3}(0.25)^3(0.75)^7 = 120 \cdot 0.015625 \cdot 0.1335$
+
+$\approx 0.250$، أي فرصة تقارب واحدًا من أربعة.
+</Solution>
+</Example>
+
+<Check
+  q="أرجحية حدث 2 إلى 7. ما احتماله؟"
+  options={["$\\tfrac27$", "$\\tfrac29$", "$\\tfrac79$", "$\\tfrac57$"]}
+  answer={1}
+  explain="$P = \\tfrac{a}{a + b} = \\tfrac{2}{2 + 7} = \\tfrac29$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $P(E) = \tfrac{n(E)}{n(S)}$ للنتائج المتساوية، و $0 \le P \le 1$.
+- $P(E') = 1 - P(E)$، مفيد مع «على الأقل».
+- $P(E \cup F) = P(E) + P(F) - P(E \cap F)$.
+- الأرجحية $a$ إلى $b$ ← $P = \tfrac{a}{a + b}$.
+- ذات الحدين: $\binom{n}{k}p^k(1 - p)^{n-k}$.
+
+<Practice set="11.7" count={5} />

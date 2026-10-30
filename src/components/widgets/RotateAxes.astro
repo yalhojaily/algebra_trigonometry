@@ -1,0 +1,83 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-rot" title="دوران المحاور: إزالة الحد xy" en="Ax² + Bxy + Cy² = F → A′x′² + C′y′² = F">
+  <div class="controls">
+    <label>المعادلة <select data-i="eq">
+      <option value="0">52x² − 72xy + 73y² = 100</option>
+      <option value="1">xy = 2</option>
+      <option value="2">x² + √3xy + 2y² = 5</option>
+      <option value="3">3x² − 2√3xy + y² − 2x − 2√3y = 0</option>
+    </select></label>
+    <label>زاوية الدوران <span class="ltr">θ = <output data-o="t"></output>°</span><input type="range" min="0" max="90" step="0.5" value="10" data-i="t" /></label>
+    <span class="seg"><button type="button" data-i="snap">الزاوية التي تزيل xy</button></span>
+  </div>
+  <canvas aria-label="قطع مائل ومحوران مدوّران"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-rot')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -6, xmax: 6, ymin: -4, ymax: 4 });
+  const s3 = Math.sqrt(3);
+  // A, B, C, D, E, F في Ax² + Bxy + Cy² + Dx + Ey = F
+  const EQ = [
+    { A: 52, B: -72, C: 73, D: 0, E: 0, F: 100, tx: '52x^2 - 72xy + 73y^2 = 100' },
+    { A: 0, B: 1, C: 0, D: 0, E: 0, F: 2, tx: 'xy = 2' },
+    { A: 1, B: s3, C: 2, D: 0, E: 0, F: 5, tx: 'x^2 + \\sqrt3\\,xy + 2y^2 = 5' },
+    { A: 3, B: -2 * s3, C: 1, D: -2, E: -2 * s3, F: 0, tx: '3x^2 - 2\\sqrt3\\,xy + y^2 - 2x - 2\\sqrt3\\,y = 0' },
+  ];
+  const sel = root.querySelector<HTMLSelectElement>('[data-i="eq"]')!;
+  const inp = root.querySelector<HTMLInputElement>('[data-i="t"]')!;
+  const exact = (q: typeof EQ[number]) => {
+    const two = q.A === q.C ? Math.PI / 2 : Math.atan2(q.B, q.A - q.C); // cot 2θ = (A − C)/B
+    let t = (two / 2) * (180 / Math.PI);
+    if (t < 0) t += 90;
+    return t;
+  };
+  root.querySelector('[data-i="snap"]')!.addEventListener('click', () => { inp.value = String(Math.round(exact(EQ[Number(sel.value)]) * 2) / 2); draw(); });
+  sel.addEventListener('input', () => { inp.value = '10'; draw(); });
+  inp.addEventListener('input', draw);
+  function draw() {
+    const q = EQ[Number(sel.value)];
+    const deg = Number(inp.value), th = (deg * Math.PI) / 180;
+    root.querySelector('[data-o="t"]')!.textContent = String(deg);
+    plot.fit(0.62);
+    const H = 5, W = H / 0.62;
+    plot.view = { xmin: -W, xmax: W, ymin: -H, ymax: H };
+    plot.clear();
+    plot.grid(1, 2);
+    // المنحنى الضمني: مسح شبكي بإشارة g(x, y)
+    const g = (x: number, y: number) => q.A * x * x + q.B * x * y + q.C * y * y + q.D * x + q.E * y - q.F;
+    const { ctx } = plot;
+    const step = 0.03;
+    ctx.fillStyle = css('--plot-curve');
+    for (let x = plot.view.xmin; x < plot.view.xmax; x += step) for (let y = plot.view.ymin; y < plot.view.ymax; y += step) {
+      const a = g(x, y), b = g(x + step, y), c = g(x, y + step);
+      if (a * b <= 0 || a * c <= 0) ctx.fillRect(plot.X(x) - 1.4, plot.Y(y) - 1.4, 2.8, 2.8);
+    }
+    // المحوران المدوّران
+    const c = Math.cos(th), s = Math.sin(th), L = 30;
+    plot.seg(-L * c, -L * s, L * c, L * s, css('--plot-hot'), 2.2, [8, 5]);
+    plot.seg(L * s, -L * c, -L * s, L * c, css('--plot-hot'), 2.2, [8, 5]);
+    plot.label(4.2 * c + 0.15, 4.2 * s + 0.15, "x′", css('--plot-hot'));
+    plot.label(-4.2 * s + 0.15, 4.2 * c, "y′", css('--plot-hot'));
+    // المعاملات الجديدة
+    const A2 = q.A * c * c + q.B * c * s + q.C * s * s;
+    const B2 = (q.C - q.A) * 2 * s * c + q.B * (c * c - s * s);
+    const C2 = q.A * s * s - q.B * c * s + q.C * c * c;
+    const D2 = q.D * c + q.E * s, E2 = -q.D * s + q.E * c;
+    const z = (v: number) => (Math.abs(v) < 0.005 ? 0 : v);
+    const disc = q.B * q.B - 4 * q.A * q.C;
+    const kind = Math.abs(disc) < 1e-9 ? 'قطع مكافئ' : disc < 0 ? 'قطع ناقص' : 'قطع زائد';
+    const lin = (z(D2) || z(E2)) ? ` ${z(D2) < 0 ? '-' : '+'} ${fmt(Math.abs(D2), 3)}x' ${z(E2) < 0 ? '-' : '+'} ${fmt(Math.abs(E2), 3)}y'` : '';
+    out.innerHTML =
+      `<p>${tex(`$${q.tx}$`)}: ${tex(`$B^2 - 4AC = ${fmt(disc, 3)}$`)} ← <strong>${kind}</strong>.</p>` +
+      `<p>بعد الدوران بزاوية ${tex(`$${deg}^\\circ$`)}: ${tex(`$${fmt(z(A2), 3)}x'^2 ${z(B2) < 0 ? '-' : '+'} ${fmt(Math.abs(z(B2)), 3)}x'y' ${z(C2) < 0 ? '-' : '+'} ${fmt(Math.abs(z(C2)), 3)}y'^2${lin} = ${q.F}$`)}</p>` +
+      `<p>${z(B2) === 0 ? '<strong>اختفى الحد ' + tex("$x'y'$") + '</strong>: المحوران الجديدان على محوري تماثل القطع.' : `ما زال الحد ${tex("$x'y'$")} موجودًا. الزاوية المطلوبة تحقق ${tex(`$\\cot 2\\theta = \\tfrac{A - C}{B}$`)}، أي ${tex(`$\\theta \\approx ${fmt(exact(q), 2)}^\\circ$`)}.`}</p>`;
+  }
+  onRedraw(canvas, draw);
+</script>

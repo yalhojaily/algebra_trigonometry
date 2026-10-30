@@ -196,7 +196,7 @@ export const chapters: Chapter[] = [
     id: '11',
     ar: 'موضوعات إضافية في الجبر',
     en: 'Further Topics in Algebra',
-    status: 'soon',
+    status: 'ready',
     blurb: 'المتتابعات والمتسلسلات، نظرية ذات الحدين، الاستقراء الرياضي، والعد والاحتمالات.',
     sections: [
       { id: '11.1', ar: 'المتتابعات والمتسلسلات', en: 'Sequences and Series', topics: [t('المتتابعات', 'Sequences'), t('المتسلسلات ورمز المجموع', 'Series and Summation Notation'), t('خصائص المجموع', 'Summation Properties and Rules')] },
@@ -212,7 +212,7 @@ export const chapters: Chapter[] = [
     id: 'A',
     ar: 'الملاحق',
     en: 'Appendices',
-    status: 'soon',
+    status: 'ready',
     blurb: 'الصيغة القطبية للقطوع، دوران المحاور، وقوانين الهندسة.',
     sections: [
       { id: 'A.A', ar: 'الصيغة القطبية للقطوع المخروطية', en: 'Polar Form of Conic Sections', topics: [t('المعادلات والرسوم', 'Equations and Graphs'), t('التحويل إلى الصيغة الديكارتية', 'Conversion from Polar to Rectangular Form')] },

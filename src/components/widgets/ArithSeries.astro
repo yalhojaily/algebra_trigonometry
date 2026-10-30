@@ -1,0 +1,52 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-ari" title="المتسلسلة الحسابية: حيلة غاوس" en="Sₙ = n(a₁ + aₙ)/2">
+  <div class="controls">
+    <label>الحد الأول <span class="ltr">a₁ = <output data-o="a"></output></span><input type="range" min="1" max="10" value="2" data-i="a" /></label>
+    <label>الأساس <span class="ltr">d = <output data-o="d"></output></span><input type="range" min="1" max="5" value="3" data-i="d" /></label>
+    <label>عدد الحدود <span class="ltr">n = <output data-o="n"></output></span><input type="range" min="2" max="12" value="6" data-i="n" /></label>
+  </div>
+  <canvas aria-label="أعمدة الحدود ونسخة مقلوبة منها"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-ari')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: 0, xmax: 13, ymin: 0, ymax: 70 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const a = v('a'), d = v('d'), n = v('n');
+    for (const k of ['a', 'd', 'n']) root.querySelector(`[data-o="${k}"]`)!.textContent = String(v(k));
+    const an = a + (n - 1) * d;
+    const H = a + an;
+    plot.view = { xmin: -0.3, xmax: n + 0.3, ymin: -H * 0.05, ymax: H * 1.08 };
+    plot.fit(0.5);
+    plot.clear();
+    const { ctx } = plot;
+    for (let k = 0; k < n; k++) {
+      const t = a + k * d;
+      const x0 = plot.X(k + 0.1), x1 = plot.X(k + 0.9);
+      ctx.fillStyle = css('--plot-curve');
+      ctx.fillRect(x0, plot.Y(t), x1 - x0, plot.Y(0) - plot.Y(t));
+      ctx.fillStyle = css('--plot-hot');
+      ctx.globalAlpha = 0.55;
+      ctx.fillRect(x0, plot.Y(H), x1 - x0, plot.Y(t) - plot.Y(H));
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = css('--accent-ink');
+      ctx.font = '600 12px "Noto Sans", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(String(t), (x0 + x1) / 2, plot.Y(t / 2));
+    }
+    plot.seg(0, H, n, H, css('--ink'), 1.5, [4, 3]);
+    out.innerHTML =
+      `<p>الحدود (الأعمدة الخضراء): ${tex(`$${Array.from({ length: n }, (_, k) => a + k * d).join(',\\ ')}$`)}، و ${tex(`$a_n = a_1 + (n - 1)d = ${a} + ${n - 1}(${d}) = ${an}$`)}.</p>` +
+      `<p>ضع نسخة مقلوبة من المتسلسلة فوقها (البرتقالي): كل عمود يصير ارتفاعه ${tex(`$a_1 + a_n = ${H}$`)}. فمجموع النسختين ${tex(`$${n} \\times ${H}$`)}، والمتسلسلة نصفه:</p>` +
+      `<p>${tex(`$S_{${n}} = \\dfrac{n(a_1 + a_n)}{2} = \\dfrac{${n}(${a} + ${an})}{2} = ${(n * H) / 2}$`)}</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

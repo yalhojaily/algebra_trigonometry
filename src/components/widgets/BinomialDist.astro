@@ -1,0 +1,50 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-bin" title="احتمال ذات الحدين" en="P(k successes in n trials)">
+  <div class="controls">
+    <label>عدد المحاولات <span class="ltr">n = <output data-o="n"></output></span><input type="range" min="1" max="20" value="10" data-i="n" /></label>
+    <label>احتمال النجاح <span class="ltr">p = <output data-o="p"></output></span><input type="range" min="0.05" max="0.95" step="0.05" value="0.5" data-i="p" /></label>
+    <label>عدد النجاحات <span class="ltr">k = <output data-o="k"></output></span><input type="range" min="0" max="20" value="5" data-i="k" /></label>
+  </div>
+  <canvas aria-label="توزيع ذات الحدين"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-bin')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -1, xmax: 21, ymin: 0, ymax: 0.5 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const C = (n: number, k: number) => { let r = 1; for (let i = 1; i <= k; i++) r = (r * (n - k + i)) / i; return Math.round(r); };
+  function draw() {
+    const n = v('n'), p = +v('p').toFixed(2);
+    const kI = root.querySelector<HTMLInputElement>('[data-i="k"]')!;
+    kI.max = String(n);
+    const k = Math.min(v('k'), n);
+    root.querySelector('[data-o="n"]')!.textContent = String(n);
+    root.querySelector('[data-o="p"]')!.textContent = String(p);
+    root.querySelector('[data-o="k"]')!.textContent = String(k);
+    const P = Array.from({ length: n + 1 }, (_, j) => C(n, j) * p ** j * (1 - p) ** (n - j));
+    const top = Math.max(...P) * 1.15;
+    plot.view = { xmin: -0.8, xmax: n + 0.8, ymin: -top * 0.04, ymax: top };
+    plot.fit(0.5);
+    plot.clear();
+    plot.grid(n > 12 ? 2 : 1, 1, top > 0.4 ? 0.1 : top > 0.2 ? 0.05 : 0.02);
+    const { ctx } = plot;
+    P.forEach((q, j) => {
+      ctx.fillStyle = j === k ? css('--plot-hot') : css('--plot-curve');
+      const x0 = plot.X(j - 0.38), x1 = plot.X(j + 0.38);
+      ctx.fillRect(x0, plot.Y(q), x1 - x0, plot.Y(0) - plot.Y(q));
+    });
+    const atLeast = P.slice(k).reduce((s, x) => s + x, 0);
+    out.innerHTML =
+      `<p>${tex(`$P(X = ${k}) = \\dbinom{${n}}{${k}}(${p})^{${k}}(${fmt(1 - p, 2)})^{${n - k}} = ${C(n, k)} \\cdot ${fmt(p ** k, 5)} \\cdot ${fmt((1 - p) ** (n - k), 5)} \\approx ${fmt(P[k], 4)}$`)}</p>` +
+      `<p>المعامل ${tex(`$\\binom{${n}}{${k}} = ${C(n, k)}$`)} هو عدد طرق اختيار مواضع النجاحات بين المحاولات. واحتمال «${k} نجاحات على الأقل» ${tex(`$\\approx ${fmt(atLeast, 4)}$`)}.</p>` +
+      `<p>القيمة الأكثر احتمالًا قرب ${tex(`$np = ${fmt(n * p, 2)}$`)}، ومجموع الأعمدة كلها 1.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

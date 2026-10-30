@@ -1,0 +1,79 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-pc" title="القطوع بالصيغة القطبية" en="r = ep / (1 ± e cos θ) or (1 ± e sin θ)">
+  <div class="controls">
+    <label>الصيغة <select data-i="form">
+      <option value="0">r = ep/(1 + e cos θ)</option>
+      <option value="1">r = ep/(1 − e cos θ)</option>
+      <option value="2" selected>r = ep/(1 + e sin θ)</option>
+      <option value="3">r = ep/(1 − e sin θ)</option>
+    </select></label>
+    <label>الاختلاف المركزي <span class="ltr">e = <output data-o="e"></output></span><input type="range" min="0.2" max="2" step="0.1" value="0.7" data-i="e" /></label>
+    <label>بعد الدليل <span class="ltr">p = <output data-o="p"></output></span><input type="range" min="1" max="4" step="0.5" value="3" data-i="p" /></label>
+    <label>الزاوية <span class="ltr">θ = <output data-o="t"></output>°</span><input type="range" min="0" max="355" step="5" value="60" data-i="t" /></label>
+  </div>
+  <canvas aria-label="قطع مخروطي بؤرته عند القطب"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-pc')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -10, xmax: 10, ymin: -8, ymax: 8 });
+  const el = (k: string) => root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!;
+  function draw() {
+    const form = Number(el('form').value), e = Number(el('e').value), p = Number(el('p').value), deg = Number(el('t').value);
+    root.querySelector('[data-o="e"]')!.textContent = String(e);
+    root.querySelector('[data-o="p"]')!.textContent = String(p);
+    root.querySelector('[data-o="t"]')!.textContent = String(deg);
+    const sgn = form % 2 === 0 ? 1 : -1, useSin = form >= 2;
+    const trig = (t: number) => (useSin ? Math.sin(t) : Math.cos(t));
+    const r = (t: number) => (e * p) / (1 + sgn * e * trig(t));
+    plot.fit(0.7);
+    const H = Math.min(14, Math.max(5, e < 1 ? (1.25 * e * p) / (1 - e) : 3 * p)), W = H / 0.7;
+    plot.view = { xmin: -W, xmax: W, ymin: -H, ymax: H };
+    plot.clear();
+    plot.grid(H > 9 ? 2 : 1, 2);
+    // الدليل: x = ±p أو y = ±p
+    if (useSin) plot.seg(-50, sgn * p, 50, sgn * p, css('--plot-alt'), 2.5, [7, 5]);
+    else plot.seg(sgn * p, -50, sgn * p, 50, css('--plot-alt'), 2.5, [7, 5]);
+    const { ctx } = plot;
+    ctx.strokeStyle = css('--plot-curve'); ctx.lineWidth = 3;
+    for (const branch of [1, -1]) {
+      if (branch === -1 && e <= 1) continue;
+      ctx.beginPath();
+      let pen = false;
+      const N = 1500;
+      for (let j = 0; j <= N; j++) {
+        const t = (2 * Math.PI * j) / N, rr = r(t);
+        const ok = Number.isFinite(rr) && rr * branch > 0 && Math.abs(rr) < 150;
+        if (!ok) { pen = false; continue; }
+        const x = rr * Math.cos(t), y = rr * Math.sin(t);
+        if (pen) ctx.lineTo(plot.X(x), plot.Y(y)); else ctx.moveTo(plot.X(x), plot.Y(y));
+        pen = true;
+      }
+      ctx.stroke();
+    }
+    plot.dot(0, 0, css('--ink'), 5);
+    plot.label(0.2, -0.6, 'F', css('--ink'));
+    // النقطة عند θ
+    const t0 = (deg * Math.PI) / 180, r0 = r(t0);
+    let pt = '';
+    if (Number.isFinite(r0) && Math.abs(r0) < 150) {
+      const x = r0 * Math.cos(t0), y = r0 * Math.sin(t0);
+      plot.seg(0, 0, x, y, css('--plot-hot'), 2, [4, 4]);
+      plot.dot(x, y, css('--plot-hot'), 6);
+      pt = `${tex(`$\\theta = ${deg}^\\circ$`)}: ${tex(`$r = ${fmt(r0, 3)}$`)}${r0 < 0 ? ' (سالب: النقطة في الاتجاه المعاكس، على الفرع الآخر)' : ''}.`;
+    } else pt = `${tex(`$\\theta = ${deg}^\\circ$`)}: المقام صفر، لا نقطة (اتجاه خط التقارب أو محور القطع المكافئ).`;
+    const kind = e < 1 ? 'قطع ناقص' : e === 1 ? 'قطع مكافئ' : 'قطع زائد';
+    const dir = useSin ? `y = ${sgn * p}` : `x = ${sgn * p}`;
+    out.innerHTML =
+      `<p>${tex(`$r = \\dfrac{${fmt(e * p, 3)}}{1 ${sgn > 0 ? '+' : '-'} ${e}\\${useSin ? 'sin' : 'cos'}\\theta}$`)} ← ${tex(`$e = ${e}$`)}: <strong>${kind}</strong>، البؤرة عند القطب والدليل ${tex(`$${dir}$`)}.</p>` +
+      `<p>${pt}</p>`;
+  }
+  root.querySelectorAll('input, select').forEach((x) => x.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

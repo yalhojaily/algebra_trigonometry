@@ -42,12 +42,14 @@ const { set, count = 5 } = Astro.props;
   import { ch8 } from '../lib/practice/ch8';
   import { ch9 } from '../lib/practice/ch9';
   import { ch10 } from '../lib/practice/ch10';
+  import { ch11 } from '../lib/practice/ch11';
+  import { chA } from '../lib/practice/chA';
   import { tex } from '../lib/tex';
   import katex from 'katex';
   import { parseList, sameSet, sameList, stripPoint, parse, toTex, equivalent, isFactored, hasRadicalDenominator, hasNegativeExponent, isExpanded, isMonomial, isLogsExpanded, isLogsCondensed, isOneTrig } from '../lib/answer';
   import type { Problem } from '../lib/gen';
 
-  const banks: Record<string, (() => Problem)[]> = { ...chR, ...ch1, ...ch2, ...ch3, ...ch4, ...ch5, ...ch6, ...ch7, ...ch8, ...ch9, ...ch10 };
+  const banks: Record<string, (() => Problem)[]> = { ...chR, ...ch1, ...ch2, ...ch3, ...ch4, ...ch5, ...ch6, ...ch7, ...ch8, ...ch9, ...ch10, ...ch11, ...chA };
   const REQ_MSG = {
     factored: 'الإجابة صحيحة القيمة لكنها غير محللة. اكتبها كحاصل ضرب عوامل.',
     noRadicalDenominator: 'الإجابة صحيحة القيمة، لكن ما زال في المقام جذر. أنطق المقام.',

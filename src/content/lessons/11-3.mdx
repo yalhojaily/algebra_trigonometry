@@ -1,0 +1,150 @@
+---
+section: "11.3"
+summary: "المتتابعة الهندسية: النسبة r والحد العام aₙ = a₁rⁿ⁻¹، ومجموع أول n حدًا، والمتسلسلة الهندسية اللانهائية وشرط تقاربها |r| < 1، وتحويل الكسور العشرية الدورية، والدفعات الدورية (الأقساط)."
+minutes: 40
+prerequisites: ["11.2", "4.2"]
+terms:
+  - { ar: "المتتابعة الهندسية", en: "Geometric Sequence", def: "متتابعة النسبة بين كل حد والذي قبله ثابتة." }
+  - { ar: "النسبة المشتركة", en: "Common Ratio", def: "العدد الثابت r = aₙ / aₙ₋₁ في المتتابعة الهندسية." }
+  - { ar: "المتسلسلة اللانهائية", en: "Infinite Series", def: "مجموع عدد لا نهائي من الحدود؛ لها مجموع إذا اقتربت مجاميعها الجزئية من عدد." }
+  - { ar: "الدفعة الدورية", en: "Annuity", def: "سلسلة مبالغ متساوية تُودع على فترات منتظمة بفائدة مركبة." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import GeoSeries from '../../components/widgets/GeoSeries.astro';
+
+إذا **أضفنا** العدد نفسه كل مرة حصلنا على متتابعة حسابية، وإذا **ضربنا** في العدد نفسه حصلنا على متتابعة هندسية: نمو البكتيريا، وتناقص دواء في الدم، والفائدة المركبة. وهي النسخة المتقطعة من الدوال الأسية في الفصل 4.
+
+## المتتابعات الهندسية <span class="en" lang="en">Geometric Sequences</span>
+
+<Box kind="def" title="المتتابعة الهندسية" en="Geometric sequence">
+<Term ar="المتتابعة الهندسية" en="geometric sequence" /> متتابعة يكون فيها $\dfrac{a_n}{a_{n-1}} = r$ ثابتًا ($r \ne 0$). العدد $r$ هو <Term ar="النسبة المشتركة" en="common ratio" />.
+
+$$a_n = a_1 r^{\,n-1}$$
+</Box>
+
+<Example n="1" title="الحد العام">
+أوجد الحد العام والحد الثامن للمتتابعة $3, 6, 12, 24, \dots$
+
+<Solution>
+$r = \tfrac63 = 2$، و $a_1 = 3$.
+
+$a_n = 3 \cdot 2^{n-1}$.
+
+$a_8 = 3 \cdot 2^7 = 384$.
+</Solution>
+</Example>
+
+<Example n="2" title="من حدين معلومين">
+في متتابعة هندسية $a_2 = 6$ و $a_5 = 162$. أوجد $a_1$ و $r$.
+
+<Solution>
+من $a_2$ إلى $a_5$ ثلاث خطوات ضرب: $a_5 = a_2 r^3$.
+
+$r^3 = \tfrac{162}{6} = 27$، إذن $r = 3$.
+
+$a_1 = \tfrac{a_2}{r} = \tfrac63 = 2$. المتتابعة $2, 6, 18, 54, 162, \dots$
+</Solution>
+</Example>
+
+## المتسلسلات الهندسية <span class="en" lang="en">Geometric Series</span>
+
+اكتب $S_n = a_1 + a_1r + \cdots + a_1r^{n-1}$، واضرب في $r$: $rS_n = a_1r + \cdots + a_1r^{n}$. بالطرح تختفي كل الحدود الوسطى: $S_n - rS_n = a_1 - a_1r^n$.
+
+<Box kind="rule" title="مجموع متسلسلة هندسية منتهية" en="Sum of a finite geometric series">
+$$S_n = \frac{a_1(1 - r^n)}{1 - r}, \qquad r \ne 1$$
+</Box>
+
+<Example n="3" title="مجموع ستة حدود">
+أوجد مجموع أول ستة حدود من $2, 6, 18, \dots$
+
+<Solution>
+$a_1 = 2$، $r = 3$، $n = 6$.
+
+$S_6 = \dfrac{2(1 - 3^6)}{1 - 3} = \dfrac{2(1 - 729)}{-2}$
+
+$= 728$. (تحقق: $2 + 6 + 18 + 54 + 162 + 486 = 728$.)
+</Solution>
+</Example>
+
+## المتسلسلات الهندسية اللانهائية <span class="en" lang="en">Infinite Geometric Series</span>
+
+إذا كان $|r| < 1$ فإن $r^n \to 0$ كلما كبر $n$، فتقترب $S_n$ من $\tfrac{a_1}{1 - r}$. وإذا كان $|r| \ge 1$ فالحدود لا تصغر والمجموع لا يستقر.
+
+<Box kind="rule" title="مجموع متسلسلة هندسية لانهائية" en="Infinite geometric series">
+$$\sum_{i=1}^{\infty} a_1 r^{\,i-1} = \frac{a_1}{1 - r} \qquad \text{if } |r| < 1$$
+
+وإذا كان $|r| \ge 1$ فليس لـ<Term ar="المتسلسلة اللانهائية" en="infinite series" /> مجموع (متباعدة).
+</Box>
+
+<GeoSeries />
+
+<Example n="4" title="مجموع لانهائي">
+احسب $8 + 4 + 2 + 1 + \tfrac12 + \cdots$
+
+<Solution>
+$a_1 = 8$، $r = \tfrac12$، و $|r| < 1$.
+
+$S = \dfrac{8}{1 - \tfrac12} = 16$.
+
+جمع عدد لانهائي من الحدود الموجبة أعطى عددًا منتهيًا، لأن الحدود تصغر بسرعة كافية.
+</Solution>
+</Example>
+
+<Example n="5" title="كسر عشري دوري">
+اكتب $0.\overline{27} = 0.272727\ldots$ كسرًا.
+
+<Solution>
+$0.272727\ldots = 0.27 + 0.0027 + 0.000027 + \cdots$
+
+متسلسلة هندسية: $a_1 = \tfrac{27}{100}$ و $r = \tfrac1{100}$.
+
+$S = \dfrac{27/100}{1 - 1/100} = \dfrac{27}{99} = \dfrac{3}{11}$.
+</Solution>
+</Example>
+
+<Box kind="mistake" title="تحقق من |r| قبل القانون">
+القانون $\tfrac{a_1}{1 - r}$ مع $1 + 2 + 4 + \cdots$ يعطي $\tfrac{1}{1 - 2} = -1$، وهذا خطأ واضح: مجموع أعداد موجبة لا يكون سالبًا. السبب أن $r = 2 > 1$ فالمتسلسلة متباعدة.
+</Box>
+
+## الدفعات الدورية <span class="en" lang="en">Annuities</span>
+
+<Term ar="الدفعة الدورية" en="annuity" />: تودع $R$ ريالًا في نهاية كل فترة بفائدة $i$ لكل فترة. الدفعة الأخيرة لا تكسب فائدة، والتي قبلها تصبح $R(1 + i)$، وهكذا حتى الأولى $R(1 + i)^{n-1}$. المجموع متسلسلة هندسية نسبتها $1 + i$.
+
+<Box kind="rule" title="القيمة المستقبلية لدفعة دورية" en="Future value of an annuity">
+$$S = R\,\frac{(1 + i)^n - 1}{i}$$
+
+حيث $R$ قيمة الدفعة، و $i$ الفائدة لكل فترة، و $n$ عدد الدفعات.
+</Box>
+
+<Example n="6" title="ادخار سنوي">
+يودع شخص 1000 ريال في نهاية كل سنة بفائدة 5% مركبة سنويًا. كم يصبح رصيده بعد 10 سنوات؟
+
+<Solution>
+$R = 1000$، $i = 0.05$، $n = 10$.
+
+$S = 1000 \cdot \dfrac{1.05^{10} - 1}{0.05} \approx 1000 \cdot 12.578$
+
+$\approx 12\,578$ ريال، منها 10000 ريال أودعها و 2578 ريال فائدة.
+</Solution>
+</Example>
+
+<Check
+  q="أي متسلسلة لها مجموع؟"
+  options={["$3 + 6 + 12 + \\cdots$", "$5 - 5 + 5 - 5 + \\cdots$", "$9 - 3 + 1 - \\tfrac13 + \\cdots$", "$1 + 1.1 + 1.21 + \\cdots$"]}
+  answer={2}
+  explain="نسبتها $r = -\\tfrac13$ و $|r| < 1$، فمجموعها $\\tfrac{9}{1 + 1/3} = \\tfrac{27}{4}$. أما البقية فـ $|r| = 2$ و 1 و 1.1."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- هندسية: نسبة ثابتة $r$، و $a_n = a_1r^{n-1}$.
+- $S_n = \tfrac{a_1(1 - r^n)}{1 - r}$.
+- لانهائية: $S = \tfrac{a_1}{1 - r}$ فقط إذا $|r| < 1$.
+- الدفعة الدورية: $S = R\tfrac{(1 + i)^n - 1}{i}$.
+
+<Practice set="11.3" count={5} />

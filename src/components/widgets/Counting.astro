@@ -1,0 +1,53 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-cnt" title="التباديل مقابل التوافيق" en="Order matters vs. order doesn't">
+  <div class="controls">
+    <label>عدد العناصر <span class="ltr">n = <output data-o="n"></output></span><input type="range" min="2" max="6" value="4" data-i="n" /></label>
+    <label>عدد المختار <span class="ltr">r = <output data-o="r"></output></span><input type="range" min="1" max="6" value="2" data-i="r" /></label>
+  </div>
+  <div class="lists"></div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-cnt')!;
+  const lists = root.querySelector<HTMLElement>('.lists')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const nI = root.querySelector<HTMLInputElement>('[data-i="n"]')!, rI = root.querySelector<HTMLInputElement>('[data-i="r"]')!;
+  const L = 'ABCDEF';
+  const fact = (k: number): number => (k <= 1 ? 1 : k * fact(k - 1));
+  function perms(items: string[], r: number): string[][] {
+    if (r === 0) return [[]];
+    return items.flatMap((x, i) => perms([...items.slice(0, i), ...items.slice(i + 1)], r - 1).map((p) => [x, ...p]));
+  }
+  function combs(items: string[], r: number): string[][] {
+    if (r === 0) return [[]];
+    return items.flatMap((x, i) => combs(items.slice(i + 1), r - 1).map((c) => [x, ...c]));
+  }
+  function draw() {
+    const n = Number(nI.value);
+    rI.max = String(n);
+    const r = Math.min(Number(rI.value), n);
+    root.querySelector('[data-o="n"]')!.textContent = String(n);
+    root.querySelector('[data-o="r"]')!.textContent = String(r);
+    const items = L.slice(0, n).split('');
+    const P = perms(items, r), Cc = combs(items, r);
+    const show = (arr: string[][], max: number) => arr.slice(0, max).map((x) => `<span>${x.join('')}</span>`).join('') + (arr.length > max ? `<span class="more">+${arr.length - max}</span>` : '');
+    lists.innerHTML =
+      `<div><strong>تباديل: الترتيب مهم (${P.length})</strong><div class="chips" dir="ltr">${show(P, 60)}</div></div>` +
+      `<div><strong>توافيق: الترتيب لا يهم (${Cc.length})</strong><div class="chips" dir="ltr">${show(Cc, 60)}</div></div>`;
+    out.innerHTML =
+      `<p>${tex(`$P(${n}, ${r}) = \\dfrac{${n}!}{(${n} - ${r})!} = ${P.length}$`)} و ${tex(`$C(${n}, ${r}) = \\dbinom{${n}}{${r}} = \\dfrac{${n}!}{${r}!\\,(${n} - ${r})!} = ${Cc.length}$`)}</p>` +
+      `<p>كل توفيقة (مجموعة) تظهر في التباديل ${tex(`$${r}! = ${fact(r)}$`)} مرة بترتيبات مختلفة، فلذلك ${tex(`$C(n, r) = \\dfrac{P(n, r)}{r!}$`)}. مثلًا ${Cc[0] ? `<span dir="ltr">${Cc[0].join('')}</span> تقابل: ${perms(Cc[0], r).map((p) => `<span dir="ltr">${p.join('')}</span>`).join('، ')}` : ''}.</p>`;
+  }
+  nI.addEventListener('input', draw);
+  rI.addEventListener('input', draw);
+  draw();
+</script>
+<style>
+  .lists { display: grid; gap: 0.8rem; }
+  .lists :global(.chips) { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.35rem; }
+  .lists :global(.chips span) { font: 600 0.85rem var(--font-mono); padding: 0.15rem 0.45rem; border-radius: 4px; background: var(--paper); border: 1px solid var(--line); }
+  .lists :global(.chips span.more) { color: var(--muted); }
+</style>

@@ -1,0 +1,110 @@
+---
+section: "A.A"
+summary: "معادلات القطوع المخروطية في الإحداثيات القطبية حين تكون البؤرة عند القطب: r = ep/(1 ± e cos θ) و r = ep/(1 ± e sin θ)، وقراءة النوع والدليل والرؤوس منها، والتحويل إلى الصيغة الديكارتية."
+minutes: 30
+prerequisites: ["8.7", "10.4"]
+terms:
+  - { ar: "القطب", en: "Pole", def: "نقطة الأصل في الإحداثيات القطبية، وهنا هي بؤرة القطع." }
+  - { ar: "الاختلاف المركزي", en: "Eccentricity", def: "e = PF/PD: أقل من 1 ناقص، يساوي 1 مكافئ، أكبر من 1 زائد." }
+  - { ar: "الدليل", en: "Directrix", def: "المستقيم الثابت في التعريف الموحّد، على بعد p من البؤرة." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import PolarConic from '../../components/widgets/PolarConic.astro';
+
+في الدرس 10.4 عرّفنا القطوع الثلاثة تعريفًا واحدًا: $PF = e \cdot PD$. إذا وضعنا البؤرة عند <Term ar="القطب" en="pole" /> صارت المسافة $PF$ هي $r$ نفسها، فتنتج معادلة قطبية بسيطة جدًا تصف الأنواع الثلاثة معًا. ولهذا يستخدمها علماء الفلك: الشمس في البؤرة، والكوكب على بعد $r$ منها عند الزاوية $\theta$.
+
+## المعادلات والرسوم <span class="en" lang="en">Equations and Graphs</span>
+
+ليكن الدليل المستقيم $x = p$ (يمين القطب). لنقطة $P(r, \theta)$: $PF = r$، والبعد عن الدليل $PD = p - r\cos\theta$. من $r = e(p - r\cos\theta)$ نجد $r(1 + e\cos\theta) = ep$.
+
+<Box kind="rule" title="القطوع في الصيغة القطبية (البؤرة عند القطب)" en="Polar equations of conics">
+| المعادلة | الدليل |
+|---|---|
+| $r = \dfrac{ep}{1 + e\cos\theta}$ | $x = p$ (رأسي، يمين القطب) |
+| $r = \dfrac{ep}{1 - e\cos\theta}$ | $x = -p$ (رأسي، يسار القطب) |
+| $r = \dfrac{ep}{1 + e\sin\theta}$ | $y = p$ (أفقي، فوق القطب) |
+| $r = \dfrac{ep}{1 - e\sin\theta}$ | $y = -p$ (أفقي، تحت القطب) |
+
+والنوع من $e$: $0 < e < 1$ ناقص، $e = 1$ مكافئ، $e > 1$ زائد.
+</Box>
+
+<PolarConic />
+
+<Box kind="mistake" title="الثابت في المقام يجب أن يكون 1">
+في $r = \dfrac{10}{3 - 2\cos\theta}$ ليس $e = 2$. اقسم البسط والمقام على 3 أولًا: $r = \dfrac{10/3}{1 - \tfrac23\cos\theta}$، فـ $e = \tfrac23$.
+</Box>
+
+<Example n="1" title="قطع مكافئ">
+حدد نوع $r = \dfrac{8}{4 + 4\sin\theta}$ ودليله ورأسه.
+
+<Solution>
+اقسم على 4: $r = \dfrac{2}{1 + \sin\theta}$، إذن $e = 1$: **قطع مكافئ**.
+
+$ep = 2$ و $e = 1$، فـ $p = 2$، والدليل $y = 2$ (فوق القطب لأن الإشارة +).
+
+الرأس في منتصف المسافة بين البؤرة والدليل، عند $\theta = \tfrac{\pi}{2}$: $r = \tfrac{2}{2} = 1$، أي النقطة $(0, 1)$. والقطع يفتح للأسفل بعيدًا عن الدليل.
+</Solution>
+</Example>
+
+<Example n="2" title="قطع ناقص ورأساه">
+حدد نوع $r = \dfrac{10}{3 - 2\cos\theta}$ وأوجد رأسيه.
+
+<Solution>
+$r = \dfrac{10/3}{1 - \tfrac23\cos\theta}$: $e = \tfrac23 < 1$ **قطع ناقص**. و $ep = \tfrac{10}{3}$ فـ $p = 5$، والدليل $x = -5$.
+
+الرأسان على المحور الأفقي: عند $\theta = 0$: $r = \tfrac{10}{3 - 2} = 10$ ← $(10, 0)$. وعند $\theta = \pi$: $r = \tfrac{10}{3 + 2} = 2$ ← $(-2, 0)$.
+
+إذن $2a = 12$ ← $a = 6$، والمركز $(4, 0)$، و $c = 4$ (بعد البؤرة عن المركز). تحقق: $e = \tfrac{c}{a} = \tfrac46 = \tfrac23$.
+</Solution>
+</Example>
+
+<Example n="3" title="قطع زائد و r سالب">
+حدد نوع $r = \dfrac{6}{1 + 2\sin\theta}$ وأوجد رأسيه.
+
+<Solution>
+$e = 2 > 1$ **قطع زائد**، و $p = 3$، والدليل $y = 3$.
+
+عند $\theta = \tfrac{\pi}{2}$: $r = \tfrac63 = 2$ ← $(0, 2)$. وعند $\theta = \tfrac{3\pi}{2}$: $r = \tfrac{6}{1 - 2} = -6$.
+
+$r$ سالب يعني السير 6 وحدات **عكس** اتجاه $\tfrac{3\pi}{2}$، أي إلى الأعلى: النقطة $(0, 6)$. فالرأسان $(0, 2)$ و $(0, 6)$، وكل فرع من الزائد يقابل إشارة لـ $r$.
+</Solution>
+</Example>
+
+## التحويل إلى الصيغة الديكارتية <span class="en" lang="en">Conversion from Polar to Rectangular Form</span>
+
+<Box kind="tip" title="الطريقة">
+اضرب في المقام، ثم عوّض $r\cos\theta = x$ و $r\sin\theta = y$، واعزل $r$ وربّع مستخدمًا $r^2 = x^2 + y^2$.
+</Box>
+
+<Example n="4" title="من القطبية إلى الديكارتية">
+حوّل $r = \dfrac{10}{3 - 2\cos\theta}$ إلى الصيغة الديكارتية.
+
+<Solution>
+$3r - 2r\cos\theta = 10$ ← $3r = 2x + 10$.
+
+ربّع: $9r^2 = (2x + 10)^2$ ← $9(x^2 + y^2) = 4x^2 + 40x + 100$ ← $5x^2 + 9y^2 - 40x - 100 = 0$.
+
+بإكمال المربع: $5(x - 4)^2 + 9y^2 = 180$، أي $\dfrac{(x - 4)^2}{36} + \dfrac{y^2}{20} = 1$: مركز $(4, 0)$ و $a = 6$، مطابق للمثال 2.
+</Solution>
+</Example>
+
+<Check
+  q="ما نوع $r = \\dfrac{12}{2 + 2\\cos\\theta}$؟"
+  options={["قطع ناقص", "قطع مكافئ", "قطع زائد", "دائرة"]}
+  answer={1}
+  explain="اقسم على 2: $r = \\tfrac{6}{1 + \\cos\\theta}$، إذن $e = 1$: قطع مكافئ."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- البؤرة عند القطب: $r = \dfrac{ep}{1 \pm e\cos\theta}$ (دليل رأسي) أو $\dfrac{ep}{1 \pm e\sin\theta}$ (دليل أفقي).
+- اجعل ثابت المقام 1 قبل قراءة $e$.
+- الرؤوس عند $\theta = 0, \pi$ أو $\tfrac{\pi}{2}, \tfrac{3\pi}{2}$، وانتبه لـ $r$ السالب.
+- التحويل: اضرب في المقام، عوّض $x$ و $y$، ثم ربّع.
+
+<Practice set="A.A" count={4} />

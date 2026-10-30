@@ -1,0 +1,94 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-hm" title="جسم معلّق بنابض: الحركة التوافقية" en="Simple and damped harmonic motion">
+  <div class="controls">
+    <label>السعة <span class="ltr">a = <output data-o="a"></output></span><input type="range" min="1" max="4" step="0.5" value="3" data-i="a" /></label>
+    <label>التردد <span class="ltr">f = <output data-o="f"></output> Hz</span><input type="range" min="0.25" max="1.5" step="0.25" value="0.5" data-i="f" /></label>
+    <label>الإخماد <span class="ltr">k = <output data-o="k"></output></span><input type="range" min="0" max="0.5" step="0.05" value="0" data-i="k" /></label>
+    <label><button type="button" class="btn" data-i="play">إيقاف</button></label>
+  </div>
+  <canvas aria-label="نابض يهتز ورسم موضعه مع الزمن"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-hm')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -3, xmax: 10, ymin: -5, ymax: 5 });
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const btn = root.querySelector<HTMLButtonElement>('[data-i="play"]')!;
+  let loopId = 0;
+  let playing = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let t = 0, last = 0;
+  btn.textContent = playing ? 'إيقاف' : 'تشغيل';
+  btn.addEventListener('click', () => { playing = !playing; btn.textContent = playing ? 'إيقاف' : 'تشغيل'; if (playing) start(); });
+  function text() {
+    const a = v('a'), f = v('f'), k = v('k');
+    root.querySelector('[data-o="a"]')!.textContent = String(a);
+    root.querySelector('[data-o="f"]')!.textContent = String(f);
+    root.querySelector('[data-o="k"]')!.textContent = String(k);
+    const w = 2 * Math.PI * f;
+    out.innerHTML =
+      `<p>${k === 0 ? tex(`$s(t) = ${a}\\cos(${fmt(w, 3)}t)$`) : tex(`$s(t) = ${a}e^{-${k}t}\\cos(${fmt(w, 3)}t)$`)}، حيث ${tex(`$\\omega = 2\\pi f = ${fmt(w, 3)}$`)}.</p>` +
+      `<p>الدورة ${tex(`$T = \\dfrac{2\\pi}{\\omega} = \\dfrac{1}{f} = ${fmt(1 / f, 3)}$`)} ثانية، والتردد ${tex(`$f = ${f}$`)} هرتز (اهتزازة في الثانية).</p>` +
+      `<p>${k === 0 ? '<strong>حركة توافقية بسيطة</strong>: بلا احتكاك تستمر الاهتزازة بالسعة نفسها إلى الأبد.' : `<strong>حركة مخمدة</strong>: العامل ${tex(`$e^{-${k}t}$`)} (المنحنيان المتقطعان) يقلّص السعة مع الزمن كما يفعل الاحتكاك أو مقاومة الهواء.`}</p>`;
+  }
+  function draw() {
+    const a = v('a'), f = v('f'), k = v('k');
+    const w = 2 * Math.PI * f;
+    const s = (u: number) => a * Math.exp(-k * u) * Math.cos(w * u);
+    plot.fit(0.5);
+    const yr = 5, xr = 13;
+    plot.view = { xmin: -3, xmax: -3 + xr, ymin: -yr, ymax: yr };
+    plot.clear();
+    const tw = 8; // نافذة الزمن المعروضة
+    const t0 = Math.max(0, t - tw);
+    // المحور الزمني يبدأ من x = 0
+    plot.grid(1, 2);
+    const { ctx } = plot;
+    ctx.fillStyle = css('--surface');
+    ctx.fillRect(0, 0, plot.X(-0.1), plot.h);
+    // السقف والنابض
+    const cx = -1.6, top = 4.6, y = s(t);
+    plot.seg(cx - 0.8, top, cx + 0.8, top, css('--ink'), 3);
+    ctx.strokeStyle = css('--muted'); ctx.lineWidth = 2; ctx.beginPath();
+    const n = 14, yEnd = y + 0.45;
+    for (let j = 0; j <= n; j++) {
+      const yy = top + ((yEnd - top) * j) / n;
+      const xx = cx + (j === 0 || j === n ? 0 : j % 2 ? 0.35 : -0.35);
+      if (j === 0) ctx.moveTo(plot.X(xx), plot.Y(yy)); else ctx.lineTo(plot.X(xx), plot.Y(yy));
+    }
+    ctx.stroke();
+    ctx.fillStyle = css('--plot-curve');
+    ctx.fillRect(plot.X(cx - 0.45), plot.Y(y + 0.45), plot.X(cx + 0.45) - plot.X(cx - 0.45), plot.Y(y - 0.45) - plot.Y(y + 0.45));
+    plot.seg(cx - 1, 0, cx + 1, 0, css('--plot-alt'), 1.2, [4, 3]);
+    // الرسم: الزمن على المحور الأفقي (منزاح ليبقى آخر 8 ثوانٍ ظاهرة)
+    const X = (u: number) => u - t0;
+    if (k > 0) {
+      plot.fn((x) => (x >= 0 && x <= t - t0 ? a * Math.exp(-k * (x + t0)) : NaN), css('--plot-hot'), 1.4, [5, 4]);
+      plot.fn((x) => (x >= 0 && x <= t - t0 ? -a * Math.exp(-k * (x + t0)) : NaN), css('--plot-hot'), 1.4, [5, 4]);
+    }
+    plot.fn((x) => (x >= 0 && x <= t - t0 ? s(x + t0) : NaN), css('--plot-curve'), 3);
+    plot.seg(cx + 0.5, y, X(t), y, css('--plot-curve'), 1, [2, 3]);
+    plot.dot(X(t), y, css('--plot-hot'), 5);
+    plot.label(0.2, -yr + 0.2, `t₀ = ${fmt(t0, 1)} s`, css('--muted'));
+  }
+  let visible = true;
+  new IntersectionObserver((es) => { visible = es[0].isIntersecting; if (visible && playing) start(); }).observe(canvas);
+  function start() { last = 0; const id = ++loopId; const loop = (now: number) => { if (id !== loopId) return; if (tick(now)) requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+  function tick(now: number): boolean {
+    if (!playing || !visible) return false;
+    if (last) t += Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (t > 60) t = 0;
+    draw();
+    return true;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', () => { t = 0; text(); draw(); }));
+  text();
+  onRedraw(canvas, draw);
+  if (!playing) { t = 6; draw(); }
+</script>

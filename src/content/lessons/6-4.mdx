@@ -1,0 +1,119 @@
+---
+section: "6.4"
+summary: "الصورة العامة y = c + a·sin(b(x − d)): الإزاحة الطورية d والإزاحة الرأسية c، وكيف نحوّل bx − k إلى b(x − d)، وخطوات رسم دورة كاملة بعد كل التحويلات، وبناء نموذج مثلثي من بيانات."
+minutes: 40
+prerequisites: ["6.3", "2.7"]
+terms:
+  - { ar: "الإزاحة الطورية", en: "Phase Shift", def: "الإزاحة الأفقية d في y = a sin(b(x − d)): لليمين إذا d > 0 ولليسار إذا d < 0." }
+  - { ar: "الإزاحة الرأسية", en: "Vertical Translation", def: "العدد c في y = c + a sin(bx): ينقل المنحنى وخط منتصفه إلى y = c." }
+  - { ar: "خط المنتصف", en: "Midline", def: "المستقيم الأفقي y = c الذي يتذبذب حوله المنحنى." }
+  - { ar: "فترة الدورة", en: "Period Interval", def: "الفترة [d, d + 2π/b] التي تمتد عليها دورة كاملة واحدة." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import SinTransform from '../../components/widgets/SinTransform.astro';
+
+حتى الآن يبدأ منحنى الجيب دائمًا عند $x = 0$ ويتذبذب حول محور $x$. لكن المد مثلًا لا يبلغ قمته منتصف الليل، ودرجة الحرارة لا تتذبذب حول الصفر. نحتاج إزاحتين أخريين: أفقية ورأسية. وهما التحويلات نفسها التي درستها في الدرس 2.7.
+
+## الإزاحة الأفقية <span class="en" lang="en">Horizontal Translations</span>
+
+<Box kind="def" title="الإزاحة الطورية" en="Phase Shift">
+منحنى $y = \sin(x - d)$ هو منحنى $y = \sin x$ مزاحًا أفقيًا بمقدار $|d|$: **إلى اليمين** إذا $d > 0$، و**إلى اليسار** إذا $d < 0$. ويسمى $d$ <Term ar="الإزاحة الطورية" en="phase shift" />.
+</Box>
+
+<Box kind="mistake" title="أخرج b أولًا">
+في $y = \sin(2x - \pi)$ الإزاحة **ليست** $\pi$. اكتبها $\sin\left(2\left(x - \tfrac{\pi}{2}\right)\right)$، فالإزاحة $\tfrac{\pi}{2}$. والطريقة الأسرع: الدورة تبدأ حين يساوي ما داخل الدالة صفرًا: $2x - \pi = 0$ ← $x = \tfrac{\pi}{2}$.
+</Box>
+
+<Example n="1" title="إزاحة طورية">
+ارسم دورة من $y = \sin\left(x - \tfrac{\pi}{3}\right)$.
+
+<Solution>
+الإزاحة $\tfrac{\pi}{3}$ لليمين. تبدأ الدورة حين $x - \tfrac{\pi}{3} = 0$ وتنتهي حين $x - \tfrac{\pi}{3} = 2\pi$: من $\tfrac{\pi}{3}$ إلى $\tfrac{7\pi}{3}$.
+
+الأجزاء الأربعة طول كل منها $\tfrac{\pi}{2}$: $x = \tfrac{\pi}{3}, \tfrac{5\pi}{6}, \tfrac{4\pi}{3}, \tfrac{11\pi}{6}, \tfrac{7\pi}{3}$.
+
+القيم: $0, 1, 0, -1, 0$.
+</Solution>
+</Example>
+
+## الإزاحة الرأسية <span class="en" lang="en">Vertical Translations</span>
+
+إضافة عدد $c$ خارج الدالة ترفع المنحنى كله: $y = c + a\sin bx$ يتذبذب حول <Term ar="خط المنتصف" en="midline" /> $y = c$، ومداه $[c - |a|, c + |a|]$.
+
+## تركيب الإزاحات <span class="en" lang="en">Combinations of Translations</span>
+
+<Box kind="rule" title="الصورة العامة" en="y = c + a sin[b(x − d)],  y = c + a cos[b(x − d)]   (b > 0)">
+| الرمز | المعنى |
+|---|---|
+| $\lvert a\rvert$ | السعة |
+| $\dfrac{2\pi}{b}$ | الدورة |
+| $d$ | الإزاحة الطورية |
+| $c$ | الإزاحة الرأسية وخط المنتصف |
+
+**خطوات الرسم:**
+1. فترة الدورة: حل $0 \le b(x - d) \le 2\pi$، فتحصل على $\left[d, d + \tfrac{2\pi}{b}\right]$.
+2. قسّمها أربعة أجزاء متساوية.
+3. ضع قيم النقاط الخمس حول خط المنتصف $y = c$ بارتفاع $|a|$.
+4. ارسم المنحنى وكرّره.
+</Box>
+
+<SinTransform />
+
+<Example n="2" title="كل التحويلات معًا">
+ارسم دورة من $y = -1 + 2\sin(4x + \pi)$.
+
+<Solution>
+أخرج 4: $4x + \pi = 4\left(x + \tfrac{\pi}{4}\right)$. السعة 2، والدورة $\tfrac{2\pi}{4} = \tfrac{\pi}{2}$، والإزاحة $\tfrac{\pi}{4}$ لليسار، وخط المنتصف $y = -1$.
+
+فترة الدورة من $-\tfrac{\pi}{4}$ إلى $-\tfrac{\pi}{4} + \tfrac{\pi}{2} = \tfrac{\pi}{4}$، والأجزاء طولها $\tfrac{\pi}{8}$: $x = -\tfrac{\pi}{4}, -\tfrac{\pi}{8}, 0, \tfrac{\pi}{8}, \tfrac{\pi}{4}$.
+
+القيم: $-1, 1, -1, -3, -1$ (خط المنتصف، قمة، منتصف، قاع، منتصف). والمدى $[-3, 1]$.
+</Solution>
+</Example>
+
+<Example n="3" title="المعادلة من الرسم">
+منحنى جيب تمام قمته 7 وقاعه $-1$، وأول قمة له بعد الصفر عند $x = \tfrac{\pi}{6}$، ودورته $\pi$. اكتب معادلته على صورة $y = c + a\cos[b(x - d)]$.
+
+<Solution>
+خط المنتصف $c = \tfrac{7 + (-1)}{2} = 3$، والسعة $a = \tfrac{7 - (-1)}{2} = 4$.
+
+الدورة $\pi$ ← $b = 2$. وجيب التمام يبدأ دورته من القمة، فالإزاحة $d = \tfrac{\pi}{6}$.
+
+$y = 3 + 4\cos\left[2\left(x - \tfrac{\pi}{6}\right)\right]$
+</Solution>
+</Example>
+
+## نموذج مثلثي <span class="en" lang="en">A Trigonometric Model</span>
+
+<Example n="4" title="بناء نموذج من بيانات">
+أعلى متوسط حرارة في مدينة $42^\circ$ في يوليو ($x = 7$)، وأدناه $14^\circ$ في يناير ($x = 1$). ابنِ نموذجًا $f(x) = c + a\sin[b(x - d)]$.
+
+<Solution>
+$c = \tfrac{42 + 14}{2} = 28$، و $a = \tfrac{42 - 14}{2} = 14$. والظاهرة سنوية، فالدورة 12: $b = \tfrac{2\pi}{12} = \tfrac{\pi}{6}$.
+
+الجيب يصل خط المنتصف صاعدًا عند بداية الدورة، أي في منتصف الطريق بين القاع ($x = 1$) والقمة ($x = 7$): $d = 4$.
+
+$f(x) = 28 + 14\sin\left[\tfrac{\pi}{6}(x - 4)\right]$. تحقق: $f(7) = 28 + 14\sin\tfrac{\pi}{2} = 42$ ✓
+</Solution>
+</Example>
+
+<Check
+  q="ما الإزاحة الطورية لـ $y = \\cos(3x + \\pi)$؟"
+  options={["$\\pi$ لليسار", "$\\dfrac{\\pi}{3}$ لليسار", "$\\dfrac{\\pi}{3}$ لليمين", "$3\\pi$ لليسار"]}
+  answer={1}
+  explain="$3x + \\pi = 3\\left(x + \\tfrac{\\pi}{3}\\right)$، فالإزاحة $\\tfrac{\\pi}{3}$ إلى اليسار."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $y = c + a\sin[b(x - d)]$: السعة $|a|$، والدورة $\tfrac{2\pi}{b}$، والإزاحة الطورية $d$، وخط المنتصف $y = c$.
+- أخرج $b$ عاملًا مشتركًا قبل قراءة الإزاحة، أو حل «ما بالداخل = 0».
+- فترة الدورة $\left[d, d + \tfrac{2\pi}{b}\right]$ تُقسم أربعة أجزاء.
+- من البيانات: $c$ متوسط العظمى والصغرى، و $a$ نصف الفرق بينهما.
+
+<Practice set="6.4" count={5} />

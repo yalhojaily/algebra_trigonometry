@@ -1,0 +1,63 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-tan" title="منحنيا الظل وظل التمام" en="y = a·tan(bx), y = a·cot(bx)">
+  <div class="controls">
+    <label>الدالة
+      <span class="seg" dir="ltr" data-i="f"><button type="button" data-v="tan" aria-pressed="true">tan</button><button type="button" data-v="cot">cot</button></span>
+    </label>
+    <label><span class="ltr">a = <output data-o="a"></output></span><input type="range" min="-3" max="3" step="0.5" value="1" data-i="a" /></label>
+    <label><span class="ltr">b = <output data-o="b"></output></span><input type="range" min="0.5" max="3" step="0.5" value="1" data-i="b" /></label>
+  </div>
+  <canvas aria-label="منحنى الظل أو ظل التمام وخطوط التقارب"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-tan')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -7, xmax: 7, ymin: -5, ymax: 5 });
+  let f = 'tan';
+  root.querySelectorAll<HTMLButtonElement>('[data-i="f"] button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      f = btn.dataset.v!;
+      root.querySelectorAll('[data-i="f"] button').forEach((o) => o.setAttribute('aria-pressed', String(o === btn)));
+      draw();
+    }),
+  );
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const a = v('a'), b = v('b');
+    root.querySelector('[data-o="a"]')!.textContent = String(a);
+    root.querySelector('[data-o="b"]')!.textContent = String(b);
+    plot.fit(0.58);
+    plot.view = { xmin: -2.2 * Math.PI, xmax: 2.2 * Math.PI, ymin: -5, ymax: 5 };
+    plot.clear();
+    plot.piGrid(2, 1);
+    const P = Math.PI / b;
+    // خطوط التقارب: tan عند bx = π/2 + kπ، و cot عند bx = kπ
+    const off = f === 'tan' ? P / 2 : 0;
+    for (let k = -12; k <= 12; k++) {
+      const x = off + k * P;
+      if (x > plot.view.xmin && x < plot.view.xmax) plot.seg(x, -5, x, 5, css('--plot-hot'), 1.4, [6, 5]);
+    }
+    const g = (x: number) => {
+      const u = b * x;
+      const val = f === 'tan' ? Math.tan(u) : Math.cos(u) / Math.sin(u);
+      // نقطع الرسم قرب خطوط التقارب
+      const near = f === 'tan' ? Math.abs(Math.cos(u)) < 0.02 : Math.abs(Math.sin(u)) < 0.02;
+      return near ? NaN : a * val;
+    };
+    plot.fn(g, css('--plot-curve'), 3);
+    const pb = (m: number) => (m === 1 ? '\\pi' : `\\dfrac{\\pi}{${m}}`);
+    const asym = f === 'tan' ? `x = ${pb(2 * b)} + k\\cdot ${pb(b)}` : `x = k\\cdot ${pb(b)}`;
+    out.innerHTML =
+      `<p>${tex(`$y = ${a === 1 ? '' : a === -1 ? '-' : a}\\${f}${b === 1 ? ' x' : `(${b}x)`}$`)}</p>` +
+      `<p>الدورة ${tex(b === 1 ? '$\\pi \\approx 3.142$' : `$\\dfrac{\\pi}{b} = \\dfrac{\\pi}{${b}} \\approx ${fmt(P, 3)}$`)} (نصف دورة الجيب)، ولا سعة لها لأن المدى كل الأعداد الحقيقية.</p>` +
+      `<p>خطوط التقارب الرأسية (الحمراء): ${tex(`$${asym}$`)}، حيث ${f === 'tan' ? tex('$\\cos(bx) = 0$') : tex('$\\sin(bx) = 0$')}. ${f === 'tan' ? 'الظل' : 'ظل التمام'} ${a > 0 ? (f === 'tan' ? 'متزايد' : 'متناقص') : (f === 'tan' ? 'متناقص' : 'متزايد')} بين كل خطي تقارب${a > 0 ? '' : ' (الإشارة السالبة تقلبه)'}.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

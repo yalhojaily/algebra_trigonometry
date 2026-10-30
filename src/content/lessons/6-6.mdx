@@ -1,0 +1,122 @@
+---
+section: "6.6"
+summary: "القاطع وقاطع التمام كمقلوبين لجيب التمام والجيب: خطوط التقارب، والفروع على شكل «أكواب»، والرسم من الدالة الموجهة، وقراءة المعادلة، وطريقة جمع الإحداثيات لرسم مجموع دالتين."
+minutes: 35
+prerequisites: ["6.4", "6.5"]
+terms:
+  - { ar: "الدالة الموجهة", en: "Guide Function", def: "دالة الجيب أو جيب التمام التي نرسمها أولًا لنرسم مقلوبها (القاطع أو قاطع التمام)." }
+  - { ar: "جمع الإحداثيات", en: "Addition of Ordinates", def: "رسم y = f(x) + g(x) بجمع الإحداثيين الرأسيين للمنحنيين عند كل x." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import SecGraph from '../../components/widgets/SecGraph.astro';
+
+لا تحتاج حفظ شكل جديد هنا. القاطع هو مقلوب جيب التمام، فإذا رسمت جيب التمام تستطيع رسم القاطع منه مباشرة. حيث يكون جيب التمام 1 يكون القاطع 1، وحيث يصغر يكبر مقلوبه، وحيث يساوي صفرًا لا يوجد مقلوب، فيظهر خط تقارب.
+
+## رسم دالة القاطع <span class="en" lang="en">Graph of the Secant Function</span>
+
+<Box kind="rule" title="خصائص y = sec x" en="Graph of y = sec x">
+- $\sec x = \dfrac{1}{\cos x}$، غير معرّفة حيث $\cos x = 0$: خطوط تقارب عند $x = \tfrac{\pi}{2} + n\pi$.
+- المدى $(-\infty, -1] \cup [1, \infty)$، ولا أصفار له.
+- الدورة $2\pi$ (دورة جيب التمام).
+- زوجية: $\sec(-x) = \sec x$.
+- كل فرع «كوب» يلمس قمة أو قاعًا لمنحنى جيب التمام: يفتح لأعلى عند القمم ولأسفل عند القيعان.
+</Box>
+
+## رسم دالة قاطع التمام <span class="en" lang="en">Graph of the Cosecant Function</span>
+
+<Box kind="rule" title="خصائص y = csc x" en="Graph of y = csc x">
+- $\csc x = \dfrac{1}{\sin x}$: خطوط تقارب عند $x = n\pi$ (أصفار الجيب).
+- المدى $(-\infty, -1] \cup [1, \infty)$، والدورة $2\pi$.
+- فردية: $\csc(-x) = -\csc x$.
+</Box>
+
+<SecGraph />
+
+## تقنيات الرسم <span class="en" lang="en">Techniques for Graphing</span>
+
+<Box kind="rule" title="رسم y = a sec bx أو y = a csc bx" en="Guidelines">
+1. ارسم <Term ar="الدالة الموجهة" en="guide function" /> بخط منقط: $y = a\cos bx$ للقاطع، و $y = a\sin bx$ لقاطع التمام.
+2. ارسم خطوط تقارب رأسية عند **أصفار** الدالة الموجهة.
+3. عند كل قمة أو قاع للموجه ارسم «كوبًا» يلمسه ويتجه نحو خطي التقارب المجاورين.
+4. والتحويلات ($c$ و $d$) تُطبَّق على الموجه أولًا، والقاطع يتبعه.
+</Box>
+
+<Example n="1" title="قاطع بمعاملين">
+ارسم دورة من $y = 2\sec\dfrac{x}{2}$.
+
+<Solution>
+الموجه $y = 2\cos\tfrac{x}{2}$: سعته 2 ودورته $\tfrac{2\pi}{1/2} = 4\pi$. قمتاه عند $x = 0$ و $x = 4\pi$ (قيمتهما 2)، وقاعه عند $x = 2\pi$ (قيمته $-2$).
+
+أصفاره عند $x = \pi$ و $x = 3\pi$: هناك خطا التقارب.
+
+كوب يفتح لأعلى يلمس $(0, 2)$، وكوب يفتح لأسفل يلمس $(2\pi, -2)$ بين $x = \pi$ و $x = 3\pi$، وكوب لأعلى عند $(4\pi, 2)$. المدى $(-\infty, -2] \cup [2, \infty)$.
+</Solution>
+</Example>
+
+<Example n="2" title="قاطع تمام مزاح">
+ارسم $y = 1 + \csc\left(x - \tfrac{\pi}{4}\right)$ على دورة.
+
+<Solution>
+الموجه $y = 1 + \sin\left(x - \tfrac{\pi}{4}\right)$: خط منتصفه $y = 1$، وتبدأ دورته عند $x = \tfrac{\pi}{4}$.
+
+خطوط التقارب حيث $\sin\left(x - \tfrac{\pi}{4}\right) = 0$: $x = \tfrac{\pi}{4}, \tfrac{5\pi}{4}, \tfrac{9\pi}{4}$.
+
+كوب لأعلى يلمس $\left(\tfrac{3\pi}{4}, 2\right)$، وكوب لأسفل يلمس $\left(\tfrac{7\pi}{4}, 0\right)$. المدى $(-\infty, 0] \cup [2, \infty)$.
+</Solution>
+</Example>
+
+<Box kind="mistake" title="خطوط التقارب عند الأصفار لا عند القمم">
+خطوط تقارب القاطع حيث يكون الموجه **صفرًا**. أما القمم والقيعان فهي حيث يلمس القاطعُ الموجهَ.
+</Box>
+
+## ربط الرسوم بالمعادلات <span class="en" lang="en">Connecting Graphs with Equations</span>
+
+<Example n="3" title="المعادلة من الرسم">
+منحنى على صورة $y = a\csc bx$ فيه كوب يفتح **لأسفل** يلمس $\left(\tfrac{\pi}{4}, -3\right)$، وخطا تقاربه $x = 0$ و $x = \tfrac{\pi}{2}$. أوجد المعادلة.
+
+<Solution>
+بين خطي تقارب متتاليين نصف دورة، فالدورة $\pi$ ← $b = 2$.
+
+الموجه $a\sin 2x$ قيمته عند $x = \tfrac{\pi}{4}$ تساوي $a\sin\tfrac{\pi}{2} = a$، وهي $-3$.
+
+$a = -3$، والمعادلة $y = -3\csc 2x$.
+</Solution>
+</Example>
+
+## جمع الإحداثيات <span class="en" lang="en">Addition of Ordinates</span>
+
+<Box kind="def" title="جمع الإحداثيات" en="Addition of Ordinates">
+لرسم $y = f(x) + g(x)$ ارسم $f$ و $g$ على المحاور نفسها، ثم عند عدة قيم لـ $x$ اجمع الارتفاعين $f(x) + g(x)$ وضع النقطة. (اختر خيار «sin + cos» في الأداة أعلاه.)
+</Box>
+
+<Example n="4" title="مجموع جيب وجيب تمام">
+ارسم $y = \sin x + \cos x$ بالنقاط $0, \tfrac{\pi}{4}, \tfrac{\pi}{2}, \pi, \tfrac{3\pi}{2}$.
+
+<Solution>
+$x = 0$: $0 + 1 = 1$. $x = \tfrac{\pi}{4}$: $\tfrac{\sqrt2}{2} + \tfrac{\sqrt2}{2} = \sqrt2 \approx 1.41$ (القمة).
+
+$x = \tfrac{\pi}{2}$: $1 + 0 = 1$. $x = \pi$: $0 + (-1) = -1$. $x = \tfrac{3\pi}{2}$: $-1 + 0 = -1$.
+
+الناتج منحنى جيبي سعته $\sqrt2$ ودورته $2\pi$، وهو في الحقيقة $\sqrt2\sin\left(x + \tfrac{\pi}{4}\right)$ (ستبرهن ذلك في الفصل 7).
+</Solution>
+</Example>
+
+<Check
+  q="ما مدى $y = 3\\sec x - 1$؟"
+  options={["$[-4, 2]$", "$(-\\infty, -4] \\cup [2, \\infty)$", "$(-\\infty, -3] \\cup [3, \\infty)$", "$(-\\infty, \\infty)$"]}
+  answer={1}
+  explain="$3\\sec x \\le -3$ أو $\\ge 3$. بطرح 1: $y \\le -4$ أو $y \\ge 2$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $\sec = \tfrac{1}{\cos}$ و $\csc = \tfrac{1}{\sin}$: الدورة $\tfrac{2\pi}{b}$ والمدى $|y| \ge |a|$ (قبل الإزاحة الرأسية).
+- ارسم الموجه، وضع خطوط التقارب عند أصفاره، والأكواب عند قممه وقيعانه.
+- جمع الإحداثيات: ارسم كل دالة واجمع الارتفاعات عند كل $x$.
+
+<Practice set="6.6" count={5} />

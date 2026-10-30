@@ -1,0 +1,72 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-sw" title="من دائرة الوحدة إلى منحنى الجيب" en="Unwrapping the unit circle">
+  <div class="controls">
+    <label>الدالة
+      <span class="seg" dir="ltr" data-i="f"><button type="button" data-v="sin" aria-pressed="true">sin</button><button type="button" data-v="cos">cos</button></span>
+    </label>
+    <label>السعة <span class="ltr">a = <output data-o="a"></output></span><input type="range" min="-3" max="3" step="0.5" value="1" data-i="a" /></label>
+    <label>المعامل <span class="ltr">b = <output data-o="b"></output></span><input type="range" min="0.5" max="4" step="0.5" value="1" data-i="b" /></label>
+    <label><span class="ltr">x = <output data-o="x"></output></span><input type="range" min="0" max="2" step="0.01" value="0.35" data-i="x" /></label>
+  </div>
+  <canvas aria-label="دائرة الوحدة ومنحنى الجيب"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-sw')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -3.6, xmax: 13, ymin: -3.4, ymax: 3.4 });
+  let f = 'sin';
+  root.querySelectorAll<HTMLButtonElement>('[data-i="f"] button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      f = btn.dataset.v!;
+      root.querySelectorAll('[data-i="f"] button').forEach((o) => o.setAttribute('aria-pressed', String(o === btn)));
+      draw();
+    }),
+  );
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const PI = Math.PI;
+  function draw() {
+    const a = v('a'), b = v('b');
+    const x = v('x') * 2 * PI;
+    root.querySelector('[data-o="a"]')!.textContent = String(a);
+    root.querySelector('[data-o="b"]')!.textContent = String(b);
+    root.querySelector('[data-o="x"]')!.textContent = fmt(x, 2);
+    plot.fit(0.5);
+    const yr = 3.4, xr = (2 * yr) / 0.5;
+    plot.view = { xmin: -3.6, xmax: -3.6 + xr, ymin: -yr, ymax: yr };
+    plot.clear();
+    // نرسم المحور الأفقي والشبكة للمنحنى (يبدأ من x = 0)
+    plot.piGrid(2, 1);
+    const g = (u: number) => a * (f === 'sin' ? Math.sin(b * u) : Math.cos(b * u));
+    // دائرة نصف قطرها |a| مركزها عند x = −2
+    const cx = -2.1, R = Math.max(Math.abs(a), 0.0001);
+    const { ctx } = plot;
+    ctx.fillStyle = css('--surface');
+    ctx.fillRect(0, 0, plot.X(-0.15), plot.h);
+    plot.param((u) => cx + R * Math.cos(u), (u) => R * Math.sin(u), 0, 2 * PI, css('--muted'), 1.6);
+    plot.seg(cx - R - 0.2, 0, cx + R + 0.2, 0, css('--muted'), 1);
+    const ang = b * x;
+    const px = cx + a * Math.cos(ang), py = a * Math.sin(ang);
+    const yv = g(x);
+    plot.fn((u) => (u >= 0 ? g(u) : NaN), css('--plot-curve'), 3);
+    plot.fn((u) => (u >= 0 && u <= x ? g(u) : NaN), css('--plot-hot'), 4);
+    plot.seg(cx, 0, px, py, css('--ink'), 1.5);
+    plot.dot(px, py, css('--plot-hot'), 5);
+    if (f === 'sin') plot.seg(px, py, x, yv, css('--plot-hot'), 1.2, [4, 4]);
+    else { plot.seg(cx, 0, px, 0, css('--plot-alt'), 4); plot.seg(px, py, px, 0, css('--plot-alt'), 1.2, [3, 3]); }
+    plot.dot(x, yv, css('--plot-hot'), 6);
+    const P = (2 * PI) / b;
+    const ft = `y = ${a === 1 ? '' : a === -1 ? '-' : a}\\${f}${b === 1 ? ' x' : `(${b}x)`}`;
+    out.innerHTML =
+      `<p>${tex(`$${ft}$`)}: عند ${tex(`$x = ${fmt(x, 2)}$`)} يكون ${tex(`$y \\approx ${fmt(yv, 3)}$`)}.</p>` +
+      `<p>السعة ${tex(`$|a| = ${Math.abs(a)}$`)}: أقصى ارتفاع عن خط المنتصف، والمدى ${tex(`$[${-Math.abs(a)}, ${Math.abs(a)}]$`)}${a < 0 ? '، والإشارة السالبة تقلب المنحنى حول محور x' : ''}.</p>` +
+      `<p>الدورة ${tex(`$\\dfrac{2\\pi}{b} = \\dfrac{2\\pi}{${b}} \\approx ${fmt(P, 3)}$`)}: طول الفترة التي يكتمل فيها شكل واحد قبل أن يتكرر. ${f === 'sin' ? 'الإحداثي الرأسي للنقطة على الدائرة (الخط المنقط) هو ارتفاع المنحنى' : 'الإحداثي الأفقي للنقطة على الدائرة (القطعة الزرقاء) هو ارتفاع المنحنى، ومنحنى جيب التمام هو منحنى الجيب مزاحًا ' + tex('$\\tfrac{\\pi}{2}$') + ' إلى اليسار'}.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

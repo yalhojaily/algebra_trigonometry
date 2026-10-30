@@ -117,7 +117,7 @@ export const chapters: Chapter[] = [
     id: '6',
     ar: 'الدوال الدائرية ورسومها',
     en: 'The Circular Functions and Their Graphs',
-    status: 'soon',
+    status: 'ready',
     blurb: 'القياس الدائري ودائرة الوحدة ورسوم الجيب وجيب التمام والظل والحركة التوافقية.',
     sections: [
       { id: '6.1', ar: 'القياس الدائري', en: 'Radian Measure', topics: [t('القياس الدائري', 'Radian Measure'), t('التحويل بين الدرجات والراديان', 'Conversions between Degrees and Radians'), t('طول القوس', 'Arc Length on a Circle'), t('مساحة القطاع', 'Area of a Sector of a Circle')] },

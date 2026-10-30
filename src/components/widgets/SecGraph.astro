@@ -1,0 +1,71 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-sec" title="القاطع وقاطع التمام من منحنى المقلوب" en="y = a·sec(bx), y = a·csc(bx)">
+  <div class="controls">
+    <label>الدالة
+      <span class="seg" dir="ltr" data-i="f"><button type="button" data-v="sec" aria-pressed="true">sec</button><button type="button" data-v="csc">csc</button><button type="button" data-v="add">sin + cos</button></span>
+    </label>
+    <label><span class="ltr">a = <output data-o="a"></output></span><input type="range" min="-3" max="3" step="0.5" value="1" data-i="a" /></label>
+    <label><span class="ltr">b = <output data-o="b"></output></span><input type="range" min="0.5" max="3" step="0.5" value="1" data-i="b" /></label>
+  </div>
+  <canvas aria-label="منحنى القاطع أو قاطع التمام مع الدالة الموجهة"></canvas>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-sec')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -7, xmax: 7, ymin: -5, ymax: 5 });
+  let f = 'sec';
+  root.querySelectorAll<HTMLButtonElement>('[data-i="f"] button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      f = btn.dataset.v!;
+      root.querySelectorAll('[data-i="f"] button').forEach((o) => o.setAttribute('aria-pressed', String(o === btn)));
+      draw();
+    }),
+  );
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  function draw() {
+    const a = v('a'), b = v('b');
+    root.querySelector('[data-o="a"]')!.textContent = String(a);
+    root.querySelector('[data-o="b"]')!.textContent = String(b);
+    plot.fit(0.58);
+    plot.view = { xmin: -2.2 * Math.PI, xmax: 2.2 * Math.PI, ymin: -5, ymax: 5 };
+    plot.clear();
+    plot.piGrid(2, 1);
+    if (f === 'add') {
+      // جمع الإحداثيات: y = a sin(bx) + cos x
+      const y1 = (x: number) => a * Math.sin(b * x), y2 = (x: number) => Math.cos(x);
+      plot.fn(y1, css('--plot-alt'), 2, [5, 4]);
+      plot.fn(y2, css('--plot-hot'), 2, [5, 4]);
+      plot.fn((x) => y1(x) + y2(x), css('--plot-curve'), 3);
+      const x0 = 1.2;
+      plot.seg(x0, 0, x0, y1(x0), css('--plot-alt'), 4);
+      plot.seg(x0 + 0.06, y1(x0), x0 + 0.06, y1(x0) + y2(x0), css('--plot-hot'), 4);
+      plot.dot(x0, y1(x0) + y2(x0), css('--plot-curve'), 6);
+      out.innerHTML =
+        `<p><strong>جمع الإحداثيات</strong> <span class="en" lang="en">(addition of ordinates)</span>: منحنى ${tex(`$y = ${a === 1 ? '' : a}\\sin${b === 1 ? ' x' : `(${b}x)`} + \\cos x$`)} نرسمه بجمع ارتفاعي المنحنيين المتقطعين عند كل ${tex('$x$')}.</p>` +
+        `<p>عند ${tex(`$x = ${x0}$`)}: ${tex(`$${fmt(y1(x0), 3)} + ${fmt(y2(x0), 3)} = ${fmt(y1(x0) + y2(x0), 3)}$`)} (القطعتان فوق بعضهما).</p>`;
+      return;
+    }
+    const isSec = f === 'sec';
+    const guide = (x: number) => a * (isSec ? Math.cos(b * x) : Math.sin(b * x));
+    const P = (2 * Math.PI) / b;
+    const off = isSec ? Math.PI / (2 * b) : 0;
+    for (let k = -20; k <= 20; k++) {
+      const x = off + (k * Math.PI) / b;
+      if (x > plot.view.xmin && x < plot.view.xmax) plot.seg(x, -5, x, 5, css('--plot-hot'), 1.2, [6, 5]);
+    }
+    plot.fn(guide, css('--muted'), 1.8, [5, 4]);
+    plot.fn((x) => { const g = guide(x) / a; return Math.abs(g) < 0.03 ? NaN : a / g; }, css('--plot-curve'), 3);
+    out.innerHTML =
+      `<p>${tex(`$y = ${a === 1 ? '' : a === -1 ? '-' : a}\\${f}${b === 1 ? ' x' : `(${b}x)`}$`)} هو مقلوب ${tex(`$y = ${a === 1 ? '' : a === -1 ? '-' : a}\\${isSec ? 'cos' : 'sin'}${b === 1 ? ' x' : `(${b}x)`}$`)} (المتقطع) بعد إرجاع المعامل ${tex('$a$')}.</p>` +
+      `<p>طريقة الرسم: ارسم الدالة الموجهة، وضع خطوط تقارب حيث تقطع محور ${tex('$x$')} (الأصفار)، ثم ارسم «أكوابًا» تلمس قمم الموجه وقيعانه وتبتعد نحو خطوط التقارب.</p>` +
+      `<p>الدورة ${tex(b === 1 ? '$2\\pi \\approx 6.283$' : `$\\dfrac{2\\pi}{${b}} \\approx ${fmt(P, 3)}$`)}، والمدى ${tex(`$(-\\infty, ${-Math.abs(a)}] \\cup [${Math.abs(a)}, \\infty)$`)}.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

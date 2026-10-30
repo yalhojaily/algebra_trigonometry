@@ -73,6 +73,42 @@ export class Plot {
       ctx.fillText(String(+y.toFixed(2)), Math.max(Math.min(this.X(0) - 4, this.w - 4), 24), this.Y(y));
     }
   }
+  /** شبكة محورها الأفقي بمضاعفات π/den، مع تسميات مثل π/2 و 3π/2 */
+  piGrid(den = 2, stepY = 1, labelEveryY = 1) {
+    const { ctx, view } = this;
+    const step = Math.PI / den;
+    this.grid(1e9, 1, stepY);
+    // نعيد رسم الخطوط الرأسية بمضاعفات π/den
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = css('--line');
+    ctx.globalAlpha = 0.6;
+    ctx.beginPath();
+    for (let k = Math.ceil(view.xmin / step); k * step <= view.xmax; k++) {
+      ctx.moveTo(this.X(k * step) + 0.5, 0);
+      ctx.lineTo(this.X(k * step) + 0.5, this.h);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = css('--muted');
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(this.X(0), 0);
+    ctx.lineTo(this.X(0), this.h);
+    ctx.moveTo(0, this.Y(0));
+    ctx.lineTo(this.w, this.Y(0));
+    ctx.stroke();
+    ctx.fillStyle = css('--muted');
+    ctx.font = '11px "Noto Sans", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    const pxPer = this.X(step) - this.X(0);
+    const every = Math.max(1, Math.ceil(34 / pxPer));
+    for (let k = Math.ceil(view.xmin / step); k * step <= view.xmax; k++) {
+      if (k === 0 || k % every !== 0) continue;
+      ctx.fillText(piLabel(k, den), this.X(k * step), Math.min(Math.max(this.Y(0) + 4, 2), this.h - 14));
+    }
+    void labelEveryY;
+  }
   fn(f: (x: number) => number, color = css('--plot-curve'), width = 2.6, dash: number[] = []) {
     const { ctx, view } = this;
     ctx.strokeStyle = color;
@@ -161,3 +197,14 @@ export const fmt = (v: number, d = 2) => {
   const r = +v.toFixed(d);
   return Object.is(r, -0) ? '0' : String(r);
 };
+
+const gcdN = (a: number, b: number): number => (b === 0 ? Math.abs(a) : gcdN(b, a % b));
+/** k·π/den بصيغة نصية مختصرة: π/2، −3π/4، 2π */
+export function piLabel(k: number, den: number) {
+  const g = gcdN(k, den) || 1;
+  const n = k / g, d = den / g;
+  const sign = n < 0 ? '−' : '';
+  const a = Math.abs(n);
+  const top = a === 1 ? 'π' : `${a}π`;
+  return d === 1 ? `${sign}${top}` : `${sign}${top}/${d}`;
+}

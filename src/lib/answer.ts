@@ -55,6 +55,8 @@ export function normalize(s: string) {
 }
 
 // ===== شجرة التعبير =====
+const TRIG = ['sin', 'cos', 'tan', 'sec', 'csc', 'cot'] as const;
+type Fn = 'ln' | 'log' | 'exp' | 'abs' | (typeof TRIG)[number];
 export type Node =
   | { t: 'num'; v: number }
   | { t: 'i' }
@@ -62,10 +64,10 @@ export type Node =
   | { t: 'neg'; a: Node }
   | { t: 'add' | 'sub' | 'mul' | 'div' | 'pow'; a: Node; b: Node }
   | { t: 'sqrt'; a: Node }
-  | { t: 'fn'; f: 'ln' | 'log' | 'exp' | 'abs'; base?: number; a: Node }
+  | { t: 'fn'; f: Fn; base?: number; a: Node }
   | { t: 'const'; v: 'e' | 'pi' };
 
-type Tok = { t: 'num'; v: number } | { t: 'i' } | { t: 'var'; v: string } | { t: 'op'; v: string } | { t: 'fn'; f?: 'ln' | 'log' | 'exp' | 'abs'; base?: number } | { t: 'const'; v: 'e' | 'pi' };
+type Tok = { t: 'num'; v: number } | { t: 'i' } | { t: 'var'; v: string } | { t: 'op'; v: string } | { t: 'fn'; f?: Fn; base?: number } | { t: 'const'; v: 'e' | 'pi' };
 
 function tokenize(s: string): Tok[] {
   const out: Tok[] = [];
@@ -89,8 +91,8 @@ function tokenize(s: string): Tok[] {
       if (!(base > 0) || base === 1) throw new Error('أساس اللوغاريتم غير صالح');
       out.push({ t: 'fn', f: 'log', base });
       k = j;
-    } else if (s.startsWith('ln', k) || s.startsWith('log', k) || s.startsWith('exp', k) || s.startsWith('abs', k)) {
-      const f = (['ln', 'log', 'exp', 'abs'] as const).find((name) => s.startsWith(name, k))!;
+    } else if ((['ln', 'log', 'exp', 'abs', ...TRIG] as const).some((name) => s.startsWith(name, k))) {
+      const f = (['ln', 'log', 'exp', 'abs', ...TRIG] as const).find((name) => s.startsWith(name, k))!;
       out.push({ t: 'fn', f });
       k += f.length;
     } else if (s.startsWith('pi', k) || ch === 'π') {
@@ -190,6 +192,13 @@ export function evalNode(n: Node, vars: Record<string, number> = {}): C {
       const a = evalNode(n.a, vars);
       if (n.f === 'abs') return c(Math.hypot(a.re, a.im));
       if (n.f === 'exp') { const m = Math.exp(a.re); return c(m * Math.cos(a.im), m * Math.sin(a.im)); }
+      if ((TRIG as readonly string[]).includes(n.f)) {
+        if (a.im !== 0) throw new Error('دالة مثلثية لعدد مركب');
+        const x = a.re, sn = Math.sin(x), cs = Math.cos(x);
+        const v = { sin: sn, cos: cs, tan: sn / cs, sec: 1 / cs, csc: 1 / sn, cot: cs / sn }[n.f as (typeof TRIG)[number]];
+        if (!Number.isFinite(v) || Math.abs(v) > 1e12) throw new Error('القيمة غير معرّفة');
+        return c(v);
+      }
       if (a.im !== 0 || a.re <= 0) throw new Error('لوغاريتم عدد غير موجب');
       const ln = Math.log(a.re);
       return c(n.f === 'ln' ? ln : ln / Math.log(n.base ?? 10));
@@ -218,6 +227,7 @@ export function toTex(n: Node): string {
     case 'fn':
       if (n.f === 'exp') return `e^{${toTex(n.a)}}`;
       if (n.f === 'abs') return `\\left|${toTex(n.a)}\\right|`;
+      if ((TRIG as readonly string[]).includes(n.f)) return `\\${n.f}\\left(${toTex(n.a)}\\right)`;
       return `${n.f === 'ln' ? '\\ln' : n.base ? `\\log_{${n.base}}` : '\\log'}\\left(${toTex(n.a)}\\right)`;
     case 'add': return `${toTex(n.a)} + ${toTex(n.b)}`;
     case 'sub': return `${toTex(n.a)} - ${prec(n.b) <= 1 || n.b.t === 'neg' ? wrap(toTex(n.b)) : toTex(n.b)}`;

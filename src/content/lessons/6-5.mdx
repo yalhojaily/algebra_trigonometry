@@ -1,0 +1,113 @@
+---
+section: "6.5"
+summary: "منحنيا الظل وظل التمام: خطوط التقارب الرأسية والدورة π، ورسم y = c + a·tan(bx) و y = c + a·cot(bx) بخطوات ثابتة، وقراءة المعادلة من الرسم."
+minutes: 35
+prerequisites: ["6.3", "6.4"]
+terms:
+  - { ar: "خط تقارب رأسي", en: "Vertical Asymptote", def: "مستقيم رأسي يقترب منه المنحنى دون أن يقطعه، حيث تكون الدالة غير معرّفة." }
+  - { ar: "دورة الظل", en: "Period of Tangent", def: "π/b للدالتين a tan bx و a cot bx." }
+  - { ar: "دالة فردية", en: "Odd Function", def: "f(−x) = −f(x)؛ منحناها متماثل حول نقطة الأصل، ومنها tan و cot." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import TanGraph from '../../components/widgets/TanGraph.astro';
+
+الظل يختلف عن الجيب وجيب التمام في أمرين: ليس له حد أعلى أو أدنى، و**ينكسر** حيث يكون غير معرّف. فمنحناه سلسلة من فروع منفصلة بينها خطوط تقارب رأسية، ويتكرر كل $\pi$ لا كل $2\pi$.
+
+## رسم دالة الظل <span class="en" lang="en">Graph of the Tangent Function</span>
+
+$\tan x = \dfrac{\sin x}{\cos x}$. فحيث $\cos x = 0$ (أي $x = \tfrac{\pi}{2} + n\pi$) يكون المقام صفرًا، والدالة غير معرّفة، وتظهر <Term ar="خطوط التقارب الرأسية" en="vertical asymptotes" />. ومع اقتراب $x$ من $\tfrac{\pi}{2}$ من اليسار يقترب $\cos x$ من الصفر وهو موجب و $\sin x$ من 1، فالظل يكبر بلا حد.
+
+<Box kind="rule" title="خصائص y = tan x" en="Graph of y = tan x">
+- المجال: كل الأعداد عدا $\tfrac{\pi}{2} + n\pi$. والمدى $(-\infty, \infty)$.
+- الدورة $\pi$: لأن النقطتين $s$ و $s + \pi$ على دائرة الوحدة متقابلتان، والنسبة $\tfrac{y}{x}$ واحدة لهما.
+- خطوط التقارب $x = \tfrac{\pi}{2} + n\pi$، والأصفار $x = n\pi$.
+- متزايدة على كل فترة بين خطي تقارب.
+- فردية: $\tan(-x) = -\tan x$ (متماثلة حول الأصل).
+</Box>
+
+## رسم دالة ظل التمام <span class="en" lang="en">Graph of the Cotangent Function</span>
+
+$\cot x = \dfrac{\cos x}{\sin x}$ غير معرّفة حيث $\sin x = 0$.
+
+<Box kind="rule" title="خصائص y = cot x" en="Graph of y = cot x">
+- المجال: كل الأعداد عدا $n\pi$. والمدى $(-\infty, \infty)$.
+- الدورة $\pi$. خطوط التقارب $x = n\pi$، والأصفار $x = \tfrac{\pi}{2} + n\pi$.
+- **متناقصة** على كل فترة بين خطي تقارب.
+- فردية: $\cot(-x) = -\cot x$.
+</Box>
+
+<TanGraph />
+
+## تقنيات الرسم <span class="en" lang="en">Techniques for Graphing</span>
+
+<Box kind="rule" title="رسم y = a tan bx أو y = a cot bx" en="Guidelines (b > 0)">
+1. **الدورة** $\dfrac{\pi}{b}$.
+2. **خطّا تقارب متتاليان**: للظل حل $bx = -\tfrac{\pi}{2}$ و $bx = \tfrac{\pi}{2}$. ولظل التمام حل $bx = 0$ و $bx = \pi$.
+3. قسّم الفترة بينهما **أربعة أجزاء**: النقطة الوسطى صفر، والنقطتان بجانبها قيمتهما $-a$ و $a$ (لظل التمام بالعكس: $a$ ثم $-a$).
+4. ارسم الفرع واقترب من خطي التقارب، ثم كرّر كل دورة.
+
+و $|a|$ هنا **ليس سعة** (المدى غير محدود)، بل يمطّ الفرع رأسيًا. والإشارة السالبة تقلب الاتجاه.
+</Box>
+
+<Example n="1" title="ظل بدورة أقصر">
+ارسم دورة من $y = \tan 2x$.
+
+<Solution>
+الدورة $\tfrac{\pi}{2}$. خطا التقارب: $2x = \pm\tfrac{\pi}{2}$ ← $x = \pm\tfrac{\pi}{4}$.
+
+الأجزاء طولها $\tfrac{\pi}{8}$: النقاط $x = -\tfrac{\pi}{8}, 0, \tfrac{\pi}{8}$ وقيمها $-1, 0, 1$.
+
+فرع صاعد من قرب $x = -\tfrac{\pi}{4}$ إلى قرب $x = \tfrac{\pi}{4}$، ويتكرر كل $\tfrac{\pi}{2}$.
+</Solution>
+</Example>
+
+<Example n="2" title="ظل تمام مقلوب ومزاح">
+ارسم دورة من $y = 1 - 2\cot\left(x + \tfrac{\pi}{4}\right)$.
+
+<Solution>
+خطا التقارب حيث ما بالداخل $0$ و $\pi$: $x = -\tfrac{\pi}{4}$ و $x = \tfrac{3\pi}{4}$. والدورة $\pi$.
+
+المنتصف $x = \tfrac{\pi}{4}$ (حيث $\cot = 0$)، فقيمته $y = 1$. وعند ربع الفترة $x = 0$: $\cot\tfrac{\pi}{4} = 1$ ← $y = 1 - 2 = -1$. وعند ثلاثة أرباعها $x = \tfrac{\pi}{2}$: $\cot\tfrac{3\pi}{4} = -1$ ← $y = 3$.
+
+الإشارة السالبة جعلت الفرع **صاعدًا** من $-\infty$ قرب $x = -\tfrac{\pi}{4}$ إلى $+\infty$ قرب $x = \tfrac{3\pi}{4}$، والإزاحة الرأسية رفعته وحدة.
+</Solution>
+</Example>
+
+<Box kind="mistake" title="دورة الظل π/b لا 2π/b">
+أكثر خطأ شائع: كتابة دورة $\tan 3x$ على أنها $\tfrac{2\pi}{3}$. الصحيح $\tfrac{\pi}{3}$.
+</Box>
+
+## ربط الرسوم بالمعادلات <span class="en" lang="en">Connecting Graphs with Equations</span>
+
+<Example n="3" title="المعادلة من الرسم">
+منحنى على صورة $y = a\tan bx$ له خطوط تقارب عند $x = \pm\tfrac{\pi}{6}$، ويمر بالنقطة $\left(\tfrac{\pi}{12}, -3\right)$. أوجد $a$ و $b$.
+
+<Solution>
+المسافة بين خطي التقارب = الدورة $= \tfrac{\pi}{3}$، فإن $\tfrac{\pi}{b} = \tfrac{\pi}{3}$ ← $b = 3$.
+
+عند $x = \tfrac{\pi}{12}$: $3x = \tfrac{\pi}{4}$ و $\tan\tfrac{\pi}{4} = 1$.
+
+$a \cdot 1 = -3$ ← $a = -3$، والمعادلة $y = -3\tan 3x$.
+</Solution>
+</Example>
+
+<Check
+  q="أي مما يأتي خط تقارب لـ $y = \\cot 2x$؟"
+  options={["$x = \\dfrac{\\pi}{4}$", "$x = \\dfrac{\\pi}{2}$", "$x = \\dfrac{\\pi}{8}$", "$x = \\pi + \\dfrac{\\pi}{4}$"]}
+  answer={1}
+  explain="خطوط تقارب $\\cot$ حيث $\\sin 2x = 0$، أي $2x = n\\pi$ و $x = \\tfrac{n\\pi}{2}$. ومنها $\\tfrac{\\pi}{2}$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $\tan$ و $\cot$ دورتهما $\pi$ (أو $\tfrac{\pi}{b}$)، ومداهما كل الأعداد، ولا سعة لهما.
+- خطوط تقارب $\tan$ حيث $\cos = 0$، وخطوط تقارب $\cot$ حيث $\sin = 0$.
+- $\tan$ متزايدة و $\cot$ متناقصة بين خطوط التقارب، والإشارة السالبة تقلبهما.
+- ارسم بين خطي تقارب متتاليين مقسّمين أربعة أجزاء.
+
+<Practice set="6.5" count={5} />

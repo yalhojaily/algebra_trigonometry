@@ -1,0 +1,78 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-st" title="مختبر y = c + a·sin(b(x − d))" en="Amplitude, period, phase shift, vertical shift">
+  <div class="controls">
+    <label>الدالة
+      <span class="seg" dir="ltr" data-i="f"><button type="button" data-v="sin" aria-pressed="true">sin</button><button type="button" data-v="cos">cos</button></span>
+    </label>
+    <label><span class="ltr">a = <output data-o="a"></output></span><input type="range" min="-3" max="3" step="0.5" value="2" data-i="a" /></label>
+    <label><span class="ltr">b = <output data-o="b"></output></span><input type="range" min="0.5" max="4" step="0.5" value="2" data-i="b" /></label>
+    <label><span class="ltr">d = <output data-o="d"></output></span><input type="range" min="-12" max="12" value="3" data-i="d" /></label>
+    <label><span class="ltr">c = <output data-o="c"></output></span><input type="range" min="-3" max="3" step="0.5" value="1" data-i="c" /></label>
+  </div>
+  <canvas aria-label="منحنى جيب بعد التحويلات"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--muted)"></i>الأصل</span>
+    <span><i style="background:var(--plot-curve)"></i>بعد التحويل</span>
+    <span><i style="background:var(--plot-hot)"></i>دورة واحدة تبدأ عند d</span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt, piLabel } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-st')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -7, xmax: 7, ymin: -6.5, ymax: 6.5 });
+  let f = 'sin';
+  root.querySelectorAll<HTMLButtonElement>('[data-i="f"] button').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      f = btn.dataset.v!;
+      root.querySelectorAll('[data-i="f"] button').forEach((o) => o.setAttribute('aria-pressed', String(o === btn)));
+      draw();
+    }),
+  );
+  const v = (k: string) => Number(root.querySelector<HTMLInputElement>(`[data-i="${k}"]`)!.value);
+  const piT = (k: number, den: number) => {
+    if (k === 0) return '0';
+    const g = (p: number, q: number): number => (q === 0 ? Math.abs(p) : g(q, p % q));
+    const gg = g(k, den), n = k / gg, d = den / gg;
+    const s = n < 0 ? '-' : '';
+    const top = Math.abs(n) === 1 ? '\\pi' : `${Math.abs(n)}\\pi`;
+    return d === 1 ? `${s}${top}` : `${s}\\dfrac{${top}}{${d}}`;
+  };
+  function draw() {
+    const a = v('a'), b = v('b'), dk = v('d'), c = v('c');
+    const d = (dk * Math.PI) / 12;
+    root.querySelector('[data-o="a"]')!.textContent = String(a);
+    root.querySelector('[data-o="b"]')!.textContent = String(b);
+    root.querySelector('[data-o="d"]')!.textContent = dk === 0 ? '0' : piLabel(dk, 12);
+    root.querySelector('[data-o="c"]')!.textContent = String(c);
+    const base = f === 'sin' ? Math.sin : Math.cos;
+    const g = (x: number) => c + a * base(b * (x - d));
+    plot.fit(0.55);
+    plot.view = { xmin: -2.2 * Math.PI, xmax: 2.2 * Math.PI, ymin: -6.5, ymax: 6.5 };
+    plot.clear();
+    plot.piGrid(2, 1);
+    plot.fn(base, css('--muted'), 1.6, [5, 4]);
+    plot.seg(-8, c, 8, c, css('--plot-alt'), 1.4, [6, 4]);
+    plot.fn(g, css('--plot-curve'), 3);
+    const P = (2 * Math.PI) / b;
+    plot.fn((x) => (x >= d && x <= d + P ? g(x) : NaN), css('--plot-hot'), 4);
+    plot.dot(d, g(d), css('--plot-hot'), 5);
+    plot.dot(d + P, g(d + P), css('--plot-hot'), 5);
+    const bT = b === 1 ? '' : String(b);
+    const inner = dk === 0 ? `${bT}x` : `${bT}\\left(x ${dk > 0 ? '-' : '+'} ${piT(Math.abs(dk), 12)}\\right)`;
+    const eq = `y = ${c === 0 ? '' : `${c} ${a < 0 ? '-' : '+'} `}${c === 0 && a < 0 ? '-' : ''}${Math.abs(a) === 1 ? '' : Math.abs(a)}\\${f}${b === 1 && dk === 0 ? ' x' : `\\left(${inner}\\right)`}`;
+    const Pk = 24 / b;
+    const pT = Number.isInteger(Pk) ? piT(Pk, 12) : `\\dfrac{2\\pi}{${b}}`;
+    out.innerHTML =
+      `<p>${tex(`$${eq}$`)}</p>` +
+      `<p>السعة ${tex(`$|a| = ${Math.abs(a)}$`)}، والدورة ${tex(`$\\dfrac{2\\pi}{b} = ${pT}$`)}، و<strong>الإزاحة الطورية</strong> ${tex(`$d = ${piT(dk, 12)}$`)} (${dk > 0 ? 'إلى اليمين' : dk < 0 ? 'إلى اليسار' : 'لا إزاحة'})، و<strong>الإزاحة الرأسية</strong> ${tex(`$c = ${c}$`)} (خط المنتصف ${tex(`$y = ${c}$`)}).</p>` +
+      `<p>المدى ${tex(`$[${c - Math.abs(a)}, ${c + Math.abs(a)}]$`)}. دورة واحدة (بالأحمر) تمتد من ${tex(`$x = ${piT(dk, 12)}$`)} إلى ${tex(`$x = d + \\text{period}$`)}، ونقسمها أربعة أجزاء متساوية لرسم النقاط الخمس المفتاحية.</p>`;
+  }
+  root.querySelectorAll('input').forEach((i) => i.addEventListener('input', draw));
+  onRedraw(canvas, draw);
+</script>

@@ -1,0 +1,137 @@
+---
+section: "6.3"
+summary: "الدوال الدورية، ورسم y = sin x و y = cos x من دائرة الوحدة، والسعة |a| والدورة 2π/b في y = a sin bx و y = a cos bx، وطريقة النقاط الخمس للرسم، وقراءة المعادلة من المنحنى، ونموذج مثلثي لظاهرة حقيقية."
+minutes: 45
+prerequisites: ["6.2"]
+terms:
+  - { ar: "دالة دورية", en: "Periodic Function", def: "دالة f يوجد لها عدد موجب p بحيث f(x + p) = f(x) لكل x، وأصغر p هو الدورة." }
+  - { ar: "الدورة", en: "Period", def: "طول أصغر فترة يتكرر بعدها المنحنى؛ 2π/b للدالتين a sin bx و a cos bx." }
+  - { ar: "السعة", en: "Amplitude", def: "|a|: نصف الفرق بين القيمتين العظمى والصغرى للمنحنى الجيبي." }
+  - { ar: "منحنى جيبي", en: "Sinusoid", def: "أي منحنى على صورة الجيب أو جيب التمام بعد تحويلات." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import SineUnwrap from '../../components/widgets/SineUnwrap.astro';
+
+نبض القلب وأمواج البحر وطول النهار خلال السنة وتيار الكهرباء في بيتك: كلها تتكرر بانتظام. والدالتان اللتان تصفان كل تكرار سلس هما الجيب وجيب التمام. في هذا الدرس نرسمهما، ونتعلم كيف يمطّ المعاملان $a$ و $b$ المنحنى رأسيًا وأفقيًا.
+
+## الدوال الدورية <span class="en" lang="en">Periodic Functions</span>
+
+<Box kind="def" title="الدالة الدورية" en="Periodic Function">
+الدالة $f$ <Term ar="دورية" en="periodic" /> إذا وُجد عدد موجب $p$ بحيث
+
+$$f(x + p) = f(x) \quad \text{for every } x \text{ in the domain}$$
+
+وأصغر عدد $p$ كهذا هو <Term ar="الدورة" en="period" />.
+</Box>
+
+بعد قوس طوله $2\pi$ نعود إلى النقطة نفسها على دائرة الوحدة، فإن $\sin(x + 2\pi) = \sin x$ و $\cos(x + 2\pi) = \cos x$: الدورة $2\pi$.
+
+## رسم الجيب وجيب التمام <span class="en" lang="en">Graphs of Sine and Cosine</span>
+
+تابع الإحداثي $y$ للنقطة وهي تدور: يبدأ من 0، ويصعد إلى 1 عند $\tfrac{\pi}{2}$، ويعود إلى 0 عند $\pi$، ثم ينزل إلى $-1$ عند $\tfrac{3\pi}{2}$، ويرجع إلى 0 عند $2\pi$. هذا منحنى الجيب.
+
+<SineUnwrap />
+
+<Box kind="rule" title="خصائص y = sin x و y = cos x" en="Properties">
+| | $y = \sin x$ | $y = \cos x$ |
+|---|---|---|
+| المجال | $(-\infty, \infty)$ | $(-\infty, \infty)$ |
+| المدى | $[-1, 1]$ | $[-1, 1]$ |
+| الدورة | $2\pi$ | $2\pi$ |
+| يبدأ عند $x = 0$ | من الصفر صاعدًا | من القمة 1 |
+| الأصفار | $n\pi$ | $\tfrac{\pi}{2} + n\pi$ |
+| التماثل | فردية: $\sin(-x) = -\sin x$ (حول الأصل) | زوجية: $\cos(-x) = \cos x$ (حول المحور $y$) |
+
+ومنحنى جيب التمام هو منحنى الجيب مزاحًا $\tfrac{\pi}{2}$ إلى اليسار: $\cos x = \sin\left(x + \tfrac{\pi}{2}\right)$.
+</Box>
+
+## السعة والدورة <span class="en" lang="en">Amplitude and Period</span>
+
+<Box kind="rule" title="y = a sin bx و y = a cos bx" en="Amplitude and Period (b > 0)">
+- <Term ar="السعة" en="amplitude" /> $= |a|$: المنحنى بين $-|a|$ و $|a|$. وإذا كانت $a < 0$ ينقلب المنحنى حول محور $x$.
+- الدورة $= \dfrac{2\pi}{b}$: كلما كبر $b$ ضاق المنحنى وتكرر أسرع.
+</Box>
+
+<Box kind="rule" title="طريقة النقاط الخمس" en="Graphing in five key points">
+1. أوجد الدورة $\tfrac{2\pi}{b}$ وقسّمها إلى **أربعة أجزاء متساوية**.
+2. تحصل على خمس قيم لـ $x$: البداية والنهاية وثلاث بينهما.
+3. لـ $\sin$: صفر، قمة، صفر، قاع، صفر. ولـ $\cos$: قمة، صفر، قاع، صفر، قمة. (مضروبة في $a$.)
+4. صل النقاط بمنحنى أملس، وكرّره يمينًا ويسارًا.
+</Box>
+
+<Example n="1" title="سعة ودورة">
+ارسم دورة واحدة من $y = -2\sin 3x$.
+
+<Solution>
+السعة $|-2| = 2$، والدورة $\tfrac{2\pi}{3}$، والإشارة السالبة تقلب المنحنى.
+
+الدورة على أربعة أجزاء طول كل منها $\tfrac{2\pi}{3} \div 4 = \tfrac{\pi}{6}$: النقاط $x = 0, \tfrac{\pi}{6}, \tfrac{\pi}{3}, \tfrac{\pi}{2}, \tfrac{2\pi}{3}$.
+
+القيم: $0, -2, 0, 2, 0$ (قاع أولًا ثم قمة، بسبب الإشارة السالبة).
+</Solution>
+</Example>
+
+<Example n="2" title="دورة أطول">
+ارسم $y = \cos \tfrac{2}{3}x$ على دورة واحدة.
+
+<Solution>
+السعة 1، والدورة $\dfrac{2\pi}{2/3} = 3\pi$.
+
+الأجزاء: $\tfrac{3\pi}{4}$، فالنقاط $x = 0, \tfrac{3\pi}{4}, \tfrac{3\pi}{2}, \tfrac{9\pi}{4}, 3\pi$.
+
+القيم: $1, 0, -1, 0, 1$. المنحنى أعرض من $\cos x$ لأن $b < 1$.
+</Solution>
+</Example>
+
+<Box kind="mistake" title="b لا يغيّر الارتفاع">
+في $y = \sin 4x$ السعة ما زالت 1. المعامل داخل الدالة يغيّر الدورة فقط، والمعامل خارجها يغيّر السعة فقط.
+</Box>
+
+## ربط الرسوم بالمعادلات <span class="en" lang="en">Connecting Graphs with Equations</span>
+
+<Example n="3" title="المعادلة من الرسم">
+منحنى جيبي يمر بنقطة الأصل صاعدًا، وأعلى قيمة له 3، ويكمل دورة واحدة بين $x = 0$ و $x = \pi$. اكتب معادلته.
+
+<Solution>
+يبدأ من الصفر صاعدًا: جيب بـ $a > 0$. والسعة 3.
+
+الدورة $\pi$: $\tfrac{2\pi}{b} = \pi$ ← $b = 2$.
+
+$y = 3\sin 2x$
+</Solution>
+</Example>
+
+## نموذج مثلثي <span class="en" lang="en">A Trigonometric Model</span>
+
+<Example n="4" title="درجات الحرارة السنوية">
+متوسط درجات الحرارة الشهرية في مدينة يمكن نمذجته بـ $f(x) = 14\sin\left[\tfrac{\pi}{6}(x - 4)\right] + 25$، حيث $x$ رقم الشهر ($x = 1$ يناير). ما أعلى متوسط، ومتى؟
+
+<Solution>
+السعة 14 وخط المنتصف 25، فالعظمى $25 + 14 = 39^\circ$.
+
+تحدث حين $\tfrac{\pi}{6}(x - 4) = \tfrac{\pi}{2}$ ← $x - 4 = 3$ ← $x = 7$.
+
+أعلى متوسط $39^\circ$ في يوليو. والدورة $\tfrac{2\pi}{\pi/6} = 12$ شهرًا كما ينبغي لظاهرة سنوية.
+</Solution>
+</Example>
+
+<Check
+  q="ما دورة $y = 5\\cos\\dfrac{x}{2}$؟"
+  options={["$\\pi$", "$4\\pi$", "$\\dfrac{\\pi}{2}$", "$10\\pi$"]}
+  answer={1}
+  explain="$b = \\tfrac12$، فالدورة $\\dfrac{2\\pi}{1/2} = 4\\pi$. والعدد 5 هو السعة ولا يؤثر في الدورة."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $\sin$ و $\cos$ دوريتان بدورة $2\pi$ ومداهما $[-1, 1]$.
+- في $y = a\sin bx$ أو $y = a\cos bx$: السعة $|a|$، والدورة $\tfrac{2\pi}{b}$.
+- ارسم بخمس نقاط تقسم الدورة إلى أربعة أجزاء.
+- الجيب يبدأ من الصفر صاعدًا، وجيب التمام يبدأ من القمة.
+
+<Practice set="6.3" count={5} />

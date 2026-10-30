@@ -1,0 +1,116 @@
+---
+section: "6.7"
+summary: "تطبيق الدوال الدائرية على الاهتزاز: الحركة التوافقية البسيطة s(t) = a cos ωt أو a sin ωt، والسعة والدورة والتردد، وبناء النموذج من وصف فيزيائي، ثم الحركة المخمدة حين يقلّص الاحتكاك السعة مع الزمن."
+minutes: 30
+prerequisites: ["6.3", "4.2"]
+terms:
+  - { ar: "حركة توافقية بسيطة", en: "Simple Harmonic Motion", def: "حركة موضعها s(t) = a cos ωt أو s(t) = a sin ωt، حيث ω > 0." }
+  - { ar: "التردد", en: "Frequency", def: "عدد الاهتزازات في وحدة الزمن: f = ω/(2π) = 1/T، ويُقاس بالهرتز." }
+  - { ar: "السرعة الزاوية (التردد الزاوي)", en: "Angular Frequency", def: "ω في s = a cos ωt، بالراديان لكل وحدة زمن." }
+  - { ar: "حركة اهتزازية مخمدة", en: "Damped Oscillatory Motion", def: "اهتزاز تتناقص سعته مع الزمن، مثل s(t) = a e^{−kt} cos ωt." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import Harmonic from '../../components/widgets/Harmonic.astro';
+
+علّق ثقلًا بنابض، واسحبه لأسفل، ثم اتركه. يصعد ويهبط حول موضع اتزانه بإيقاع ثابت. لو أسقطنا ظل نقطة تدور بسرعة ثابتة على دائرة على خط مستقيم، لتحرك الظل بالطريقة نفسها تمامًا. لذلك فالجيب وجيب التمام هما لغة كل اهتزاز: النابض، والبندول، والوتر، والدوائر الكهربائية.
+
+## الحركة التوافقية البسيطة <span class="en" lang="en">Simple Harmonic Motion</span>
+
+<Box kind="def" title="الحركة التوافقية البسيطة" en="Simple Harmonic Motion">
+جسم يتحرك على خط مستقيم، وموضعه بالنسبة لنقطة الاتزان عند الزمن $t$:
+
+$$s(t) = a\cos\omega t \qquad\text{or}\qquad s(t) = a\sin\omega t \qquad (\omega > 0)$$
+
+- السعة $|a|$: أقصى بعد عن الاتزان.
+- الدورة $T = \dfrac{2\pi}{\omega}$: زمن اهتزازة كاملة.
+- <Term ar="التردد" en="frequency" /> $f = \dfrac{\omega}{2\pi} = \dfrac{1}{T}$: عدد الاهتزازات في الثانية (هرتز، Hz).
+</Box>
+
+<Box kind="tip" title="جيب أم جيب تمام؟">
+- إذا بدأ الجسم من **أقصى إزاحة** ($s(0) = a$): استخدم $a\cos\omega t$.
+- إذا بدأ من **موضع الاتزان** ($s(0) = 0$): استخدم $a\sin\omega t$.
+</Box>
+
+<Harmonic />
+
+<Example n="1" title="نموذج من وصف">
+ثقل معلّق بنابض سُحب 5 سم تحت موضع الاتزان ثم تُرك، ويكمل اهتزازة كل 2 ثانية. اكتب معادلة حركته باعتبار الاتجاه لأعلى موجبًا.
+
+<Solution>
+بدأ من أقصى إزاحة، فنستخدم جيب التمام. وهو تحت الاتزان، فالإزاحة الابتدائية $-5$: $a = -5$.
+
+$T = 2$ ← $\omega = \dfrac{2\pi}{2} = \pi$
+
+$s(t) = -5\cos \pi t$. تحقق: $s(0) = -5$ ✓، و $s(1) = -5\cos\pi = 5$ (أعلى نقطة بعد نصف دورة) ✓
+</Solution>
+</Example>
+
+<Example n="2" title="قراءة نموذج">
+موضع نقطة على وتر يهتز $s(t) = 0.3\sin(880\pi t)$ سم. أوجد السعة والدورة والتردد.
+
+<Solution>
+السعة $0.3$ سم، و $\omega = 880\pi$.
+
+$T = \dfrac{2\pi}{880\pi} = \dfrac{1}{440}$ ثانية.
+
+$f = 440$ هرتز: وهي نغمة «لا» (A) التي تُضبط عليها الآلات الموسيقية.
+</Solution>
+</Example>
+
+<Example n="3" title="موضع وزمن">
+لـ $s(t) = 4\cos 3t$ (سم، ثوانٍ): أين الجسم عند $t = 1.2$؟ ومتى يصل الاتزان أول مرة؟
+
+<Solution>
+$s(1.2) = 4\cos(3.6) \approx 4(-0.8968) \approx -3.59$ سم (الآلة على RAD).
+
+يصل الاتزان حين $\cos 3t = 0$، وأول مرة حين $3t = \tfrac{\pi}{2}$.
+
+$t = \tfrac{\pi}{6} \approx 0.52$ ثانية.
+</Solution>
+</Example>
+
+## الحركة الاهتزازية المخمدة <span class="en" lang="en">Damped Oscillatory Motion</span>
+
+في الواقع تتناقص الاهتزازة شيئًا فشيئًا بسبب الاحتكاك ومقاومة الهواء. نمثّل ذلك بضرب جيب التمام في دالة أسية متناقصة (الفصل 4):
+
+<Box kind="def" title="الحركة المخمدة" en="Damped Oscillatory Motion">
+$$s(t) = a e^{-kt}\cos\omega t \qquad (k > 0)$$
+
+المنحنى يتذبذب بين **غلافين** $y = a e^{-kt}$ و $y = -a e^{-kt}$ يقتربان من الصفر. الدورة تبقى $\tfrac{2\pi}{\omega}$، لكن السعة تتناقص أسيًا.
+</Box>
+
+<Example n="4" title="سعة متناقصة">
+نابض مخمد $s(t) = 6e^{-0.25t}\cos 2\pi t$. ما أقصى إزاحة ممكنة عند $t = 4$؟ ومتى تنخفض إلى نصف قيمتها الابتدائية؟
+
+<Solution>
+الغلاف عند $t = 4$: $6e^{-0.25(4)} = 6e^{-1} \approx 2.21$ سم.
+
+نصف السعة: $6e^{-0.25t} = 3$ ← $e^{-0.25t} = 0.5$.
+
+$t = \dfrac{\ln 0.5}{-0.25} = 4\ln 2 \approx 2.77$ ثانية (عمر النصف للغلاف، كما في الدرس 4.6).
+</Solution>
+</Example>
+
+<Box kind="note" title="المخمِّد في السيارة">
+ممتص الصدمات في السيارة مصمم ليجعل $k$ كبيرًا، فتخمد اهتزازة النابض بعد اصطدام العجلة بحفرة خلال أقل من دورة واحدة. ولو كان ضعيفًا لظلت السيارة «تتراقص».
+</Box>
+
+<Check
+  q="جسم في حركة توافقية تردده 4 هرتز. ما دورته؟"
+  options={["4 ثوانٍ", "$\\tfrac14$ ثانية", "$8\\pi$ ثانية", "$\\tfrac{\\pi}{2}$ ثانية"]}
+  answer={1}
+  explain="الدورة مقلوب التردد: $T = \\tfrac{1}{f} = \\tfrac14$ ثانية."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- $s(t) = a\cos\omega t$ (بداية من أقصى إزاحة) أو $a\sin\omega t$ (بداية من الاتزان).
+- السعة $|a|$، والدورة $\tfrac{2\pi}{\omega}$، والتردد $\tfrac{\omega}{2\pi}$ بالهرتز.
+- الحركة المخمدة $a e^{-kt}\cos\omega t$: الدورة ثابتة والسعة تتناقص أسيًا.
+
+<Practice set="6.7" count={5} />

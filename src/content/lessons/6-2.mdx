@@ -1,0 +1,140 @@
+---
+section: "6.2"
+summary: "دائرة الوحدة تجعل الدوال المثلثية دوال لأعداد حقيقية: النقطة (cos s, sin s) عند قطع قوس طوله s، والقيم الدقيقة والتقريبية، وإيجاد العدد من قيمة دالته، والقيم كأطوال قطع، والسرعتان الخطية والزاوية."
+minutes: 40
+prerequisites: ["6.1", "5.3"]
+terms:
+  - { ar: "دائرة الوحدة", en: "Unit Circle", def: "الدائرة x² + y² = 1 التي مركزها الأصل ونصف قطرها 1." }
+  - { ar: "الدوال الدائرية", en: "Circular Functions", def: "الدوال المثلثية معرّفة لعدد حقيقي s: cos s و sin s هما إحداثيا النقطة على دائرة الوحدة بعد قوس طوله s." }
+  - { ar: "السرعة الزاوية", en: "Angular Speed", def: "ω = θ/t: الزاوية (بالراديان) المقطوعة في وحدة الزمن." }
+  - { ar: "السرعة الخطية", en: "Linear Speed", def: "v = s/t = rω: المسافة المقطوعة على القوس في وحدة الزمن." }
+---
+import Term from '../../components/Term.astro';
+import Box from '../../components/Box.astro';
+import Example from '../../components/Example.astro';
+import Solution from '../../components/Solution.astro';
+import Check from '../../components/Check.astro';
+import Practice from '../../components/Practice.astro';
+import UnitCircle from '../../components/widgets/UnitCircle.astro';
+
+في الفصل 5 كانت مدخلات الجيب وجيب التمام **زوايا**. لكن لرسم $y = \sin x$ ونمذجة موجات الصوت والمد والجزر نحتاجها دوالًا لـ**أعداد حقيقية**. دائرة الوحدة هي الجسر: نصف قطرها 1، فطول القوس يساوي الزاوية بالراديان، ونستطيع أن نعتبر المدخل طولًا لا زاوية.
+
+## الدوال الدائرية <span class="en" lang="en">Circular Functions</span>
+
+<Box kind="def" title="الدوال الدائرية" en="Circular Functions">
+على <Term ar="دائرة الوحدة" en="unit circle" /> $x^2 + y^2 = 1$، ابدأ من $(1, 0)$ وسر قوسًا طوله $s$ (عكس عقارب الساعة إذا $s > 0$، ومعها إذا $s < 0$). إذا وصلت إلى النقطة $(x, y)$ فإن:
+
+$$\cos s = x \qquad \sin s = y \qquad \tan s = \frac{y}{x}\ (x \ne 0)$$
+
+$$\sec s = \frac1x\ (x \ne 0) \qquad \csc s = \frac1y\ (y \ne 0) \qquad \cot s = \frac{x}{y}\ (y \ne 0)$$
+</Box>
+
+ولأن $r = 1$ تتطابق هذه التعريفات مع تعريفات الفصل 5 للزاوية $\theta = s$ راديان. فكل ما تعلمته (الإشارات، والزوايا المرجعية، والمتطابقات) ينطبق كما هو.
+
+<UnitCircle />
+
+<Box kind="rule" title="حقائق من دائرة الوحدة" en="Unit circle facts">
+- النقطة على الدائرة دائمًا $(\cos s, \sin s)$.
+- مجال $\sin$ و $\cos$ كل الأعداد الحقيقية، ومداهما $[-1, 1]$.
+- مجال $\tan$ و $\sec$: كل الأعداد عدا $\tfrac{\pi}{2} + n\pi$.
+- مجال $\cot$ و $\csc$: كل الأعداد عدا $n\pi$.
+</Box>
+
+## قيم الدوال الدائرية <span class="en" lang="en">Values of the Circular Functions</span>
+
+نقاط دائرة الوحدة عند مضاعفات $\tfrac{\pi}{6}$ و $\tfrac{\pi}{4}$ تأتي من المثلثين الخاصين: في الربع الأول $\left(\tfrac{\sqrt3}{2}, \tfrac12\right)$ عند $\tfrac{\pi}{6}$، و $\left(\tfrac{\sqrt2}{2}, \tfrac{\sqrt2}{2}\right)$ عند $\tfrac{\pi}{4}$، و $\left(\tfrac12, \tfrac{\sqrt3}{2}\right)$ عند $\tfrac{\pi}{3}$. وبقية الأرباع بتغيير الإشارات.
+
+<Example n="1" title="قيم دقيقة">
+أوجد: $\sin\dfrac{3\pi}{2}$، $\cos\dfrac{7\pi}{4}$، $\tan\left(-\dfrac{5\pi}{3}\right)$.
+
+<Solution>
+$\tfrac{3\pi}{2}$ تصل إلى $(0, -1)$، فإن $\sin\tfrac{3\pi}{2} = -1$.
+
+$\tfrac{7\pi}{4}$ في الربع الرابع ومرجعها $\tfrac{\pi}{4}$، فالنقطة $\left(\tfrac{\sqrt2}{2}, -\tfrac{\sqrt2}{2}\right)$ و $\cos\tfrac{7\pi}{4} = \tfrac{\sqrt2}{2}$.
+
+$-\tfrac{5\pi}{3}$ مكافئة لـ $\tfrac{\pi}{3}$ (بإضافة $2\pi$)، فإن $\tan\left(-\tfrac{5\pi}{3}\right) = \tan\tfrac{\pi}{3} = \sqrt3$.
+</Solution>
+</Example>
+
+<Box kind="mistake" title="الآلة على وضع الراديان">
+لحساب $\cos 1.85$ يجب أن تكون الآلة على **RAD**. على وضع الدرجات ستحسب $\cos 1.85^\circ \approx 0.9995$ بدل القيمة الصحيحة $\cos 1.85 \approx -0.2756$.
+</Box>
+
+## إيجاد عدد بقيمة دالة معطاة <span class="en" lang="en">Determining a Number with a Given Circular Function Value</span>
+
+<Example n="2" title="قيمة دقيقة في فترة">
+أوجد $s$ في $\left[\pi, \tfrac{3\pi}{2}\right]$ بحيث $\tan s = 1$.
+
+<Solution>
+$\tan s = 1$ عندما $x = y$ على دائرة الوحدة، أي عند المرجع $\tfrac{\pi}{4}$.
+
+في الفترة المطلوبة (الربع الثالث) كلا الإحداثيين سالب، والظل موجب.
+
+$s = \pi + \tfrac{\pi}{4} = \tfrac{5\pi}{4}$
+</Solution>
+</Example>
+
+<Example n="3" title="قيمة تقريبية في فترة">
+أوجد $s$ في $\left[\tfrac{\pi}{2}, \pi\right]$ بحيث $\cos s = -0.4$.
+
+<Solution>
+الآلة: $\cos^{-1}(-0.4) \approx 1.9823$.
+
+هل هي في الفترة؟ $\tfrac{\pi}{2} \approx 1.571$ و $\pi \approx 3.142$، فنعم.
+
+$s \approx 1.9823$. (لو طُلبت الفترة $\left[\pi, \tfrac{3\pi}{2}\right]$ لأخذنا $2\pi - 1.9823 \approx 4.3009$ بالتماثل حول محور $x$.)
+</Solution>
+</Example>
+
+## قيم الدوال كأطوال قطع <span class="en" lang="en">Function Values as Lengths of Line Segments</span>
+
+في الأداة أعلاه: إذا كانت $P = (\cos s, \sin s)$ في الربع الأول، فالقطعة الرأسية من $P$ إلى محور $x$ طولها $\sin s$، والأفقية من الأصل طولها $\cos s$. ومن المثلثين المتشابهين، القطعة على المماس الرأسي $x = 1$ من $(1, 0)$ حتى امتداد نصف القطر طولها $\tan s$. ومن هنا جاء اسم «الظل» <span class="en" lang="en">(tangent)</span>: قطعة على المماس.
+
+## السرعة الخطية والزاوية <span class="en" lang="en">Linear and Angular Speed</span>
+
+<Box kind="def" title="السرعتان" en="Angular and Linear Speed">
+نقطة تتحرك على دائرة نصف قطرها $r$، فتقطع زاوية $\theta$ (بالراديان) وقوسًا طوله $s$ في زمن $t$:
+
+- <Term ar="السرعة الزاوية" en="angular speed" />: $\omega = \dfrac{\theta}{t}$
+- <Term ar="السرعة الخطية" en="linear speed" />: $v = \dfrac{s}{t} = \dfrac{r\theta}{t} = r\omega$
+</Box>
+
+<Example n="4" title="قمر صناعي">
+قمر صناعي يدور حول الأرض في مدار دائري نصف قطره 6800 كم، ويكمل دورة كل 1.5 ساعة. ما سرعتاه الزاوية والخطية؟
+
+<Solution>
+الدورة الكاملة $2\pi$: $\omega = \dfrac{2\pi}{1.5} = \dfrac{4\pi}{3}$ راديان/ساعة $\approx 4.19$ راديان/ساعة.
+
+$v = r\omega = 6800 \cdot \dfrac{4\pi}{3}$
+
+$\approx 28{,}480$ كم/ساعة.
+</Solution>
+</Example>
+
+<Example n="5" title="من الدورات إلى السرعة">
+إطار سيارة نصف قطره 30 سم يدور 800 دورة في الدقيقة. ما سرعة السيارة بالكم/س؟
+
+<Solution>
+$\omega = 800 \cdot 2\pi = 1600\pi$ راديان/دقيقة.
+
+$v = r\omega = 30 \cdot 1600\pi = 48000\pi$ سم/دقيقة $\approx 150{,}796$ سم/دقيقة.
+
+بالتحويل: $150796 \times 60 \div 100000 \approx 90.5$ كم/س.
+</Solution>
+</Example>
+
+<Check
+  q="ما قيمة $\\sin\\left(-\\dfrac{\\pi}{2}\\right)$؟"
+  options={["$1$", "$0$", "$-1$", "غير معرّفة"]}
+  answer={2}
+  explain="السير ربع دورة مع عقارب الساعة من $(1, 0)$ يصل إلى $(0, -1)$، والجيب هو الإحداثي $y$."
+/>
+
+## الخلاصة <span class="en" lang="en">Summary</span>
+
+- قوس طوله $s$ على دائرة الوحدة يصل إلى النقطة $(\cos s, \sin s)$.
+- الدوال الدائرية هي الدوال المثلثية لعدد حقيقي (راديان).
+- لإيجاد $s$ من قيمة: المرجع من الآلة أو الجدول، ثم الربع المطلوب.
+- $\omega = \tfrac{\theta}{t}$ و $v = r\omega$.
+
+<Practice set="6.2" count={6} />

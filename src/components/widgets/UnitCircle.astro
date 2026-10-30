@@ -1,0 +1,77 @@
+---
+import Frame from './Frame.astro';
+---
+<Frame id="w-uc" title="دائرة الوحدة" en="The unit circle: (cos s, sin s)">
+  <div class="controls">
+    <label>طول القوس <span class="ltr">s = <output data-o="s"></output></span><input type="range" min="0" max="48" value="8" data-i="s" /></label>
+    <label class="chk"><input type="checkbox" data-i="seg" checked /> اعرض القيم كأطوال قطع</label>
+  </div>
+  <canvas aria-label="دائرة الوحدة والنقطة المقابلة لطول القوس"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--plot-hot)"></i><span class="ltr">sin s</span></span>
+    <span><i style="background:var(--plot-alt)"></i><span class="ltr">cos s</span></span>
+    <span><i style="background:var(--plot-curve)"></i><span class="ltr">tan s</span></span>
+  </div>
+  <div class="readout" aria-live="polite"></div>
+</Frame>
+<script>
+  import { Plot, onRedraw, css, fmt, piLabel } from '../../lib/plot';
+  import { tex } from '../../lib/tex';
+  const root = document.getElementById('w-uc')!;
+  const canvas = root.querySelector('canvas')!;
+  const out = root.querySelector<HTMLElement>('.readout')!;
+  const plot = new Plot(canvas, { xmin: -2, xmax: 2, ymin: -1.4, ymax: 1.4 });
+  const inp = root.querySelector<HTMLInputElement>('[data-i="s"]')!;
+  const segBox = root.querySelector<HTMLInputElement>('[data-i="seg"]')!;
+  // القيم الدقيقة: الزوايا الخاصة بمضاعفات π/12 (k من 0 إلى 24)
+  const EXS: Record<number, [string, string]> = {
+    0: ['1', '0'], 2: ['\\tfrac{\\sqrt3}{2}', '\\tfrac12'], 3: ['\\tfrac{\\sqrt2}{2}', '\\tfrac{\\sqrt2}{2}'], 4: ['\\tfrac12', '\\tfrac{\\sqrt3}{2}'], 6: ['0', '1'],
+  };
+  function exact(k: number): [string, string] | null {
+    const m = ((k % 24) + 24) % 24;
+    const q = Math.floor(m / 6), r = m % 6;
+    let ref = r, sx = 1, sy = 1;
+    if (q === 0) { ref = r; } else if (q === 1) { ref = 6 - r; sx = -1; } else if (q === 2) { ref = r; sx = -1; sy = -1; } else { ref = 6 - r; sy = -1; }
+    if (r === 0) { const c = [[1, 0], [0, 1], [-1, 0], [0, -1]][q]; return [String(c[0]), String(c[1])]; }
+    const e = EXS[ref];
+    if (!e) return null;
+    return [`${sx < 0 ? '-' : ''}${e[0]}`, `${sy < 0 ? '-' : ''}${e[1]}`];
+  }
+  function draw() {
+    const k = Number(inp.value);
+    const s = (k * Math.PI) / 12;
+    root.querySelector('[data-o="s"]')!.textContent = k === 0 ? '0' : piLabel(k, 12);
+    plot.fit(0.62);
+    const half = 1.45 / 0.62;
+    plot.view = { xmin: -half, xmax: half, ymin: -1.45, ymax: 1.45 };
+    plot.clear();
+    plot.grid(0.5, 2);
+    plot.param(Math.cos, Math.sin, 0, 2 * Math.PI, css('--muted'), 1.8);
+    plot.param((u) => 1.0 * Math.cos(u), (u) => Math.sin(u), 0, s, css('--ink'), 4);
+    const c = Math.cos(s), n = Math.sin(s);
+    plot.seg(0, 0, c, n, css('--muted'), 1.5);
+    if (segBox.checked) {
+      plot.seg(c, 0, c, n, css('--plot-hot'), 4);
+      plot.seg(0, 0, c, 0, css('--plot-alt'), 4);
+      if (Math.abs(c) > 0.05) {
+        const t = n / c;
+        if (Math.abs(t) < 1.4) {
+          plot.seg(1, -1.45, 1, 1.45, css('--line'), 1.2);
+          plot.seg(1, 0, 1, t, css('--plot-curve'), 4);
+          plot.seg(0, 0, 1, t, css('--plot-curve'), 1.2, [4, 3]);
+        }
+      }
+    }
+    plot.dot(c, n, css('--plot-hot'), 7);
+    plot.dot(1, 0, css('--ink'), 4);
+    const ex = exact(k);
+    const tanT = Math.abs(c) < 1e-9 ? 'غير معرّف' : tex(`$${fmt(n / c, 4)}$`);
+    out.innerHTML =
+      `<p>نبدأ من ${tex('$(1, 0)$')} ونسير على الدائرة قوسًا طوله ${tex(`$s$`)}. النقطة التي نصل إليها هي ${tex('$(\\cos s, \\sin s)$')}.</p>` +
+      `<p>${ex ? tex(`$\\left(\\cos s, \\sin s\\right) = \\left(${ex[0]}, ${ex[1]}\\right)$`) : tex(`$\\left(\\cos s, \\sin s\\right) \\approx (${fmt(c, 4)}, ${fmt(n, 4)})$`)}، و ${tex('$\\tan s =$')} ${tanT}.</p>` +
+      `<p>لأن نصف القطر 1، فطول القوس يساوي الزاوية بالراديان: ${tex(`$s = \\theta$`)}. والقطعة الحمراء طولها ${tex('$|\\sin s|$')}، والزرقاء ${tex('$|\\cos s|$')}، والخضراء على المماس ${tex('$x = 1$')} طولها ${tex('$|\\tan s|$')}.</p>`;
+  }
+  inp.addEventListener('input', draw);
+  segBox.addEventListener('change', draw);
+  onRedraw(canvas, draw);
+</script>

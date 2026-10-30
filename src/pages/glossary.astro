@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { lessonSlug } from '../data/curriculum';
+import { bidi } from '../lib/bidi';
 const base = import.meta.env.BASE_URL;
 const lessons = (await getCollection('lessons')).sort((a, b) => a.data.section.localeCompare(b.data.section, 'en', { numeric: true }));
 const terms = lessons.flatMap((l) => l.data.terms.map((t) => ({ ...t, section: l.data.section })));
@@ -24,7 +25,7 @@ const sorted = [...terms].sort((a, b) => a.ar.localeCompare(b.ar, 'ar'));
             <span class="en" lang="en" dir="ltr">{t.en}</span>
           </dt>
           <dd>
-            {t.def}
+            <Fragment set:html={bidi(t.def)} />
             <a href={`${base}lessons/${lessonSlug(t.section)}/`}>{t.section}</a>
           </dd>
         </div>

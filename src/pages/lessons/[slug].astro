@@ -1,4 +1,5 @@
 ---
+import { bidi } from '../../lib/bidi';
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { findSection, readySections, lessonSlug } from '../../data/curriculum';
@@ -57,7 +58,7 @@ const prereqs = entry.data.prerequisites.map((id) => ({ id, s: findSection(id) }
         <div>
           <h1>{section.ar}</h1>
           <p class="en-title en" lang="en" dir="ltr">{section.en}</p>
-          <p class="summary">{entry.data.summary}</p>
+          <p class="summary" set:html={bidi(entry.data.summary)} />
           <p class="meta">
             <span>وقت القراءة تقريبًا {entry.data.minutes} دقيقة</span>
             {prereqs.length > 0 && (
@@ -91,7 +92,7 @@ const prereqs = entry.data.prerequisites.map((id) => ({ id, s: findSection(id) }
             {entry.data.terms.map((t) => (
               <div>
                 <dt>{t.ar} <span class="en" lang="en" dir="ltr">{t.en}</span></dt>
-                <dd>{t.def}</dd>
+                <dd set:html={bidi(t.def)} />
               </div>
             ))}
           </dl>

@@ -131,6 +131,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 2.5rem 0; }
 }
 .katex-display > .katex { font-size: 1.15em; }
 .ltr { direction: ltr; unicode-bidi: isolate; }
+.ltr.nw { white-space: nowrap; }
 
 .skip-link {
   position: absolute;

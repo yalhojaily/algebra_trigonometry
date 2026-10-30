@@ -1,4 +1,5 @@
 ---
+import { bidi } from '../../lib/bidi';
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { chapters, lessonSlug } from '../../data/curriculum';
@@ -43,7 +44,7 @@ const info = (id: string) => lessons.find((l) => l.data.section === id)?.data;
               {live ? <a class="title" href={`${base}lessons/${lessonSlug(sec.id)}/`}>{sec.ar}</a> : <span class="title">{sec.ar}</span>}
             </h2>
             <p class="en" lang="en" dir="ltr">{sec.en}</p>
-            {live && <p class="summary">{d.summary}</p>}
+            {live && <p class="summary" set:html={bidi(d.summary)} />}
             {sec.topics.length > 0 && (
               <ul class="topics" aria-label="الموضوعات">
                 {sec.topics.map((t) => (

@@ -2,14 +2,18 @@
 // سؤال فهم سريع داخل الدرس
 import { tex } from '../lib/tex';
 interface Props { q: string; options: string[]; answer: number; explain: string }
-const { q, options, answer, explain } = Astro.props;
+const { options, answer } = Astro.props;
+// نصوص الخصائص في MDX حرفية (لا تُعالج فيها \\)، فنطوي الشرطتين المزدوجتين إلى واحدة
+const unescape = (s: string) => s.replace(/\\\\/g, '\\');
+const bold = (h: string) => h.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+const q = unescape(Astro.props.q), explain = unescape(Astro.props.explain);
 ---
 <div class="check" data-answer={answer}>
-  <p class="cq"><span class="tag">تحقق من فهمك</span> <span set:html={tex(q)} /></p>
+  <p class="cq"><span class="tag">تحقق من فهمك</span> <span set:html={bold(tex(q))} /></p>
   <div class="opts">
-    {options.map((o, k) => <button type="button" class="opt" data-k={k} set:html={tex(o)} />)}
+    {options.map((o, k) => <button type="button" class="opt" data-k={k} set:html={bold(tex(o))} />)}
   </div>
-  <p class="why" hidden set:html={tex(explain)} />
+  <p class="why" hidden set:html={bold(tex(explain))} />
 </div>
 <script>
   document.querySelectorAll<HTMLElement>('.check').forEach((box) => {

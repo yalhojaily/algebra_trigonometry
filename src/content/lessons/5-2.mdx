@@ -1,7 +1,7 @@
 ---
 section: "5.2"
 summary: "الدوال المثلثية الست لأي زاوية من نقطة على ضلعها النهائي، وقيمها عند الزوايا الربعية، ومتطابقات المقلوب والقسمة وفيثاغورس، وإشارات الدوال في الأرباع الأربعة ومدى قيمها."
-minutes: 40
+minutes: 55
 prerequisites: ["5.1", "2.1"]
 terms:
   - { ar: "الجيب", en: "Sine", def: "sin θ = y/r." }
@@ -19,6 +19,7 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import TrigPoint from '../../components/widgets/TrigPoint.astro';
 
@@ -36,15 +37,23 @@ $$\csc\theta = \frac{r}{y}\ (y \ne 0) \qquad \sec\theta = \frac{r}{x}\ (x \ne 0)
 الأسماء: <Term ar="الجيب" en="sine" />، <Term ar="جيب التمام" en="cosine" />، <Term ar="الظل" en="tangent" />، <Term ar="قاطع التمام" en="cosecant" />، <Term ar="القاطع" en="secant" />، <Term ar="ظل التمام" en="cotangent" />.
 </Box>
 
+<Deep title="لماذا لا يهم أي نقطة نختار؟">
+خذ نقطة $(x, y)$ على الضلع النهائي، ثم نقطة أبعد على الشعاع نفسه، فهي $(kx, ky)$ لعدد موجب $k$ (الشعاع يمر بالأصل، فكل نقاطه مضاعفات لنقطة واحدة). بعدها عن الأصل:
+
+$$\sqrt{(kx)^2 + (ky)^2} = k\sqrt{x^2 + y^2} = kr$$
+
+فالجيب من النقطة الجديدة $\dfrac{ky}{kr} = \dfrac{y}{r}$: العامل $k$ يختصر. وكذلك كل النسب الأخرى. هذا هو المعنى الدقيق لعبارة «المثلثات متشابهة»، وهو سبب أن الدالة المثلثية **دالة في الزاوية** لا في النقطة.
+</Deep>
+
 <Example n="1" title="من نقطة إلى الدوال الست">
 الضلع النهائي للزاوية $\theta$ يمر بـ $(-8, 15)$. أوجد قيم الدوال الست.
 
 <Solution>
-$r = \sqrt{(-8)^2 + 15^2} = \sqrt{289} = 17$
+$r = \sqrt{(-8)^2 + 15^2} = \sqrt{289} = 17$ <span class="reason">نحتاج $r$ أولًا؛ و $(-8)^2$ موجب، فـ $r$ موجب دائمًا</span>
 
-$\sin\theta = \tfrac{15}{17}$، $\cos\theta = -\tfrac{8}{17}$، $\tan\theta = -\tfrac{15}{8}$
+$\sin\theta = \tfrac{y}{r} = \tfrac{15}{17}$، $\cos\theta = \tfrac{x}{r} = -\tfrac{8}{17}$، $\tan\theta = \tfrac{y}{x} = -\tfrac{15}{8}$ <span class="reason">نعوّض في التعريفات؛ والإشارة السالبة تأتي من $x$</span>
 
-$\csc\theta = \tfrac{17}{15}$، $\sec\theta = -\tfrac{17}{8}$، $\cot\theta = -\tfrac{8}{15}$
+$\csc\theta = \tfrac{17}{15}$، $\sec\theta = -\tfrac{17}{8}$، $\cot\theta = -\tfrac{8}{15}$ <span class="reason">مقلوبات الثلاث الأولى، فلا داعي لحساب جديد</span>
 </Solution>
 </Example>
 
@@ -52,13 +61,19 @@ $\csc\theta = \tfrac{17}{15}$، $\sec\theta = -\tfrac{17}{8}$، $\cot\theta = -\
 الضلع النهائي لـ $\theta$ هو الشعاع $x + 2y = 0$ مع $x \ge 0$. أوجد $\sin\theta$ و $\cos\theta$.
 
 <Solution>
-اختر أي نقطة على الشعاع بـ $x \ge 0$، مثل $x = 2$: $2 + 2y = 0$ ← $y = -1$. النقطة $(2, -1)$ في الربع الرابع.
+نختار $x = 2$: $2 + 2y = 0$ ← $y = -1$، والنقطة $(2, -1)$ في الربع الرابع <span class="reason">أي نقطة على الشعاع تصلح (انظر «تعمّق» أعلاه)، فنختار $x$ يجعل الحساب سهلًا</span>
 
 $r = \sqrt{4 + 1} = \sqrt{5}$
 
-$\sin\theta = \dfrac{-1}{\sqrt5} = -\dfrac{\sqrt5}{5}$، $\cos\theta = \dfrac{2}{\sqrt5} = \dfrac{2\sqrt5}{5}$ (بعد إنطاق المقام).
+$\sin\theta = \dfrac{-1}{\sqrt5} = -\dfrac{\sqrt5}{5}$، $\cos\theta = \dfrac{2}{\sqrt5} = \dfrac{2\sqrt5}{5}$ <span class="reason">التعريف، ثم إنطاق المقام بالضرب في $\tfrac{\sqrt5}{\sqrt5}$</span>
 </Solution>
 </Example>
+
+<Box kind="mistake" title="r موجب دائمًا">
+حتى لو كانت $x$ و $y$ سالبتين، فـ $r = \sqrt{x^2 + y^2}$ موجب، لأنه مسافة. إذا وجدت $r$ سالبًا فهناك خطأ في الحساب. الإشارات كلها تأتي من $x$ و $y$ فقط.
+</Box>
+
+جرّب في الأداة: حرّك النقطة على الشعاع نفسه لترى أن النسب لا تتغير، ثم انقلها بين الأرباع لترى كيف تتغير الإشارات.
 
 <TrigPoint />
 
@@ -73,9 +88,23 @@ $\sin\theta = \dfrac{-1}{\sqrt5} = -\dfrac{\sqrt5}{5}$، $\cos\theta = \dfrac{2}
 | $180^\circ$ | $0$ | $-1$ | $0$ | undefined | $-1$ | undefined |
 | $270^\circ$ | $-1$ | $0$ | undefined | $-1$ | undefined | $0$ |
 
-<Box kind="tip" title="متى تكون الدالة غير معرّفة؟">
-الظل والقاطع مقامهما $x$، فهما غير معرّفين حين يكون الضلع النهائي على **محور $y$** ($90^\circ, 270^\circ, \dots$). وظل التمام وقاطع التمام مقامهما $y$، فهما غير معرّفين حين يكون الضلع على **محور $x$** ($0^\circ, 180^\circ, \dots$).
+<Box kind="tip" title="لا تحفظ الجدول: استخرجه">
+لا حاجة لحفظ هذا الجدول: ارسم النقطة على المحور ($r = 1$)، فيصير $\sin\theta = y$ و $\cos\theta = x$ مباشرة، والباقي قسمة. والظل والقاطع مقامهما $x$، فهما غير معرّفين حين يكون الضلع النهائي على **محور $y$** ($90^\circ, 270^\circ, \dots$). وظل التمام وقاطع التمام مقامهما $y$، فهما غير معرّفين حين يكون الضلع على **محور $x$** ($0^\circ, 180^\circ, \dots$).
 </Box>
+
+<Example n="3" title="عبارة بزوايا ربعية">
+احسب $\cos 90^\circ + 3\sin 270^\circ - \tan 180^\circ$.
+
+<Solution>
+$\cos 90^\circ = 0$ <span class="reason">النقطة $(0, 1)$: $x = 0$</span>
+
+$\sin 270^\circ = -1$ <span class="reason">النقطة $(0, -1)$: $y = -1$</span>
+
+$\tan 180^\circ = \tfrac{0}{-1} = 0$ <span class="reason">النقطة $(-1, 0)$: البسط صفر والمقام ليس صفرًا، فالقيمة معرّفة وتساوي 0</span>
+
+$0 + 3(-1) - 0 = -3$
+</Solution>
+</Example>
 
 ## متطابقات المقلوب <span class="en" lang="en">Reciprocal Identities</span>
 
@@ -106,6 +135,10 @@ $r$ موجب دائمًا، فالإشارة تأتي من $x$ و $y$:
 للحفظ: «**ك**ل **ج**يب **ظ**ل **ت**مام» بالترتيب من الربع الأول إلى الرابع.
 </Box>
 
+<Deep title="لماذا يكون الظل موجبًا في الربع الثالث؟">
+في الربع الثالث $x < 0$ و $y < 0$. الجيب $\tfrac{y}{r}$: سالب على موجب = سالب. جيب التمام $\tfrac{x}{r}$: سالب. أما الظل $\tfrac{y}{x}$ فسالب على سالب = **موجب**. لا حاجة لحفظ الجدول إذا تذكرت إشارتي $x$ و $y$ في كل ربع؛ الجدول مجرد نتيجة لقسمة الإشارات.
+</Deep>
+
 <Box kind="rule" title="مدى القيم" en="Ranges">
 بما أن $|x| \le r$ و $|y| \le r$:
 
@@ -114,15 +147,15 @@ $r$ موجب دائمًا، فالإشارة تأتي من $x$ و $y$:
 - $\tan\theta$ و $\cot\theta$ قد يساويان أي عدد حقيقي.
 </Box>
 
-<Example n="3" title="ممكن أم مستحيل؟">
+<Example n="4" title="ممكن أم مستحيل؟">
 هل يمكن أن يكون: (أ) $\sin\theta = 2.5$؟ (ب) $\tan\theta = 110.47$؟ (ج) $\sec\theta = 0.6$؟
 
 <Solution>
-(أ) مستحيل: الجيب لا يتجاوز 1.
+(أ) مستحيل <span class="reason">$\sin\theta = \tfrac{y}{r}$ و $|y| \le r$، فالجيب بين $-1$ و $1$</span>
 
-(ب) ممكن: الظل يأخذ أي قيمة.
+(ب) ممكن <span class="reason">$\tan\theta = \tfrac{y}{x}$ ولا قيد على النسبة بين $y$ و $x$؛ القيمة الكبيرة تعني زاوية قريبة من $90^\circ$</span>
 
-(ج) مستحيل: $|\sec\theta| \ge 1$ دائمًا.
+(ج) مستحيل <span class="reason">$\sec\theta = \tfrac{1}{\cos\theta}$ ومقلوب عدد بين $-1$ و $1$ يكون خارج الفترة $(-1, 1)$</span>
 </Solution>
 </Example>
 
@@ -140,17 +173,35 @@ $$\sin^2\theta + \cos^2\theta = 1 \qquad \tan^2\theta + 1 = \sec^2\theta \qquad 
 $$\tan\theta = \frac{\sin\theta}{\cos\theta} \qquad \cot\theta = \frac{\cos\theta}{\sin\theta}$$
 </Box>
 
-<Example n="4" title="إيجاد بقية الدوال من دالة وربع">
+<Example n="5" title="إيجاد بقية الدوال من دالة وربع">
 إذا كان $\sin\theta = -\tfrac{2}{3}$ و $\theta$ في الربع الثالث، فأوجد $\cos\theta$ و $\tan\theta$.
 
 <Solution>
-$\cos^2\theta = 1 - \sin^2\theta = 1 - \tfrac{4}{9} = \tfrac{5}{9}$ ← $\cos\theta = \pm\tfrac{\sqrt5}{3}$
+$\cos^2\theta = 1 - \sin^2\theta = 1 - \tfrac{4}{9} = \tfrac{5}{9}$ <span class="reason">فيثاغورس بصورة $\cos^2 = 1 - \sin^2$</span>
 
-في الربع الثالث جيب التمام سالب: $\cos\theta = -\tfrac{\sqrt5}{3}$
+$\cos\theta = \pm\tfrac{\sqrt5}{3}$، ونختار $-\tfrac{\sqrt5}{3}$ <span class="reason">الجذر يعطي قيمتين، وفي الربع الثالث جيب التمام سالب</span>
 
-$\tan\theta = \dfrac{\sin\theta}{\cos\theta} = \dfrac{-2/3}{-\sqrt5/3} = \dfrac{2}{\sqrt5} = \dfrac{2\sqrt5}{5}$ (موجب كما يجب في الربع الثالث).
+$\tan\theta = \dfrac{\sin\theta}{\cos\theta} = \dfrac{-2/3}{-\sqrt5/3} = \dfrac{2}{\sqrt5} = \dfrac{2\sqrt5}{5}$ <span class="reason">القسمة؛ والناتج موجب كما يجب في الربع الثالث، وهذا تحقق مجاني</span>
 </Solution>
 </Example>
+
+<Example n="6" title="طريقة النقطة (مستوى الاختبار)">
+إذا كان $\tan\theta = -\tfrac43$ و $\sin\theta > 0$، فأوجد قيم الدوال الست.
+
+<Solution>
+$\tan\theta < 0$ و $\sin\theta > 0$ ← الربع الثاني <span class="reason">الظل سالب في II و IV، والجيب موجب في I و II؛ المشترك II</span>
+
+في الربع الثاني $x < 0$ و $y > 0$، و $\tfrac{y}{x} = -\tfrac43$، فنختار $x = -3$ و $y = 4$ <span class="reason">بدل المتطابقات نبني نقطة على الضلع النهائي مباشرة؛ نضع الإشارة السالبة على $x$ لأننا في الربع الثاني</span>
+
+$r = \sqrt{9 + 16} = 5$ <span class="reason">المثلث 3-4-5 المشهور</span>
+
+$\sin\theta = \tfrac45$، $\cos\theta = -\tfrac35$، $\csc\theta = \tfrac54$، $\sec\theta = -\tfrac53$، $\cot\theta = -\tfrac34$ <span class="reason">نعوّض في التعريفات؛ والإشارات توافق الربع الثاني (الجيب وقاطع التمام فقط موجبان)</span>
+</Solution>
+</Example>
+
+<Box kind="tip" title="أي الطريقتين أسرع؟">
+طريقة المتطابقات (المثال 5) وطريقة النقطة (المثال 6) توصلان إلى النتيجة نفسها. طريقة النقطة أسرع غالبًا حين تُعطى النسبة كسرًا، لأنك تقرأ $x$ و $y$ (أو $y$ و $r$) من الكسر مباشرة ثم تجد الثالث بفيثاغورس.
+</Box>
 
 <Check
   q="إذا كان $\\tan\\theta < 0$ و $\\cos\\theta > 0$، ففي أي ربع تقع $\\theta$؟"
@@ -159,11 +210,23 @@ $\tan\theta = \dfrac{\sin\theta}{\cos\theta} = \dfrac{-2/3}{-\sqrt5/3} = \dfrac{
   explain="جيب التمام موجب في الأول والرابع، والظل سالب في الثاني والرابع. المشترك: الرابع."
 />
 
+<Check
+  q="ما قيمة $\\csc 180^\\circ$؟"
+  options={["$0$", "$-1$", "$1$", "غير معرّفة"]}
+  answer={3}
+  explain="عند $180^\\circ$ النقطة $(-1, 0)$، و $\\csc\\theta = \\tfrac{r}{y} = \\tfrac{1}{0}$: قسمة على صفر، فهي غير معرّفة."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+هذا التعريف هو الذي يجعل الدوال المثلثية معرّفة لكل زاوية. في الدرس 5.3 ستحسب قيمها لأي زاوية من زاوية حادة واحدة، وفي الفصل 6 تصبح $r = 1$ دائمًا (دائرة الوحدة) فتصير $\cos\theta$ و $\sin\theta$ هما إحداثيا النقطة نفسها.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
 - من نقطة $(x, y)$ و $r = \sqrt{x^2 + y^2}$: $\sin = \tfrac{y}{r}$، $\cos = \tfrac{x}{r}$، $\tan = \tfrac{y}{x}$، والثلاث الأخرى مقلوباتها.
+- أي نقطة على الضلع النهائي تعطي النسب نفسها، و $r$ موجب دائمًا.
 - عند الزوايا الربعية بعض الدوال غير معرّف (المقام صفر).
-- الإشارات: كل، جيب، ظل، تمام.
-- $\sin^2\theta + \cos^2\theta = 1$ ومشتقاتها، و $\tan\theta = \tfrac{\sin\theta}{\cos\theta}$.
+- الإشارات: كل، جيب، ظل، تمام، وهي نتيجة لإشارتي $x$ و $y$.
+- من دالة وربع: إما فيثاغورس مع اختيار الإشارة، أو بناء نقطة على الضلع النهائي.
 
 <Practice set="5.2" count={6} />

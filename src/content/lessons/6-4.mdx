@@ -1,7 +1,7 @@
 ---
 section: "6.4"
 summary: "الصورة العامة y = c + a·sin(b(x − d)): الإزاحة الطورية d والإزاحة الرأسية c، وكيف نحوّل bx − k إلى b(x − d)، وخطوات رسم دورة كاملة بعد كل التحويلات، وبناء نموذج مثلثي من بيانات."
-minutes: 40
+minutes: 55
 prerequisites: ["6.3", "2.7"]
 terms:
   - { ar: "الإزاحة الطورية", en: "Phase Shift", def: "الإزاحة الأفقية d في y = a sin(b(x − d)): لليمين إذا d > 0 ولليسار إذا d < 0." }
@@ -14,6 +14,7 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import SinTransform from '../../components/widgets/SinTransform.astro';
 
@@ -25,19 +26,29 @@ import SinTransform from '../../components/widgets/SinTransform.astro';
 منحنى $y = \sin(x - d)$ هو منحنى $y = \sin x$ مزاحًا أفقيًا بمقدار $|d|$: **إلى اليمين** إذا $d > 0$، و**إلى اليسار** إذا $d < 0$. ويسمى $d$ <Term ar="الإزاحة الطورية" en="phase shift" />.
 </Box>
 
+<Deep title="لماذا الطرح يزيح إلى اليمين؟">
+يبدو غريبًا أن $x - \tfrac{\pi}{3}$ تنقل المنحنى إلى اليمين لا اليسار. فكّر فيما يحدث للنقطة المميزة: $\sin x$ يبدأ دورته حين $x = 0$. أما $\sin\left(x - \tfrac{\pi}{3}\right)$ فيبدأ دورته حين يصبح **ما بداخله** صفرًا، أي حين $x = \tfrac{\pi}{3}$. المدخل يحتاج أن يكون أكبر بـ $\tfrac{\pi}{3}$ ليصل إلى القيمة نفسها، فكل حدث على المنحنى «يتأخر» $\tfrac{\pi}{3}$، أي ينتقل يمينًا. وهي القاعدة نفسها في $y = (x - 3)^2$ الذي ينتقل رأسه إلى $x = 3$.
+</Deep>
+
 <Box kind="mistake" title="أخرج b أولًا">
 في $y = \sin(2x - \pi)$ الإزاحة **ليست** $\pi$. اكتبها $\sin\left(2\left(x - \tfrac{\pi}{2}\right)\right)$، فالإزاحة $\tfrac{\pi}{2}$. والطريقة الأسرع: الدورة تبدأ حين يساوي ما داخل الدالة صفرًا: $2x - \pi = 0$ ← $x = \tfrac{\pi}{2}$.
+</Box>
+
+<Box kind="mistake" title="الزائد يعني اليسار">
+$\sin\left(x + \tfrac{\pi}{4}\right) = \sin\left(x - \left(-\tfrac{\pi}{4}\right)\right)$، فالإزاحة $d = -\tfrac{\pi}{4}$: **إلى اليسار**. الإشارة داخل القوس عكس اتجاه الحركة.
 </Box>
 
 <Example n="1" title="إزاحة طورية">
 ارسم دورة من $y = \sin\left(x - \tfrac{\pi}{3}\right)$.
 
 <Solution>
-الإزاحة $\tfrac{\pi}{3}$ لليمين. تبدأ الدورة حين $x - \tfrac{\pi}{3} = 0$ وتنتهي حين $x - \tfrac{\pi}{3} = 2\pi$: من $\tfrac{\pi}{3}$ إلى $\tfrac{7\pi}{3}$.
+الإزاحة $\tfrac{\pi}{3}$ لليمين <span class="reason">الصورة $x - d$ مع $d = \tfrac{\pi}{3} > 0$</span>
 
-الأجزاء الأربعة طول كل منها $\tfrac{\pi}{2}$: $x = \tfrac{\pi}{3}, \tfrac{5\pi}{6}, \tfrac{4\pi}{3}, \tfrac{11\pi}{6}, \tfrac{7\pi}{3}$.
+تبدأ الدورة حين $x - \tfrac{\pi}{3} = 0$ وتنتهي حين $x - \tfrac{\pi}{3} = 2\pi$: من $\tfrac{\pi}{3}$ إلى $\tfrac{7\pi}{3}$ <span class="reason">ما بالداخل يمر من $0$ إلى $2\pi$ في دورة كاملة</span>
 
-القيم: $0, 1, 0, -1, 0$.
+طول الجزء $\tfrac{2\pi}{4} = \tfrac{\pi}{2}$: $x = \tfrac{\pi}{3}, \tfrac{5\pi}{6}, \tfrac{4\pi}{3}, \tfrac{11\pi}{6}, \tfrac{7\pi}{3}$ <span class="reason">نضيف $\tfrac{\pi}{2}$ في كل مرة بدءًا من بداية الدورة</span>
+
+القيم: $0, 1, 0, -1, 0$ <span class="reason">نمط الجيب العادي، فالسعة 1 ولا انقلاب</span>
 </Solution>
 </Example>
 
@@ -62,27 +73,45 @@ import SinTransform from '../../components/widgets/SinTransform.astro';
 4. ارسم المنحنى وكرّره.
 </Box>
 
+جرّب في الأداة تغيير كل معامل وحده، ولاحظ أي خاصية يغيّرها: الارتفاع، أم العرض، أم الموضع.
+
 <SinTransform />
 
-<Example n="2" title="كل التحويلات معًا">
-ارسم دورة من $y = -1 + 2\sin(4x + \pi)$.
+<Example n="2" title="قراءة المعاملات الأربعة">
+أوجد السعة والدورة والإزاحة الطورية وخط المنتصف والمدى لـ $y = 3 - 2\cos(\pi x - \tfrac{\pi}{2})$.
 
 <Solution>
-أخرج 4: $4x + \pi = 4\left(x + \tfrac{\pi}{4}\right)$. السعة 2، والدورة $\tfrac{2\pi}{4} = \tfrac{\pi}{2}$، والإزاحة $\tfrac{\pi}{4}$ لليسار، وخط المنتصف $y = -1$.
+$\pi x - \tfrac{\pi}{2} = \pi\left(x - \tfrac12\right)$ <span class="reason">نخرج $b = \pi$ عاملًا مشتركًا لنقرأ الإزاحة</span>
 
-فترة الدورة من $-\tfrac{\pi}{4}$ إلى $-\tfrac{\pi}{4} + \tfrac{\pi}{2} = \tfrac{\pi}{4}$، والأجزاء طولها $\tfrac{\pi}{8}$: $x = -\tfrac{\pi}{4}, -\tfrac{\pi}{8}, 0, \tfrac{\pi}{8}, \tfrac{\pi}{4}$.
+السعة $|-2| = 2$، والدورة $\tfrac{2\pi}{\pi} = 2$، والإزاحة $\tfrac12$ لليمين <span class="reason">الإشارة السالبة على 2 تعني انقلابًا لا سعة سالبة</span>
 
-القيم: $-1, 1, -1, -3, -1$ (خط المنتصف، قمة، منتصف، قاع، منتصف). والمدى $[-3, 1]$.
+خط المنتصف $y = 3$، والمدى $[3 - 2, 3 + 2] = [1, 5]$ <span class="reason">العدد المضاف خارج الدالة يرفع خط المنتصف، والسعة تحدد البعد عنه</span>
 </Solution>
 </Example>
 
-<Example n="3" title="المعادلة من الرسم">
+<Example n="3" title="كل التحويلات معًا">
+ارسم دورة من $y = -1 + 2\sin(4x + \pi)$.
+
+<Solution>
+$4x + \pi = 4\left(x + \tfrac{\pi}{4}\right)$ <span class="reason">نخرج 4 لنقرأ الإزاحة الصحيحة</span>
+
+السعة 2، والدورة $\tfrac{2\pi}{4} = \tfrac{\pi}{2}$، والإزاحة $\tfrac{\pi}{4}$ لليسار، وخط المنتصف $y = -1$ <span class="reason">نستخرج المعاملات الأربعة قبل الرسم</span>
+
+فترة الدورة من $-\tfrac{\pi}{4}$ إلى $-\tfrac{\pi}{4} + \tfrac{\pi}{2} = \tfrac{\pi}{4}$، والأجزاء طولها $\tfrac{\pi}{8}$: $x = -\tfrac{\pi}{4}, -\tfrac{\pi}{8}, 0, \tfrac{\pi}{8}, \tfrac{\pi}{4}$ <span class="reason">البداية عند الإزاحة، والنهاية بعد دورة كاملة</span>
+
+القيم: $-1, 1, -1, -3, -1$ <span class="reason">نمط الجيب حول خط المنتصف: منتصف، منتصف + 2، منتصف، منتصف − 2، منتصف. والمدى $[-3, 1]$</span>
+</Solution>
+</Example>
+
+<Example n="4" title="المعادلة من الرسم">
 منحنى جيب تمام قمته 7 وقاعه $-1$، وأول قمة له بعد الصفر عند $x = \tfrac{\pi}{6}$، ودورته $\pi$. اكتب معادلته على صورة $y = c + a\cos[b(x - d)]$.
 
 <Solution>
-خط المنتصف $c = \tfrac{7 + (-1)}{2} = 3$، والسعة $a = \tfrac{7 - (-1)}{2} = 4$.
+$c = \tfrac{7 + (-1)}{2} = 3$ <span class="reason">خط المنتصف في منتصف المسافة بين القمة والقاع: متوسطهما</span>
 
-الدورة $\pi$ ← $b = 2$. وجيب التمام يبدأ دورته من القمة، فالإزاحة $d = \tfrac{\pi}{6}$.
+$a = \tfrac{7 - (-1)}{2} = 4$ <span class="reason">السعة نصف المسافة الرأسية بين القمة والقاع</span>
+
+الدورة $\pi$ ← $b = 2$، و $d = \tfrac{\pi}{6}$ <span class="reason">جيب التمام يبدأ دورته من القمة، فالإزاحة هي موضع القمة</span>
 
 $y = 3 + 4\cos\left[2\left(x - \tfrac{\pi}{6}\right)\right]$
 </Solution>
@@ -90,15 +119,38 @@ $y = 3 + 4\cos\left[2\left(x - \tfrac{\pi}{6}\right)\right]$
 
 ## نموذج مثلثي <span class="en" lang="en">A Trigonometric Model</span>
 
-<Example n="4" title="بناء نموذج من بيانات">
+<Box kind="rule" title="بناء نموذج من بيانات" en="Modeling steps">
+1. $c = \dfrac{\max + \min}{2}$ و $a = \dfrac{\max - \min}{2}$.
+2. الدورة من طبيعة الظاهرة (سنة، يوم، دورة كاملة)، ثم $b = \dfrac{2\pi}{\text{period}}$.
+3. اختر الدالة الأنسب لنقطة البداية: جيب تمام إذا عرفت موضع قمة، وجيب إذا عرفت متى يعبر خط المنتصف صاعدًا.
+4. تحقق بالتعويض بنقطة معلومة.
+</Box>
+
+<Example n="5" title="بناء نموذج من بيانات">
 أعلى متوسط حرارة في مدينة $42^\circ$ في يوليو ($x = 7$)، وأدناه $14^\circ$ في يناير ($x = 1$). ابنِ نموذجًا $f(x) = c + a\sin[b(x - d)]$.
 
 <Solution>
-$c = \tfrac{42 + 14}{2} = 28$، و $a = \tfrac{42 - 14}{2} = 14$. والظاهرة سنوية، فالدورة 12: $b = \tfrac{2\pi}{12} = \tfrac{\pi}{6}$.
+$c = \tfrac{42 + 14}{2} = 28$، و $a = \tfrac{42 - 14}{2} = 14$ <span class="reason">الخطوة 1 من القاعدة</span>
 
-الجيب يصل خط المنتصف صاعدًا عند بداية الدورة، أي في منتصف الطريق بين القاع ($x = 1$) والقمة ($x = 7$): $d = 4$.
+$b = \tfrac{2\pi}{12} = \tfrac{\pi}{6}$ <span class="reason">الظاهرة سنوية: الدورة 12 شهرًا</span>
 
-$f(x) = 28 + 14\sin\left[\tfrac{\pi}{6}(x - 4)\right]$. تحقق: $f(7) = 28 + 14\sin\tfrac{\pi}{2} = 42$ ✓
+$d = 4$ <span class="reason">الجيب يبدأ دورته عند خط المنتصف صاعدًا، وهذا يحدث في منتصف الطريق بين القاع ($x = 1$) والقمة ($x = 7$)</span>
+
+$f(x) = 28 + 14\sin\left[\tfrac{\pi}{6}(x - 4)\right]$، و $f(7) = 28 + 14\sin\tfrac{\pi}{2} = 42$ ✓ <span class="reason">نتحقق بالقمة المعطاة</span>
+</Solution>
+</Example>
+
+<Example n="6" title="عجلة دوّارة (مستوى الاختبار)">
+عجلة ملاهٍ قطرها 40 م ومركزها على ارتفاع 25 م عن الأرض، وتكمل دورة كل 8 دقائق. يركب شخص من أسفل نقطة عند $t = 0$. اكتب ارتفاعه $h(t)$ بعد $t$ دقيقة.
+
+<Solution>
+خط المنتصف $c = 25$ (المركز)، والسعة $a = 20$ (نصف القطر) <span class="reason">الارتفاع يتذبذب حول المركز بمقدار نصف القطر: بين 5 و 45 م</span>
+
+$b = \tfrac{2\pi}{8} = \tfrac{\pi}{4}$ <span class="reason">الدورة 8 دقائق</span>
+
+يبدأ من القاع: نستخدم جيب تمام بمعامل سالب <span class="reason">جيب التمام يبدأ من قمة، والإشارة السالبة تجعله يبدأ من القاع، فلا نحتاج إزاحة طورية</span>
+
+$h(t) = 25 - 20\cos\tfrac{\pi}{4}t$. تحقق: $h(0) = 5$ و $h(4) = 25 - 20\cos\pi = 45$ ✓ <span class="reason">في البداية أسفل العجلة، وبعد نصف دورة في أعلاها</span>
 </Solution>
 </Example>
 
@@ -109,11 +161,22 @@ $f(x) = 28 + 14\sin\left[\tfrac{\pi}{6}(x - 4)\right]$. تحقق: $f(7) = 28 + 1
   explain="$3x + \\pi = 3\\left(x + \\tfrac{\\pi}{3}\\right)$، فالإزاحة $\\tfrac{\\pi}{3}$ إلى اليسار."
 />
 
+<Check
+  q="ما مدى $y = 5 + 3\\sin(2x - 1)$؟"
+  options={["$[2, 8]$", "$[-3, 3]$", "$[5, 8]$", "$[-2, 8]$"]}
+  answer={0}
+  explain="خط المنتصف 5 والسعة 3، فالمدى $[5 - 3, 5 + 3] = [2, 8]$. الإزاحة الطورية والدورة لا تؤثران في المدى."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+الصورة العامة نفسها تُستخدم مع بقية الدوال المثلثية في الدرسين التاليين، وفي 6.7 تصف الحركة التوافقية: النابض والبندول والتيار المتردد.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
 - $y = c + a\sin[b(x - d)]$: السعة $|a|$، والدورة $\tfrac{2\pi}{b}$، والإزاحة الطورية $d$، وخط المنتصف $y = c$.
-- أخرج $b$ عاملًا مشتركًا قبل قراءة الإزاحة، أو حل «ما بالداخل = 0».
+- أخرج $b$ عاملًا مشتركًا قبل قراءة الإزاحة، أو حل «ما بالداخل = 0»؛ والإشارة داخل القوس عكس الاتجاه.
 - فترة الدورة $\left[d, d + \tfrac{2\pi}{b}\right]$ تُقسم أربعة أجزاء.
-- من البيانات: $c$ متوسط العظمى والصغرى، و $a$ نصف الفرق بينهما.
+- من البيانات: $c$ متوسط العظمى والصغرى، و $a$ نصف الفرق، و $b$ من الدورة، والدالة حسب نقطة البداية.
 
 <Practice set="6.4" count={5} />

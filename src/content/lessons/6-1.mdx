@@ -1,7 +1,7 @@
 ---
 section: "6.1"
 summary: "الراديان: وحدة قياس الزوايا الطبيعية في الرياضيات، والتحويل بين الدرجات والراديان، وطول القوس s = rθ، ومساحة القطاع الدائري A = ½r²θ، مع تطبيقات على البكرات والتروس والمساحات."
-minutes: 35
+minutes: 50
 prerequisites: ["5.1"]
 terms:
   - { ar: "راديان", en: "Radian", def: "قياس الزاوية المركزية التي يقابلها قوس طوله يساوي نصف قطر الدائرة." }
@@ -15,6 +15,7 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import RadianArc from '../../components/widgets/RadianArc.astro';
 
@@ -32,7 +33,17 @@ $$360^\circ = 2\pi \text{ radians} \qquad\Longleftrightarrow\qquad 180^\circ = \
 
 ومنه الراديان الواحد $= \tfrac{180^\circ}{\pi} \approx 57.3^\circ$.
 
+جرّب في الأداة: لُفّ نصف القطر على محيط الدائرة، ولاحظ أن ستة أنصاف أقطار وشيئًا قليلًا ($2\pi \approx 6.28$) تكمل الدورة.
+
 <RadianArc />
+
+<Deep title="لماذا يفضّل الرياضيون الراديان؟">
+لأن الراديان لا يحتاج «ثابت تحويل». قارن قانون طول القوس بالوحدتين:
+
+$$s = r\theta \ \ (\text{radians}) \qquad\text{vs}\qquad s = \frac{\pi r\theta}{180} \ \ (\text{degrees})$$
+
+العامل $\tfrac{\pi}{180}$ يظهر في كل قانون إذا استخدمنا الدرجات، ويختفي مع الراديان. والأهم يظهر في التفاضل لاحقًا: للزوايا الصغيرة بالراديان $\sin x \approx x$ (جرّب $\sin 0.01 \approx 0.0099998$)، أما بالدرجات فـ $\sin x^\circ \approx 0.01745x$. هذه البساطة سبب أن الآلات الحاسبة والبرمجيات وكتب الفيزياء تعتبر الزاوية بالراديان ما لم يُكتب رمز الدرجة.
+</Deep>
 
 ## التحويل بين الدرجات والراديان <span class="en" lang="en">Converting between Degrees and Radians</span>
 
@@ -43,15 +54,21 @@ $$360^\circ = 2\pi \text{ radians} \qquad\Longleftrightarrow\qquad 180^\circ = \
 وإذا كُتبت الزاوية **بلا وحدة** فهي بالراديان: $\theta = 2$ تعني راديانين.
 </Box>
 
+<Box kind="tip" title="كيف تتذكر أي كسر تضرب فيه؟">
+اكتب الكسر بحيث **تختفي الوحدة القديمة**: لتتخلص من الدرجات ضع $180^\circ$ في المقام ($\tfrac{\pi}{180^\circ}$)، ولتتخلص من $\pi$ ضعها في المقام ($\tfrac{180^\circ}{\pi}$). هي الفكرة نفسها في تحويل الوحدات: الضرب في كسر يساوي 1.
+</Box>
+
 <Example n="1" title="من الدرجات إلى الراديان">
 حوّل إلى الراديان: $45^\circ$، $240^\circ$، $-150^\circ$، $249.8^\circ$.
 
 <Solution>
-$45^\circ \cdot \dfrac{\pi}{180^\circ} = \dfrac{\pi}{4}$، و $240^\circ \cdot \dfrac{\pi}{180^\circ} = \dfrac{4\pi}{3}$
+$45^\circ \cdot \dfrac{\pi}{180^\circ} = \dfrac{45\pi}{180} = \dfrac{\pi}{4}$ <span class="reason">نضرب في $\tfrac{\pi}{180^\circ}$ لتختفي الدرجات، ثم نختصر $\tfrac{45}{180} = \tfrac14$</span>
 
-$-150^\circ \cdot \dfrac{\pi}{180^\circ} = -\dfrac{5\pi}{6}$
+$240^\circ \cdot \dfrac{\pi}{180^\circ} = \dfrac{4\pi}{3}$ <span class="reason">$\tfrac{240}{180} = \tfrac43$ بالقسمة على 60</span>
 
-$249.8^\circ \cdot \dfrac{\pi}{180^\circ} \approx 4.360$ راديان (قيمة تقريبية لأن الزاوية ليست مضاعفًا بسيطًا).
+$-150^\circ \cdot \dfrac{\pi}{180^\circ} = -\dfrac{5\pi}{6}$ <span class="reason">الإشارة تبقى كما هي؛ و $\tfrac{150}{180} = \tfrac56$</span>
+
+$249.8^\circ \cdot \dfrac{\pi}{180^\circ} \approx 4.360$ راديان <span class="reason">$\tfrac{249.8}{180}$ لا يختصر إلى كسر بسيط، فنعطي قيمة عشرية</span>
 </Solution>
 </Example>
 
@@ -59,11 +76,11 @@ $249.8^\circ \cdot \dfrac{\pi}{180^\circ} \approx 4.360$ راديان (قيمة 
 حوّل إلى الدرجات: $\dfrac{9\pi}{4}$، $-\dfrac{11\pi}{6}$، $4.25$.
 
 <Solution>
-$\dfrac{9\pi}{4} \cdot \dfrac{180^\circ}{\pi} = 405^\circ$
+$\dfrac{9\pi}{4} \cdot \dfrac{180^\circ}{\pi} = 9 \cdot 45^\circ = 405^\circ$ <span class="reason">$\pi$ تختصر، و $\tfrac{180}{4} = 45$</span>
 
-$-\dfrac{11\pi}{6} \cdot \dfrac{180^\circ}{\pi} = -330^\circ$
+$-\dfrac{11\pi}{6} \cdot \dfrac{180^\circ}{\pi} = -11 \cdot 30^\circ = -330^\circ$ <span class="reason">$\tfrac{180}{6} = 30$</span>
 
-$4.25 \cdot \dfrac{180^\circ}{\pi} \approx 243.5^\circ$
+$4.25 \cdot \dfrac{180^\circ}{\pi} \approx 243.5^\circ$ <span class="reason">لا يوجد $\pi$ هنا، فالعدد 4.25 راديان فعلًا ونقسم على $\pi \approx 3.1416$</span>
 </Solution>
 </Example>
 
@@ -73,6 +90,10 @@ $4.25 \cdot \dfrac{180^\circ}{\pi} \approx 243.5^\circ$
 | الراديان | $0$ | $\tfrac{\pi}{6}$ | $\tfrac{\pi}{4}$ | $\tfrac{\pi}{3}$ | $\tfrac{\pi}{2}$ | $\pi$ | $\tfrac{3\pi}{2}$ | $2\pi$ |
 
 وبقية الزوايا الخاصة مضاعفات لها: $150^\circ = 5 \cdot 30^\circ = \tfrac{5\pi}{6}$.
+</Box>
+
+<Box kind="mistake" title="π ليست 180">
+العبارة الصحيحة: «$\pi$ **راديان** = $180^\circ$». أما العدد $\pi$ نفسه فيساوي $3.14159\ldots$. لذلك $\sin 3$ (ثلاثة راديان، نحو $172^\circ$) لا علاقة لها بـ $\sin 3^\circ$، و $\tfrac{\pi}{2}$ عدد يساوي نحو $1.57$ لا 90.
 </Box>
 
 ## طول القوس <span class="en" lang="en">Arc Length on a Circle</span>
@@ -87,27 +108,37 @@ $$s = r\theta \qquad (\theta \text{ in radians})$$
 مع زاوية $60^\circ$ ونصف قطر 10 لا يصح $s = 10 \cdot 60 = 600$. حوّل أولًا: $60^\circ = \tfrac{\pi}{3}$، ثم $s = \tfrac{10\pi}{3} \approx 10.47$.
 </Box>
 
-<Example n="3" title="المسافة بين مدينتين">
-مدينتان على خط الطول نفسه، دائرتا العرض لهما $33^\circ\text{N}$ و $12^\circ\text{S}$. ونصف قطر الأرض نحو 6400 كم. ما المسافة بينهما على سطح الأرض؟
+<Example n="3" title="طول قوس مباشر">
+أوجد طول القوس الذي تقابله زاوية مركزية $\tfrac{3\pi}{4}$ في دائرة نصف قطرها 8 سم.
 
 <Solution>
-الزاوية المركزية بينهما $33^\circ + 12^\circ = 45^\circ$ (واحدة شمال خط الاستواء والأخرى جنوبه).
+$s = r\theta = 8 \cdot \dfrac{3\pi}{4}$ <span class="reason">الزاوية بالراديان أصلًا، فنعوّض مباشرة</span>
 
-$45^\circ = \dfrac{\pi}{4}$
-
-$s = 6400 \cdot \dfrac{\pi}{4} = 1600\pi \approx 5030$ كم.
+$= 6\pi \approx 18.85$ سم <span class="reason">$\tfrac{8 \cdot 3}{4} = 6$؛ والقيمة الدقيقة $6\pi$ أفضل إذا لم يُطلب تقريب</span>
 </Solution>
 </Example>
 
-<Example n="4" title="بكرتان بحزام">
+<Example n="4" title="المسافة بين مدينتين">
+مدينتان على خط الطول نفسه، دائرتا العرض لهما $33^\circ\text{N}$ و $12^\circ\text{S}$. ونصف قطر الأرض نحو 6400 كم. ما المسافة بينهما على سطح الأرض؟
+
+<Solution>
+الزاوية المركزية $33^\circ + 12^\circ = 45^\circ$ <span class="reason">واحدة شمال خط الاستواء والأخرى جنوبه، فالزاويتان من مركز الأرض تُجمعان (لو كانتا في الجهة نفسها لطرحناهما)</span>
+
+$45^\circ = \dfrac{\pi}{4}$ <span class="reason">القانون يحتاج الراديان</span>
+
+$s = 6400 \cdot \dfrac{\pi}{4} = 1600\pi \approx 5030$ كم
+</Solution>
+</Example>
+
+<Example n="5" title="بكرتان بحزام">
 بكرة صغيرة نصف قطرها 12 سم تدير بكرة كبيرة نصف قطرها 25 سم بحزام. إذا دارت الكبيرة $\tfrac{3\pi}{4}$ راديان، فكم تدور الصغيرة؟
 
 <Solution>
-الحزام يقطع المسافة نفسها على البكرتين: $s = 25 \cdot \dfrac{3\pi}{4} = \dfrac{75\pi}{4}$ سم.
+$s = 25 \cdot \dfrac{3\pi}{4} = \dfrac{75\pi}{4}$ سم <span class="reason">الحزام لا ينزلق، فيقطع **الطول نفسه** على البكرتين؛ نحسبه من البكرة المعلومة</span>
 
-البكرة الصغيرة: $12\theta = \dfrac{75\pi}{4}$
+$12\theta = \dfrac{75\pi}{4}$ <span class="reason">الطول نفسه على البكرة الصغيرة: $s = r\theta$ مع $r = 12$</span>
 
-$\theta = \dfrac{75\pi}{48} = \dfrac{25\pi}{16} \approx 4.91$ راديان (أي نحو $281^\circ$).
+$\theta = \dfrac{75\pi}{48} = \dfrac{25\pi}{16} \approx 4.91$ راديان (نحو $281^\circ$) <span class="reason">الصغيرة تدور أكثر من الكبيرة لأن محيطها أقصر؛ وهذا تحقق منطقي من الإجابة</span>
 </Solution>
 </Example>
 
@@ -121,15 +152,27 @@ $$A = \frac{\theta}{2\pi}\cdot \pi r^2 = \frac12 r^2\theta$$
 $$A = \frac12 r^2\theta \qquad (\theta \text{ in radians})$$
 </Box>
 
-<Example n="5" title="رشاش ري">
+<Example n="6" title="رشاش ري">
 رشاش ماء يدور بزاوية $130^\circ$ ويصل الماء إلى 18 م. ما المساحة التي يرويها؟
 
 <Solution>
-$130^\circ = \dfrac{13\pi}{18}$
+$130^\circ = 130 \cdot \dfrac{\pi}{180} = \dfrac{13\pi}{18}$ <span class="reason">الشكل المروي قطاع، وقانونه يحتاج الراديان</span>
 
-$A = \dfrac12 (18)^2 \cdot \dfrac{13\pi}{18} = 117\pi$
+$A = \dfrac12 (18)^2 \cdot \dfrac{13\pi}{18} = \dfrac12 \cdot 18 \cdot 13\pi = 117\pi$ <span class="reason">اختصرنا 18 من $18^2$ مع المقام قبل الضرب لتسهيل الحساب</span>
 
-$\approx 367.6$ م².
+$\approx 367.6$ م²
+</Solution>
+</Example>
+
+<Example n="7" title="من القوس إلى المساحة (مستوى الاختبار)">
+قطاع دائري نصف قطره 4 سم وطول قوسه 6 سم. أوجد زاويته المركزية ومساحته.
+
+<Solution>
+$\theta = \dfrac{s}{r} = \dfrac{6}{4} = 1.5$ راديان <span class="reason">نعكس قانون القوس لنجد الزاوية؛ والناتج بالراديان تلقائيًا</span>
+
+$A = \dfrac12 r^2\theta = \dfrac12 (16)(1.5) = 12$ سم² <span class="reason">نعوّض الزاوية التي وجدناها في قانون المساحة</span>
+
+ملاحظة: $A = \tfrac12 rs = \tfrac12(4)(6) = 12$ أيضًا <span class="reason">بتعويض $\theta = \tfrac{s}{r}$ في قانون المساحة يصبح $A = \tfrac12 rs$، وهو اختصار مفيد</span>
 </Solution>
 </Example>
 
@@ -140,10 +183,21 @@ $\approx 367.6$ م².
   explain="$\\theta = \\tfrac{s}{r} = \\tfrac{15}{5} = 3$ راديان (نحو $172^\\circ$)."
 />
 
+<Check
+  q="أيهما أكبر: زاوية قياسها 1 راديان أم زاوية قياسها $50^\\circ$؟"
+  options={["1 راديان", "$50^\\circ$", "متساويتان", "لا يمكن المقارنة"]}
+  answer={0}
+  explain="1 راديان $= \\tfrac{180^\\circ}{\\pi} \\approx 57.3^\\circ$، وهي أكبر من $50^\\circ$."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+من الآن تُكتب الزوايا غالبًا بالراديان. في الدرس التالي يصبح طول القوس على دائرة الوحدة هو المدخل نفسه للجيب وجيب التمام، ثم ترسم $y = \sin x$ حيث $x$ عدد حقيقي بالراديان.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
-- الراديان: زاوية قوسها يساوي نصف القطر، و $\pi$ راديان $= 180^\circ$.
-- للتحويل اضرب في $\tfrac{\pi}{180^\circ}$ أو $\tfrac{180^\circ}{\pi}$.
-- $s = r\theta$ و $A = \tfrac12 r^2\theta$، والزاوية بالراديان دائمًا.
+- الراديان: زاوية قوسها يساوي نصف القطر، و $\pi$ راديان $= 180^\circ$، والراديان الواحد نحو $57.3^\circ$.
+- للتحويل اضرب في $\tfrac{\pi}{180^\circ}$ أو $\tfrac{180^\circ}{\pi}$، بحيث تختفي الوحدة القديمة.
+- $s = r\theta$ و $A = \tfrac12 r^2\theta = \tfrac12 rs$، والزاوية بالراديان دائمًا.
 
 <Practice set="6.1" count={6} />

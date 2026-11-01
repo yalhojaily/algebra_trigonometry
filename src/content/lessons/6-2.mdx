@@ -1,7 +1,7 @@
 ---
 section: "6.2"
 summary: "دائرة الوحدة تجعل الدوال المثلثية دوال لأعداد حقيقية: النقطة (cos s, sin s) عند قطع قوس طوله s، والقيم الدقيقة والتقريبية، وإيجاد العدد من قيمة دالته، والقيم كأطوال قطع، والسرعتان الخطية والزاوية."
-minutes: 40
+minutes: 55
 prerequisites: ["6.1", "5.3"]
 terms:
   - { ar: "دائرة الوحدة", en: "Unit Circle", def: "الدائرة x² + y² = 1 التي مركزها الأصل ونصف قطرها 1." }
@@ -14,6 +14,7 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import UnitCircle from '../../components/widgets/UnitCircle.astro';
 
@@ -31,28 +32,52 @@ $$\sec s = \frac1x\ (x \ne 0) \qquad \csc s = \frac1y\ (y \ne 0) \qquad \cot s =
 
 ولأن $r = 1$ تتطابق هذه التعريفات مع تعريفات الفصل 5 للزاوية $\theta = s$ راديان. فكل ما تعلمته (الإشارات، والزوايا المرجعية، والمتطابقات) ينطبق كما هو.
 
+<Deep title="لفّ خط الأعداد حول الدائرة">
+تخيل خط الأعداد الحقيقية خيطًا، ضع صفره عند النقطة $(1, 0)$ ولُفّ الجزء الموجب حول الدائرة عكس عقارب الساعة والسالب معها. كل عدد حقيقي $s$ يقع فوق نقطة واحدة من الدائرة، وإحداثيا تلك النقطة هما $(\cos s, \sin s)$.
+
+ولأن محيط دائرة الوحدة $2\pi$، فإن الأعداد $s$ و $s + 2\pi$ و $s - 2\pi$ و $s + 4\pi$ … تقع كلها فوق النقطة نفسها. هذه هي **الدورية**: $\sin(s + 2\pi) = \sin s$ و $\cos(s + 2\pi) = \cos s$، وهي سبب الشكل المتكرر لرسم الجيب في الدرس القادم.
+</Deep>
+
+جرّب في الأداة: حرّك $s$ وراقب النقطة وإحداثييها، ولاحظ أن القيم تعود كما هي بعد كل دورة.
+
 <UnitCircle />
 
 <Box kind="rule" title="حقائق من دائرة الوحدة" en="Unit circle facts">
-- النقطة على الدائرة دائمًا $(\cos s, \sin s)$.
+- النقطة على الدائرة دائمًا $(\cos s, \sin s)$، ولذلك $\cos^2 s + \sin^2 s = 1$ (معادلة الدائرة نفسها).
 - مجال $\sin$ و $\cos$ كل الأعداد الحقيقية، ومداهما $[-1, 1]$.
-- مجال $\tan$ و $\sec$: كل الأعداد عدا $\tfrac{\pi}{2} + n\pi$.
-- مجال $\cot$ و $\csc$: كل الأعداد عدا $n\pi$.
+- مجال $\tan$ و $\sec$: كل الأعداد عدا $\tfrac{\pi}{2} + n\pi$ (حيث $x = 0$).
+- مجال $\cot$ و $\csc$: كل الأعداد عدا $n\pi$ (حيث $y = 0$).
 </Box>
+
+<Example n="1" title="من نقطة على الدائرة">
+النقطة $\left(-\tfrac35, \tfrac45\right)$ تقع على دائرة الوحدة، وهي النقطة المقابلة للعدد $s$. أوجد $\cos s$ و $\sin s$ و $\tan s$.
+
+<Solution>
+$\left(-\tfrac35\right)^2 + \left(\tfrac45\right)^2 = \tfrac{9}{25} + \tfrac{16}{25} = 1$ ✓ <span class="reason">نتحقق أولًا أن النقطة على دائرة الوحدة فعلًا</span>
+
+$\cos s = -\tfrac35$ و $\sin s = \tfrac45$ <span class="reason">على دائرة الوحدة: جيب التمام هو $x$ والجيب هو $y$ مباشرة، دون قسمة على $r$</span>
+
+$\tan s = \dfrac{y}{x} = \dfrac{4/5}{-3/5} = -\dfrac43$ <span class="reason">الظل قسمة $y$ على $x$؛ وهو سالب لأن النقطة في الربع الثاني</span>
+</Solution>
+</Example>
 
 ## قيم الدوال الدائرية <span class="en" lang="en">Values of the Circular Functions</span>
 
 نقاط دائرة الوحدة عند مضاعفات $\tfrac{\pi}{6}$ و $\tfrac{\pi}{4}$ تأتي من المثلثين الخاصين: في الربع الأول $\left(\tfrac{\sqrt3}{2}, \tfrac12\right)$ عند $\tfrac{\pi}{6}$، و $\left(\tfrac{\sqrt2}{2}, \tfrac{\sqrt2}{2}\right)$ عند $\tfrac{\pi}{4}$، و $\left(\tfrac12, \tfrac{\sqrt3}{2}\right)$ عند $\tfrac{\pi}{3}$. وبقية الأرباع بتغيير الإشارات.
 
-<Example n="1" title="قيم دقيقة">
+<Box kind="tip" title="القاعدة السريعة للربع الأول">
+عند $\tfrac{\pi}{6}$ النقطة أقرب إلى محور $x$، فإحداثيها الأفقي هو الأكبر: $\left(\tfrac{\sqrt3}{2}, \tfrac12\right)$. وعند $\tfrac{\pi}{3}$ أقرب إلى محور $y$، فيتبادل الإحداثيان: $\left(\tfrac12, \tfrac{\sqrt3}{2}\right)$. وعند $\tfrac{\pi}{4}$ في المنتصف تمامًا فيتساويان.
+</Box>
+
+<Example n="2" title="قيم دقيقة">
 أوجد: $\sin\dfrac{3\pi}{2}$، $\cos\dfrac{7\pi}{4}$، $\tan\left(-\dfrac{5\pi}{3}\right)$.
 
 <Solution>
-$\tfrac{3\pi}{2}$ تصل إلى $(0, -1)$، فإن $\sin\tfrac{3\pi}{2} = -1$.
+$\sin\tfrac{3\pi}{2} = -1$ <span class="reason">$\tfrac{3\pi}{2}$ ثلاثة أرباع دورة، فتصل إلى $(0, -1)$، والجيب هو $y$</span>
 
-$\tfrac{7\pi}{4}$ في الربع الرابع ومرجعها $\tfrac{\pi}{4}$، فالنقطة $\left(\tfrac{\sqrt2}{2}, -\tfrac{\sqrt2}{2}\right)$ و $\cos\tfrac{7\pi}{4} = \tfrac{\sqrt2}{2}$.
+$\cos\tfrac{7\pi}{4} = \tfrac{\sqrt2}{2}$ <span class="reason">$\tfrac{7\pi}{4} = 2\pi - \tfrac{\pi}{4}$: الربع الرابع ومرجعها $\tfrac{\pi}{4}$، فالنقطة $\left(\tfrac{\sqrt2}{2}, -\tfrac{\sqrt2}{2}\right)$ و $x$ موجب</span>
 
-$-\tfrac{5\pi}{3}$ مكافئة لـ $\tfrac{\pi}{3}$ (بإضافة $2\pi$)، فإن $\tan\left(-\tfrac{5\pi}{3}\right) = \tan\tfrac{\pi}{3} = \sqrt3$.
+$\tan\left(-\tfrac{5\pi}{3}\right) = \tan\tfrac{\pi}{3} = \sqrt3$ <span class="reason">$-\tfrac{5\pi}{3} + 2\pi = \tfrac{\pi}{3}$: نضيف دورة كاملة لنصل إلى عدد مكافئ مألوف</span>
 </Solution>
 </Example>
 
@@ -60,35 +85,55 @@ $-\tfrac{5\pi}{3}$ مكافئة لـ $\tfrac{\pi}{3}$ (بإضافة $2\pi$)، ف
 لحساب $\cos 1.85$ يجب أن تكون الآلة على **RAD**. على وضع الدرجات ستحسب $\cos 1.85^\circ \approx 0.9995$ بدل القيمة الصحيحة $\cos 1.85 \approx -0.2756$.
 </Box>
 
+<Box kind="mistake" title="الظل y/x لا x/y">
+على دائرة الوحدة يسهل الخلط لأن $\cos$ و $\sin$ إحداثيان مباشرة. الظل هو **الجيب على جيب التمام**: $\tan s = \tfrac{y}{x}$، أي الإحداثي الرأسي على الأفقي (ميل نصف القطر). أما $\tfrac{x}{y}$ فهو ظل التمام.
+</Box>
+
 ## إيجاد عدد بقيمة دالة معطاة <span class="en" lang="en">Determining a Number with a Given Circular Function Value</span>
 
-<Example n="2" title="قيمة دقيقة في فترة">
+<Example n="3" title="قيمة دقيقة في فترة">
 أوجد $s$ في $\left[\pi, \tfrac{3\pi}{2}\right]$ بحيث $\tan s = 1$.
 
 <Solution>
-$\tan s = 1$ عندما $x = y$ على دائرة الوحدة، أي عند المرجع $\tfrac{\pi}{4}$.
+$\tan s = 1$ عندما $y = x$، أي عند المرجع $\tfrac{\pi}{4}$ <span class="reason">الظل 1 يعني أن الإحداثيين متساويان</span>
 
-في الفترة المطلوبة (الربع الثالث) كلا الإحداثيين سالب، والظل موجب.
+الفترة $\left[\pi, \tfrac{3\pi}{2}\right]$ هي الربع الثالث، وفيه $x$ و $y$ سالبان والظل موجب ✓ <span class="reason">نتأكد أن الإشارة ممكنة في الفترة المطلوبة</span>
 
-$s = \pi + \tfrac{\pi}{4} = \tfrac{5\pi}{4}$
+$s = \pi + \tfrac{\pi}{4} = \tfrac{5\pi}{4}$ <span class="reason">في الربع الثالث نضيف المرجع إلى $\pi$</span>
 </Solution>
 </Example>
 
-<Example n="3" title="قيمة تقريبية في فترة">
+<Example n="4" title="كل الحلول في دورة (مستوى الاختبار)">
+أوجد كل $s$ في $[0, 2\pi)$ بحيث $\sin s = -\tfrac{\sqrt3}{2}$.
+
+<Solution>
+القيمة الموجبة $\tfrac{\sqrt3}{2}$ هي $\sin\tfrac{\pi}{3}$، فالمرجع $\tfrac{\pi}{3}$ <span class="reason">نتجاهل الإشارة لإيجاد المرجع</span>
+
+الجيب سالب حين $y < 0$: الربعان الثالث والرابع <span class="reason">الإشارة تحدد الأرباع</span>
+
+$s = \pi + \tfrac{\pi}{3} = \tfrac{4\pi}{3}$ أو $s = 2\pi - \tfrac{\pi}{3} = \tfrac{5\pi}{3}$ <span class="reason">في III نضيف المرجع إلى $\pi$، وفي IV نطرحه من $2\pi$</span>
+</Solution>
+</Example>
+
+<Example n="5" title="قيمة تقريبية في فترة">
 أوجد $s$ في $\left[\tfrac{\pi}{2}, \pi\right]$ بحيث $\cos s = -0.4$.
 
 <Solution>
-الآلة: $\cos^{-1}(-0.4) \approx 1.9823$.
+$\cos^{-1}(-0.4) \approx 1.9823$ <span class="reason">الآلة على RAD؛ والدالة العكسية لجيب التمام تعطي عددًا بين $0$ و $\pi$</span>
 
-هل هي في الفترة؟ $\tfrac{\pi}{2} \approx 1.571$ و $\pi \approx 3.142$، فنعم.
+$\tfrac{\pi}{2} \approx 1.571 < 1.9823 < \pi \approx 3.142$ ✓ <span class="reason">نتحقق أن ما أعطته الآلة يقع في الفترة المطلوبة</span>
 
-$s \approx 1.9823$. (لو طُلبت الفترة $\left[\pi, \tfrac{3\pi}{2}\right]$ لأخذنا $2\pi - 1.9823 \approx 4.3009$ بالتماثل حول محور $x$.)
+$s \approx 1.9823$. ولو طُلبت الفترة $\left[\pi, \tfrac{3\pi}{2}\right]$ لأخذنا $2\pi - 1.9823 \approx 4.3009$ <span class="reason">النقطتان متماثلتان حول محور $x$: لهما $x$ نفسه، أي جيب التمام نفسه</span>
 </Solution>
 </Example>
 
 ## قيم الدوال كأطوال قطع <span class="en" lang="en">Function Values as Lengths of Line Segments</span>
 
 في الأداة أعلاه: إذا كانت $P = (\cos s, \sin s)$ في الربع الأول، فالقطعة الرأسية من $P$ إلى محور $x$ طولها $\sin s$، والأفقية من الأصل طولها $\cos s$. ومن المثلثين المتشابهين، القطعة على المماس الرأسي $x = 1$ من $(1, 0)$ حتى امتداد نصف القطر طولها $\tan s$. ومن هنا جاء اسم «الظل» <span class="en" lang="en">(tangent)</span>: قطعة على المماس.
+
+<Deep title="لماذا طول قطعة المماس هو الظل؟">
+المثلث الصغير رؤوسه الأصل و $(\cos s, 0)$ و $P$، والمثلث الكبير رؤوسه الأصل و $(1, 0)$ ونقطة تقاطع امتداد نصف القطر مع المماس $x = 1$. لهما الزاوية $s$ نفسها عند الأصل وكلاهما قائم، فهما متشابهان. نسبة الضلع الرأسي إلى الأفقي متساوية: $\dfrac{\sin s}{\cos s} = \dfrac{t}{1}$، حيث $t$ طول قطعة المماس. إذن $t = \tan s$. وحين تقترب $s$ من $\tfrac{\pi}{2}$ يصبح نصف القطر شبه رأسي ولا يلتقي المماس إلا بعيدًا جدًا، ولذلك يكبر الظل بلا حد.
+</Deep>
 
 ## السرعة الخطية والزاوية <span class="en" lang="en">Linear and Angular Speed</span>
 
@@ -99,27 +144,31 @@ $s \approx 1.9823$. (لو طُلبت الفترة $\left[\pi, \tfrac{3\pi}{2}\ri
 - <Term ar="السرعة الخطية" en="linear speed" />: $v = \dfrac{s}{t} = \dfrac{r\theta}{t} = r\omega$
 </Box>
 
-<Example n="4" title="قمر صناعي">
+<Box kind="tip" title="السرعة الزاوية متساوية والخطية لا">
+على قرص دوّار، كل النقاط تكمل الدورة في الزمن نفسه، فلها **السرعة الزاوية نفسها**. لكن النقطة البعيدة عن المركز تقطع دائرة أكبر، فسرعتها **الخطية أكبر**: $v = r\omega$. لهذا يشعر من يقف على حافة لعبة دوّارة بقوة أكبر ممن يقف قرب مركزها.
+</Box>
+
+<Example n="6" title="قمر صناعي">
 قمر صناعي يدور حول الأرض في مدار دائري نصف قطره 6800 كم، ويكمل دورة كل 1.5 ساعة. ما سرعتاه الزاوية والخطية؟
 
 <Solution>
-الدورة الكاملة $2\pi$: $\omega = \dfrac{2\pi}{1.5} = \dfrac{4\pi}{3}$ راديان/ساعة $\approx 4.19$ راديان/ساعة.
+$\omega = \dfrac{2\pi}{1.5} = \dfrac{4\pi}{3} \approx 4.19$ راديان/ساعة <span class="reason">الدورة الكاملة $2\pi$ راديان في زمن الدورة</span>
 
-$v = r\omega = 6800 \cdot \dfrac{4\pi}{3}$
+$v = r\omega = 6800 \cdot \dfrac{4\pi}{3}$ <span class="reason">العلاقة بين السرعتين، و $r$ نصف قطر المدار</span>
 
-$\approx 28{,}480$ كم/ساعة.
+$\approx 28{,}480$ كم/ساعة <span class="reason">الوحدة: كم × (راديان/ساعة)، والراديان بلا وحدة فيبقى كم/ساعة</span>
 </Solution>
 </Example>
 
-<Example n="5" title="من الدورات إلى السرعة">
+<Example n="7" title="من الدورات إلى السرعة">
 إطار سيارة نصف قطره 30 سم يدور 800 دورة في الدقيقة. ما سرعة السيارة بالكم/س؟
 
 <Solution>
-$\omega = 800 \cdot 2\pi = 1600\pi$ راديان/دقيقة.
+$\omega = 800 \cdot 2\pi = 1600\pi$ راديان/دقيقة <span class="reason">كل دورة $2\pi$ راديان، فنحوّل «دورة/دقيقة» إلى «راديان/دقيقة»</span>
 
-$v = r\omega = 30 \cdot 1600\pi = 48000\pi$ سم/دقيقة $\approx 150{,}796$ سم/دقيقة.
+$v = r\omega = 30 \cdot 1600\pi = 48000\pi \approx 150{,}796$ سم/دقيقة <span class="reason">نقطة على حافة الإطار تتحرك بسرعة السيارة نفسها (إذا لم ينزلق)</span>
 
-بالتحويل: $150796 \times 60 \div 100000 \approx 90.5$ كم/س.
+$150796 \times 60 \div 100000 \approx 90.5$ كم/س <span class="reason">ضربنا في 60 (دقيقة ← ساعة) وقسمنا على 100000 (سم ← كم)</span>
 </Solution>
 </Example>
 
@@ -130,11 +179,22 @@ $v = r\omega = 30 \cdot 1600\pi = 48000\pi$ سم/دقيقة $\approx 150{,}796$ 
   explain="السير ربع دورة مع عقارب الساعة من $(1, 0)$ يصل إلى $(0, -1)$، والجيب هو الإحداثي $y$."
 />
 
+<Check
+  q="لأي عدد في $[0, \\pi]$ يكون $\\cos s = 0$؟"
+  options={["$0$", "$\\tfrac{\\pi}{2}$", "$\\pi$", "$\\tfrac{\\pi}{4}$"]}
+  answer={1}
+  explain="جيب التمام هو الإحداثي $x$، ويساوي صفرًا عند $(0, 1)$، أي $s = \\tfrac{\\pi}{2}$."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+الدرس القادم يأخذ إحداثيي النقطة الدائرة ويرسمهما مقابل $s$: الإحداثي $y$ يعطي موجة الجيب، والإحداثي $x$ موجة جيب التمام. وفكرة السرعة الزاوية $\omega$ تعود في 6.7 (الحركة التوافقية) معاملًا يحدد سرعة الاهتزاز.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
 - قوس طوله $s$ على دائرة الوحدة يصل إلى النقطة $(\cos s, \sin s)$.
-- الدوال الدائرية هي الدوال المثلثية لعدد حقيقي (راديان).
-- لإيجاد $s$ من قيمة: المرجع من الآلة أو الجدول، ثم الربع المطلوب.
-- $\omega = \tfrac{\theta}{t}$ و $v = r\omega$.
+- الدوال الدائرية هي الدوال المثلثية لعدد حقيقي (راديان)، وتتكرر كل $2\pi$.
+- لإيجاد $s$ من قيمة: المرجع من الآلة أو الجدول، ثم الأرباع من الإشارة.
+- $\omega = \tfrac{\theta}{t}$ و $v = r\omega$: السرعة الزاوية واحدة لكل نقاط القرص، والخطية تكبر مع البعد عن المركز.
 
 <Practice set="6.2" count={6} />

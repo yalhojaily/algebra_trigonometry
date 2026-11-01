@@ -1,7 +1,7 @@
 ---
 section: "7.7"
-summary: "استخدام الدوال العكسية في الاتجاهين: حل معادلة مثل y = 3 cos 2x لـ x بدلالة y مع الانتباه للمجال، وحل معادلات تظهر فيها الدوال العكسية نفسها، مثل sin⁻¹x = cos⁻¹(3/5)."
-minutes: 30
+summary: "استخدام الدوال العكسية في الاتجاهين: حل معادلة مثل y = 3 cos 2x لـ x بدلالة y مع الانتباه للمجال ولماذا نحتاج القيد، وحل معادلات تظهر فيها الدوال العكسية نفسها، مثل sin⁻¹x = cos⁻¹(3/5) و sin⁻¹x − cos⁻¹x = π/6."
+minutes: 45
 prerequisites: ["7.5", "7.6"]
 terms:
   - { ar: "معادلة مثلثية عكسية", en: "Inverse Trigonometric Equation", def: "معادلة يظهر فيها المتغير داخل دالة مثلثية عكسية، مثل 2 sin⁻¹x = π." }
@@ -12,10 +12,13 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import InverseTrig from '../../components/widgets/InverseTrig.astro';
 
 في الدرس السابق حللنا معادلات لأعداد محددة. هنا خطوتان أبعد: (1) نكتب الحل **صيغة عامة** بدلالة متغير آخر، كما نكتب $x = \tfrac{y - b}{a}$ من $y = ax + b$. (2) نحل معادلات تكون فيها الدوال العكسية نفسها هي المشكلة.
+
+الفكرة الوحيدة الجديدة هنا هي **المدى**. كل مرة تطبّق فيها $\sin^{-1}$ أو $\cos^{-1}$ تسأل نفسك: هل الزاوية التي أتعامل معها داخل المدى المقيّد؟ معظم الأخطاء في هذا الدرس تأتي من نسيان هذا السؤال.
 
 ## الحل لـ x بدلالة y <span class="en" lang="en">Solution for x in Terms of y Using Inverse Functions</span>
 
@@ -26,29 +29,53 @@ import InverseTrig from '../../components/widgets/InverseTrig.astro';
 4. اذكر قيد المجال: الخطوة 2 صحيحة فقط إذا كانت $bx - c$ في **مدى** $f^{-1}$.
 </Box>
 
-<Example n="1" title="جيب تمام مع معامل">
+<Example n="1" title="بداية سهلة">
+حل $y = 2\tan x$ لـ $x$، حيث $-\tfrac{\pi}{2} < x < \tfrac{\pi}{2}$.
+
+<Solution>
+$\dfrac{y}{2} = \tan x$ <span class="reason">نعزل الدالة بالقسمة على المعامل</span>
+
+$x = \tan^{-1}\dfrac{y}{2}$ <span class="reason">القيد المعطى هو بالضبط مدى $\tan^{-1}$، فتطبيق المعكوس يعطي $x$ نفسها</span>
+
+ولا قيد على $y$ لأن مجال $\tan^{-1}$ كل الأعداد. <span class="reason">الظل يأخذ كل القيم الحقيقية</span>
+</Solution>
+</Example>
+
+<Example n="2" title="جيب تمام مع معامل">
 حل $y = 3\cos 2x$ لـ $x$، حيث $0 \le x \le \tfrac{\pi}{2}$.
 
 <Solution>
-$\dfrac{y}{3} = \cos 2x$. والقيد $0 \le x \le \tfrac{\pi}{2}$ يجعل $0 \le 2x \le \pi$، وهو بالضبط مدى $\cos^{-1}$.
+$\dfrac{y}{3} = \cos 2x$. والقيد $0 \le x \le \tfrac{\pi}{2}$ يجعل $0 \le 2x \le \pi$، وهو بالضبط مدى $\cos^{-1}$. <span class="reason">نتحقق أن الزاوية داخل الدالة ($2x$ لا $x$) تقع في المدى، قبل تطبيق المعكوس</span>
 
-$2x = \cos^{-1}\dfrac{y}{3}$
+$2x = \cos^{-1}\dfrac{y}{3}$ <span class="reason">تطبيق $\cos^{-1}$ على الطرفين؛ مسموح بسبب السطر السابق</span>
 
-$x = \dfrac12\cos^{-1}\dfrac{y}{3}$، حيث $-3 \le y \le 3$.
+$x = \dfrac12\cos^{-1}\dfrac{y}{3}$، حيث $-3 \le y \le 3$. <span class="reason">نقسم على 2؛ ومدخل $\cos^{-1}$ يجب أن يكون في $[-1, 1]$، أي $-1 \le \tfrac{y}{3} \le 1$</span>
 </Solution>
 </Example>
 
-<Example n="2" title="إزاحة وجيب">
+<Deep title="لماذا يُعطى قيد على x في كل مسألة؟">
+بدون قيد، المعادلة $y = 3\cos 2x$ لها لكل قيمة $y$ عدد لا نهائي من قيم $x$. مثلًا عند $y = 3$: $x = 0, \pi, 2\pi, \ldots$ كلها حلول. فلا يمكن أن تكون $x$ «دالة» في $y$.
+
+القيد يختار قطعة واحدة من المنحنى تكون فيها الدالة واحدًا لواحد، والصيغة الناتجة تصف تلك القطعة فقط. ولهذا تحديدًا نختار القيد بحيث تقع الزاوية الداخلية في مدى المعكوس: عندها يعيد $\cos^{-1}$ بالضبط الزاوية التي بدأنا بها.
+
+ماذا لو كان القيد مختلفًا، مثلًا $\tfrac{\pi}{2} \le x \le \pi$؟ عندها $\pi \le 2x \le 2\pi$، خارج مدى $\cos^{-1}$. نستخدم التماثل: $\cos 2x = \cos(2\pi - 2x)$ و $2\pi - 2x \in [0, \pi]$، فإن $2\pi - 2x = \cos^{-1}\tfrac{y}{3}$، أي $x = \pi - \tfrac12\cos^{-1}\tfrac{y}{3}$. الصيغة تتغير حين تتغير القطعة.
+</Deep>
+
+<Example n="3" title="إزاحة وجيب">
 حل $y = 4\sin(x - \pi) + 1$ لـ $x$، حيث $\tfrac{\pi}{2} \le x \le \tfrac{3\pi}{2}$.
 
 <Solution>
-$\dfrac{y - 1}{4} = \sin(x - \pi)$. والقيد يجعل $-\tfrac{\pi}{2} \le x - \pi \le \tfrac{\pi}{2}$، وهو مدى $\sin^{-1}$.
+$\dfrac{y - 1}{4} = \sin(x - \pi)$. والقيد يجعل $-\tfrac{\pi}{2} \le x - \pi \le \tfrac{\pi}{2}$، وهو مدى $\sin^{-1}$. <span class="reason">نطرح الإزاحة الرأسية ثم نقسم على السعة؛ ونطرح $\pi$ من حدود القيد</span>
 
-$x - \pi = \sin^{-1}\dfrac{y - 1}{4}$
+$x - \pi = \sin^{-1}\dfrac{y - 1}{4}$ <span class="reason">تطبيق $\sin^{-1}$ مسموح لأن $x - \pi$ في مداه</span>
 
-$x = \pi + \sin^{-1}\dfrac{y - 1}{4}$، حيث $-3 \le y \le 5$.
+$x = \pi + \sin^{-1}\dfrac{y - 1}{4}$، حيث $-3 \le y \le 5$. <span class="reason">$-1 \le \tfrac{y - 1}{4} \le 1$ تعطي $-4 \le y - 1 \le 4$؛ وهذا أيضًا مدى الدالة الأصلية: $1 \pm 4$</span>
 </Solution>
 </Example>
+
+<Box kind="mistake" title="لا تنسَ قيد y">
+الصيغة $x = \tfrac12\cos^{-1}\tfrac{y}{3}$ بلا قيد ناقصة: عند $y = 6$ تطلب $\cos^{-1}2$ وهي غير معرّفة. قيد $y$ هو **مدى الدالة الأصلية**، ويُكتب دائمًا مع الجواب.
+</Box>
 
 <InverseTrig />
 
@@ -58,51 +85,71 @@ $x = \pi + \sin^{-1}\dfrac{y - 1}{4}$، حيث $-3 \le y \le 5$.
 اعزل الدالة العكسية، ثم طبّق الدالة الأصلية على الطرفين: $\sin^{-1}x = \theta$ تعني $x = \sin\theta$، **بشرط** أن تكون $\theta$ في مدى $\sin^{-1}$. وإن لم تكن، فلا حل.
 </Box>
 
-<Example n="3" title="عزل ثم تطبيق">
+<Example n="4" title="عزل ثم تطبيق">
 حل $-2\sin^{-1}x = \pi$.
 
 <Solution>
-$\sin^{-1}x = -\tfrac{\pi}{2}$، وهي في مدى $\sin^{-1}$ (طرفه الأيسر).
+$\sin^{-1}x = -\tfrac{\pi}{2}$، وهي في مدى $\sin^{-1}$ (طرفه الأيسر). <span class="reason">نعزل الدالة العكسية بالقسمة على $-2$، ثم نتحقق من المدى قبل المتابعة</span>
 
-$x = \sin\left(-\tfrac{\pi}{2}\right)$
+$x = \sin\left(-\tfrac{\pi}{2}\right)$ <span class="reason">$\sin^{-1}x = \theta$ تعني $x = \sin\theta$</span>
 
-$x = -1$
+$x = -1$ <span class="reason">النقطة عند $-\tfrac{\pi}{2}$ على دائرة الوحدة هي $(0, -1)$</span>
 </Solution>
 </Example>
 
-<Example n="4" title="دالتان عكسيتان">
+<Example n="5" title="دالتان عكسيتان">
 حل $\cos^{-1}x = \sin^{-1}\tfrac12$.
 
 <Solution>
-$\sin^{-1}\tfrac12 = \tfrac{\pi}{6}$، فإن $\cos^{-1}x = \tfrac{\pi}{6}$ ($\tfrac{\pi}{6}$ في $[0, \pi]$ ✓).
+$\sin^{-1}\tfrac12 = \tfrac{\pi}{6}$، فإن $\cos^{-1}x = \tfrac{\pi}{6}$ ($\tfrac{\pi}{6}$ في $[0, \pi]$ ✓). <span class="reason">الطرف الأيمن عدد معروف، فنحسبه أولًا</span>
 
-$x = \cos\tfrac{\pi}{6}$
+$x = \cos\tfrac{\pi}{6}$ <span class="reason">نطبّق $\cos$ على الطرفين</span>
 
-$x = \tfrac{\sqrt3}{2}$
+$x = \tfrac{\sqrt3}{2}$ <span class="reason">قيمة خاصة</span>
 </Solution>
 </Example>
 
-<Example n="5" title="باستخدام مثلث">
+<Example n="6" title="باستخدام مثلث">
 حل $\sin^{-1}x = \cos^{-1}\tfrac35$.
 
 <Solution>
-ضع $\theta = \cos^{-1}\tfrac35$، فهي في الربع الأول، ومثلثها: مجاور 3 ووتر 5، فالمقابل 4.
+ضع $\theta = \cos^{-1}\tfrac35$، فهي في الربع الأول، ومثلثها: مجاور 3 ووتر 5، فالمقابل 4. <span class="reason">$\tfrac35$ ليست قيمة خاصة، لكن مثلث 3-4-5 يعطي بقية الدوال؛ والمدخل موجب فالزاوية حادة</span>
 
-$\sin^{-1}x = \theta$ ← $x = \sin\theta$
+$\sin^{-1}x = \theta$ ← $x = \sin\theta$ <span class="reason">$\theta$ حادة فهي في مدى $\sin^{-1}$ أيضًا</span>
 
-$x = \tfrac45$
+$x = \tfrac45$ <span class="reason">الجيب = المقابل ÷ الوتر</span>
 </Solution>
 </Example>
 
-<Example n="6" title="باستخدام متطابقة مجموع">
+<Example n="7" title="باستخدام متطابقة مجموع">
 حل $\sin^{-1}x - \tan^{-1}1 = -\dfrac{\pi}{6}$.
 
 <Solution>
-$\tan^{-1}1 = \tfrac{\pi}{4}$، فإن $\sin^{-1}x = \tfrac{\pi}{4} - \tfrac{\pi}{6} = \tfrac{\pi}{12}$.
+$\tan^{-1}1 = \tfrac{\pi}{4}$، فإن $\sin^{-1}x = \tfrac{\pi}{4} - \tfrac{\pi}{6} = \tfrac{\pi}{12}$. <span class="reason">نحسب الحد المعروف ونعزل $\sin^{-1}x$؛ و $\tfrac{\pi}{12}$ في مداه</span>
 
-$x = \sin\tfrac{\pi}{12} = \sin\left(\tfrac{\pi}{3} - \tfrac{\pi}{4}\right) = \tfrac{\sqrt3}{2}\cdot\tfrac{\sqrt2}{2} - \tfrac12\cdot\tfrac{\sqrt2}{2}$
+$x = \sin\tfrac{\pi}{12} = \sin\left(\tfrac{\pi}{3} - \tfrac{\pi}{4}\right) = \tfrac{\sqrt3}{2}\cdot\tfrac{\sqrt2}{2} - \tfrac12\cdot\tfrac{\sqrt2}{2}$ <span class="reason">$\tfrac{\pi}{12} = 15^\circ$ ليست خاصة، لكنها فرق زاويتين خاصتين (الدرس 7.3)</span>
 
-$x = \dfrac{\sqrt6 - \sqrt2}{4} \approx 0.2588$
+$x = \dfrac{\sqrt6 - \sqrt2}{4} \approx 0.2588$ <span class="reason">نجمع على المقام 4؛ وتحقق: $\sin 15^\circ \approx 0.2588$</span>
+</Solution>
+</Example>
+
+<Example n="8" title="مستوى الاختبار: المتغير في الطرفين">
+حل $\sin^{-1}x - \cos^{-1}x = \dfrac{\pi}{6}$.
+
+<Solution>
+$\sin^{-1}x = \cos^{-1}x + \tfrac{\pi}{6}$ <span class="reason">نعزل إحدى الدالتين العكسيتين لنطبّق عليها الدالة الأصلية</span>
+
+$x = \sin\left(\cos^{-1}x + \tfrac{\pi}{6}\right)$ <span class="reason">نطبّق $\sin$ على الطرفين</span>
+
+$x = \sin(\cos^{-1}x)\cos\tfrac{\pi}{6}$ $+ \cos(\cos^{-1}x)\sin\tfrac{\pi}{6}$ <span class="reason">صيغة مجموع الجيب (الدرس 7.3)</span>
+
+$x = \sqrt{1 - x^2}\cdot\tfrac{\sqrt3}{2} + \tfrac{x}{2}$ <span class="reason">$\cos(\cos^{-1}x) = x$، و $\sin(\cos^{-1}x) = \sqrt{1 - x^2}$ لأن الزاوية في $[0, \pi]$ حيث الجيب غير سالب</span>
+
+$\tfrac{x}{2} = \tfrac{\sqrt3}{2}\sqrt{1 - x^2}$ ← $x = \sqrt3\sqrt{1 - x^2}$ <span class="reason">نجمع حدود $x$ ونضرب في 2؛ لاحظ أن الطرف الأيمن غير سالب، فلا بد أن $x \ge 0$</span>
+
+$x^2 = 3(1 - x^2)$ ← $4x^2 = 3$ ← $x = \pm\tfrac{\sqrt3}{2}$ <span class="reason">نربّع لنتخلص من الجذر؛ والتربيع قد يُدخل حلولًا دخيلة</span>
+
+$x = \tfrac{\sqrt3}{2}$ فقط. التحقق: $\sin^{-1}\tfrac{\sqrt3}{2} - \cos^{-1}\tfrac{\sqrt3}{2} = \tfrac{\pi}{3} - \tfrac{\pi}{6} = \tfrac{\pi}{6}$ ✓ <span class="reason">نرفض السالب لأن $x \ge 0$؛ وعند $-\tfrac{\sqrt3}{2}$ يكون الفرق $-\tfrac{\pi}{3} - \tfrac{5\pi}{6} = -\tfrac{7\pi}{6}$</span>
 </Solution>
 </Example>
 
@@ -117,10 +164,22 @@ $\sin^{-1}x = \tfrac{2\pi}{3}$ **لا حل لها**، رغم أن $\sin\tfrac{2\
   explain="$\\tfrac{\\pi}{3}$ في مدى $\\tan^{-1}$، فإن $x = \\tan\\tfrac{\\pi}{3} = \\sqrt3$."
 />
 
+<Check
+  q="ما حل $\\cos^{-1}x = -\\dfrac{\\pi}{4}$؟"
+  options={["$\\tfrac{\\sqrt2}{2}$", "$-\\tfrac{\\sqrt2}{2}$", "$1$", "لا يوجد حل"]}
+  answer={3}
+  explain="مدى $\\cos^{-1}$ هو $[0, \\pi]$ ولا يحتوي زوايا سالبة، فلا يوجد $x$ يحقق المعادلة، رغم أن $\\cos\\left(-\\tfrac{\\pi}{4}\\right) = \\tfrac{\\sqrt2}{2}$."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+في الفيزياء كثيرًا ما تعرف الموضع وتريد الزمن: من $s = A\cos\omega t$ تحصل على $t = \tfrac{1}{\omega}\cos^{-1}\tfrac{s}{A}$ لنصف الدورة الأول، وهو بالضبط حل $x$ بدلالة $y$. وفي الفصل 8 تحسب زوايا المثلث من أضلاعه بـ $\cos^{-1}$، والمدى $[0, \pi]$ هو ما يجعل الجواب صحيحًا حتى للزوايا المنفرجة.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
-- لحل $y = a f(bx) + d$ لـ $x$: اعزل الدالة، وطبّق المعكوس، وحل خطيًا، واذكر القيد.
+- لحل $y = a f(bx) + d$ لـ $x$: اعزل الدالة، وطبّق المعكوس، وحل خطيًا، واذكر القيدين (على $x$ وعلى $y$).
+- القيد على $x$ يختار قطعة واحدة لواحد؛ والصيغة تتغير إذا تغيرت القطعة.
 - لحل معادلة فيها $f^{-1}$: اعزلها، وطبّق $f$ على الطرفين.
-- تحقق دائمًا أن الزاوية الناتجة في مدى الدالة العكسية، وإلا فلا حل.
+- تحقق دائمًا أن الزاوية الناتجة في مدى الدالة العكسية، وإلا فلا حل؛ وتحقق إذا ربّعت.
 
 <Practice set="7.7" count={5} />

@@ -1,7 +1,7 @@
 ---
 section: "7.5"
-summary: "الدوال الدائرية العكسية: لماذا نقيّد مجال الجيب وجيب التمام والظل، وتعريف sin⁻¹ و cos⁻¹ و tan⁻¹ ومجالاتها ومداها ورسومها، والدوال العكسية الثلاث الأخرى، وإيجاد القيم الدقيقة والتقريبية، وحساب عبارات مثل sin(cos⁻¹ ¾)."
-minutes: 45
+summary: "الدوال الدائرية العكسية: لماذا نقيّد مجال الجيب وجيب التمام والظل ولماذا هذه الفترات بالذات، وتعريف sin⁻¹ و cos⁻¹ و tan⁻¹ ومجالاتها ومداها ورسومها، والدوال العكسية الثلاث الأخرى، وإيجاد القيم الدقيقة والتقريبية، وحساب عبارات مثل sin(cos⁻¹ ¾)."
+minutes: 55
 prerequisites: ["4.1", "6.2"]
 terms:
   - { ar: "الدالة العكسية للجيب", en: "Inverse Sine Function", def: "y = sin⁻¹x = arcsin x تعني x = sin y مع −π/2 ≤ y ≤ π/2." }
@@ -14,10 +14,13 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import InverseTrig from '../../components/widgets/InverseTrig.astro';
 
 نعرف أن $\sin\tfrac{\pi}{6} = \tfrac12$. والسؤال العكسي: ما الزاوية التي جيبها $\tfrac12$؟ هناك عدد لا نهائي منها: $\tfrac{\pi}{6}$ و $\tfrac{5\pi}{6}$ و $\tfrac{13\pi}{6}$ وغيرها. والدالة لا يمكن أن تعطي إلا جوابًا واحدًا. الحل الذي رأيناه مع $x^2$ في الدرس 4.1: نقيّد المجال ونأخذ جزءًا واحدًا لواحد.
+
+هذا السؤال العكسي ليس نظريًا: كلما عرفت أضلاع مثلث وأردت زاويته، أو عرفت ميل طريق وأردت زاوية انحداره، فأنت تحتاج دالة عكسية. وزر $\sin^{-1}$ في الآلة الحاسبة يعطيك **القيمة الرئيسية** فقط، وهذا الدرس يشرح ما هي ولماذا.
 
 ## مراجعة الدوال العكسية <span class="en" lang="en">Review of Inverse Functions</span>
 
@@ -62,6 +65,16 @@ $$y = \tan^{-1}x \ \ (\text{or } \arctan x) \quad\iff\quad x = \tan y,\ \ -\frac
 المجال كل الأعداد الحقيقية، والمدى $\left(-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right)$، وخطا التقارب **أفقيان**: $y = \pm\tfrac{\pi}{2}$.
 </Box>
 
+<Deep title="لماذا هذه الفترات بالذات؟">
+لكل دالة فترات كثيرة تصلح نظريًا؛ مثلًا الجيب واحد لواحد أيضًا على $\left[\tfrac{\pi}{2}, \tfrac{3\pi}{2}\right]$. فلماذا اختار الرياضيون $\left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$؟ هناك ثلاثة شروط:
+
+1. أن تأخذ الدالة على الفترة **كل** قيمها، كل قيمة مرة واحدة فقط.
+2. أن تكون الفترة **متصلة** بلا قفزات، فيكون رسم المعكوس قطعة واحدة.
+3. أن تحتوي الزوايا **الحادة** $\left[0, \tfrac{\pi}{2}\right]$، لأنها زوايا المثلث القائم، فيبقى المعكوس متوافقًا مع حساب المثلثات الذي نعرفه.
+
+الجيب يحقق الثلاثة على $\left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$: يصعد من $-1$ إلى $1$ مارًّا بالربع الأول. لكن جيب التمام **ليس** واحدًا لواحد هناك ($\cos(-x) = \cos x$)، فنأخذ له $[0, \pi]$: ينزل من $1$ إلى $-1$ ويحتوي الربع الأول أيضًا. والنتيجة العملية: للمدخل السالب يعطي $\sin^{-1}$ زاوية **سالبة** (الربع الرابع)، بينما يعطي $\cos^{-1}$ زاوية **منفرجة** (الربع الثاني).
+</Deep>
+
 <InverseTrig />
 
 ## دوال عكسية أخرى <span class="en" lang="en">Other Inverse Circular Functions</span>
@@ -78,56 +91,92 @@ $$y = \tan^{-1}x \ \ (\text{or } \arctan x) \quad\iff\quad x = \tan y,\ \ -\frac
 
 ## قيم الدوال العكسية <span class="en" lang="en">Inverse Function Values</span>
 
-<Example n="1" title="قيم دقيقة">
+<Box kind="tip" title="طريقة ثابتة لأي قيمة دقيقة">
+1. حدّد **المدى** المسموح للدالة العكسية.
+2. ابحث عن الزاوية **المرجعية** التي تعطي القيمة دون إشارة (من الزوايا الخاصة).
+3. ضع الزاوية في الربع الذي **داخل المدى** وتكون فيه الإشارة صحيحة.
+</Box>
+
+<Example n="1" title="بداية سهلة">
+أوجد $\sin^{-1}\tfrac12$ و $\cos^{-1}0$.
+
+<Solution>
+$\sin^{-1}\tfrac12 = \tfrac{\pi}{6}$ <span class="reason">$\sin\tfrac{\pi}{6} = \tfrac12$ و $\tfrac{\pi}{6}$ في المدى $\left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$؛ أما $\tfrac{5\pi}{6}$ فجيبها $\tfrac12$ أيضًا لكنها خارج المدى</span>
+
+$\cos^{-1}0 = \tfrac{\pi}{2}$ <span class="reason">الزاوية الوحيدة في $[0, \pi]$ التي جيب تمامها صفر</span>
+</Solution>
+</Example>
+
+<Example n="2" title="قيم دقيقة بإشارات">
 أوجد: $\sin^{-1}\left(-\tfrac{\sqrt2}{2}\right)$، $\cos^{-1}\left(-\tfrac{\sqrt3}{2}\right)$، $\tan^{-1}\sqrt3$.
 
 <Solution>
-$\sin^{-1}\left(-\tfrac{\sqrt2}{2}\right)$: الزاوية في $\left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$ جيبها $-\tfrac{\sqrt2}{2}$ هي $-\tfrac{\pi}{4}$ (وليست $\tfrac{5\pi}{4}$ لأنها خارج المدى).
+$\sin^{-1}\left(-\tfrac{\sqrt2}{2}\right) = -\tfrac{\pi}{4}$ <span class="reason">الزاوية المرجعية $\tfrac{\pi}{4}$، والمدخل سالب، والجزء السالب من المدى هو الربع الرابع؛ و $\tfrac{5\pi}{4}$ خارج المدى</span>
 
-$\cos^{-1}\left(-\tfrac{\sqrt3}{2}\right)$: الزاوية في $[0, \pi]$ جيب تمامها $-\tfrac{\sqrt3}{2}$ هي $\tfrac{5\pi}{6}$.
+$\cos^{-1}\left(-\tfrac{\sqrt3}{2}\right) = \tfrac{5\pi}{6}$ <span class="reason">الزاوية المرجعية $\tfrac{\pi}{6}$، وجيب التمام سالب في الجزء $\left(\tfrac{\pi}{2}, \pi\right]$ من المدى: $\pi - \tfrac{\pi}{6}$</span>
 
-$\tan^{-1}\sqrt3 = \tfrac{\pi}{3}$.
+$\tan^{-1}\sqrt3 = \tfrac{\pi}{3}$ <span class="reason">$\tan\tfrac{\pi}{3} = \sqrt3$ وهي في الربع الأول داخل المدى</span>
 </Solution>
 </Example>
 
-<Example n="2" title="الآلة الحاسبة">
+<Box kind="mistake" title="cos⁻¹ لمدخل سالب لا يعطي زاوية سالبة">
+$\cos^{-1}\left(-\tfrac12\right) = \tfrac{2\pi}{3}$، **وليس** $-\tfrac{\pi}{3}$. مدى $\cos^{-1}$ هو $[0, \pi]$، فلا يحتوي أي زاوية سالبة. هذا عكس $\sin^{-1}$ و $\tan^{-1}$ اللتين تعطيان زاوية سالبة لمدخل سالب.
+</Box>
+
+<Example n="3" title="الآلة الحاسبة">
 احسب $\cos^{-1}(-0.3)$ بالدرجات، و $\cot^{-1}(-2)$ بالراديان.
 
 <Solution>
-$\cos^{-1}(-0.3) \approx 107.46^\circ$ (الآلة على DEG).
+$\cos^{-1}(-0.3) \approx 107.46^\circ$ (الآلة على DEG). <span class="reason">زاوية منفرجة كما يجب لمدخل سالب</span>
 
-$\cot^{-1}(-2)$: المدخل سالب، فإن $\tan^{-1}\left(-\tfrac12\right) + \pi \approx -0.4636 + 3.1416$
+$\cot^{-1}(-2)$: المدخل سالب، فإن $\tan^{-1}\left(-\tfrac12\right) + \pi \approx -0.4636 + 3.1416$ <span class="reason">الآلة لا تحوي زر $\cot^{-1}$؛ و $\tan^{-1}$ يعطي زاوية سالبة، بينما مدى $\cot^{-1}$ هو $(0, \pi)$، فنضيف $\pi$</span>
 
-$\approx 2.6779$، وهي في المدى $(0, \pi)$ كما يجب.
+$\approx 2.6779$، وهي في المدى $(0, \pi)$ كما يجب. <span class="reason">نتحقق دائمًا أن الجواب داخل المدى</span>
 </Solution>
 </Example>
 
-<Example n="3" title="دالة لدالة عكسية">
+<Example n="4" title="دالة لدالة عكسية">
 أوجد القيمة الدقيقة: $\sin\left(\tan^{-1}\left(-\tfrac34\right)\right)$، ثم $\cos\left(2\sin^{-1}\tfrac13\right)$.
 
 <Solution>
-ضع $\theta = \tan^{-1}\left(-\tfrac34\right)$: الظل سالب و $\theta \in \left(-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right)$، فهي في الربع الرابع، والنقطة $(4, -3)$ و $r = 5$. إذن $\sin\theta = -\tfrac35$.
+ضع $\theta = \tan^{-1}\left(-\tfrac34\right)$: الظل سالب و $\theta \in \left(-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right)$، فهي في الربع الرابع، والنقطة $(4, -3)$ و $r = 5$. <span class="reason">نسمي الزاوية ونرسم مثلثها؛ $\tan\theta = \tfrac{y}{x} = \tfrac{-3}{4}$ مع $x > 0$ في الربع الرابع، و $r = \sqrt{16 + 9}$</span>
 
-ضع $\theta = \sin^{-1}\tfrac13$، فإن $\sin\theta = \tfrac13$.
+إذن $\sin\theta = -\tfrac35$. <span class="reason">$\sin\theta = \tfrac{y}{r}$</span>
 
-$\cos 2\theta = 1 - 2\sin^2\theta = 1 - \tfrac29 = \tfrac79$
+ضع $\theta = \sin^{-1}\tfrac13$، فإن $\sin\theta = \tfrac13$. <span class="reason">العبارة الآن $\cos 2\theta$، وهذه ضعف زاوية</span>
+
+$\cos 2\theta = 1 - 2\sin^2\theta = 1 - \tfrac29 = \tfrac79$ <span class="reason">نختار صيغة $\cos 2\theta$ التي بدلالة $\sin$ لأنه المعروف</span>
 </Solution>
 </Example>
 
-<Example n="4" title="عبارة جبرية">
+<Example n="5" title="عبارة جبرية">
 اكتب $\cos(\sin^{-1}u)$ عبارة جبرية في $u$، حيث $-1 \le u \le 1$.
 
 <Solution>
-ضع $\theta = \sin^{-1}u$، فإن $\sin\theta = u$ و $\theta \in \left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$ حيث $\cos\theta \ge 0$.
+ضع $\theta = \sin^{-1}u$، فإن $\sin\theta = u$ و $\theta \in \left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$ حيث $\cos\theta \ge 0$. <span class="reason">المدى يقع في الربعين الأول والرابع، وجيب التمام فيهما غير سالب</span>
 
-$\cos\theta = \sqrt{1 - \sin^2\theta}$
+$\cos\theta = \sqrt{1 - \sin^2\theta}$ <span class="reason">فيثاغورس بالإشارة الموجبة فقط، بسبب السطر السابق</span>
 
-$\cos(\sin^{-1}u) = \sqrt{1 - u^2}$
+$\cos(\sin^{-1}u) = \sqrt{1 - u^2}$ <span class="reason">نعوّض $\sin\theta = u$</span>
+</Solution>
+</Example>
+
+<Example n="6" title="مستوى الاختبار: مجموع دالتين عكسيتين">
+أوجد القيمة الدقيقة لـ $\sin\left(\sin^{-1}\tfrac13 + \cos^{-1}\tfrac35\right)$.
+
+<Solution>
+ضع $\alpha = \sin^{-1}\tfrac13$ و $\beta = \cos^{-1}\tfrac35$؛ المطلوب $\sin(\alpha + \beta)$. <span class="reason">تسمية الزاويتين تحوّل المسألة إلى صيغة مجموع (الدرس 7.3)</span>
+
+$\sin\alpha = \tfrac13$ و $\cos\alpha = \sqrt{1 - \tfrac19} = \tfrac{2\sqrt2}{3}$ <span class="reason">$\alpha$ في الربع الأول (مدخل موجب لـ $\sin^{-1}$)، فجيب التمام موجب</span>
+
+$\cos\beta = \tfrac35$ و $\sin\beta = \tfrac45$ <span class="reason">$\beta$ في $[0, \pi]$ فجيبها غير سالب؛ والمثلث 3-4-5</span>
+
+$\sin(\alpha + \beta) = \tfrac13\cdot\tfrac35 + \tfrac{2\sqrt2}{3}\cdot\tfrac45 = \dfrac{3 + 8\sqrt2}{15} \approx 0.954$ <span class="reason">صيغة مجموع الجيب، ثم مقام مشترك 15</span>
 </Solution>
 </Example>
 
 <Box kind="mistake" title="الإلغاء ليس دائمًا">
-$\sin(\sin^{-1}x) = x$ لكل $x \in [-1, 1]$. أما $\sin^{-1}(\sin x) = x$ فصحيحة فقط إذا كان $x \in \left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$. مثلًا $\sin^{-1}\left(\sin\tfrac{5\pi}{6}\right) = \sin^{-1}\tfrac12 = \tfrac{\pi}{6}$، لا $\tfrac{5\pi}{6}$.
+$\sin(\sin^{-1}x) = x$ لكل $x \in [-1, 1]$. أما $\sin^{-1}(\sin x) = x$ فصحيحة فقط إذا كان $x \in \left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$. مثلًا $\sin^{-1}\left(\sin\tfrac{5\pi}{6}\right) = \sin^{-1}\tfrac12 = \tfrac{\pi}{6}$، لا $\tfrac{5\pi}{6}$. وكذلك $\cos^{-1}\left(\cos\left(-\tfrac{\pi}{3}\right)\right) = \cos^{-1}\tfrac12 = \tfrac{\pi}{3}$، لا $-\tfrac{\pi}{3}$.
 </Box>
 
 <Check
@@ -137,11 +186,24 @@ $\sin(\sin^{-1}x) = x$ لكل $x \in [-1, 1]$. أما $\sin^{-1}(\sin x) = x$ ف
   explain="الزاوية الوحيدة في $[0, \\pi]$ التي جيب تمامها $-1$ هي $\\pi$."
 />
 
+<Check
+  q="ما قيمة $\\sin^{-1}\\left(\\sin\\tfrac{3\\pi}{4}\\right)$؟"
+  options={["$\\tfrac{3\\pi}{4}$", "$\\tfrac{\\pi}{4}$", "$-\\tfrac{\\pi}{4}$", "$\\tfrac{\\sqrt2}{2}$"]}
+  answer={1}
+  explain="$\\sin\\tfrac{3\\pi}{4} = \\tfrac{\\sqrt2}{2}$، والزاوية في $\\left[-\\tfrac{\\pi}{2}, \\tfrac{\\pi}{2}\\right]$ التي جيبها $\\tfrac{\\sqrt2}{2}$ هي $\\tfrac{\\pi}{4}$. الإلغاء لا يصح لأن $\\tfrac{3\\pi}{4}$ خارج المدى."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+في الدرس التالي مباشرة (7.6): حل $\sin x = 0.3$ يبدأ بـ $\sin^{-1}0.3$ ثم تضيف بقية الحلول من الدورية والتماثل. وفي الفصل 8 تحسب زوايا المثلثات من أضلاعها بـ $\cos^{-1}$ و $\sin^{-1}$. وفي التفاضل والتكامل تظهر $\tan^{-1}x$ نتيجةً لتكامل $\tfrac{1}{1 + x^2}$.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
 - $\sin^{-1}$: مجال $[-1, 1]$ ومدى $\left[-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right]$.
-- $\cos^{-1}$: مجال $[-1, 1]$ ومدى $[0, \pi]$.
+- $\cos^{-1}$: مجال $[-1, 1]$ ومدى $[0, \pi]$؛ لا تعطي زاوية سالبة أبدًا.
 - $\tan^{-1}$: مجال كل الأعداد ومدى $\left(-\tfrac{\pi}{2}, \tfrac{\pi}{2}\right)$.
+- للقيمة الدقيقة: المدى، ثم الزاوية المرجعية، ثم الربع الصحيح داخل المدى.
 - لحساب $f(g^{-1}(x))$: ضع $\theta = g^{-1}(x)$ وارسم مثلثها في الربع الصحيح.
+- $f^{-1}(f(x)) = x$ فقط إذا كانت $x$ داخل المدى المقيّد.
 
 <Practice set="7.5" count={6} />

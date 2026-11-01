@@ -203,6 +203,7 @@ details.derive[open] summary { margin-bottom: 0.5rem; }
 input[type='range'] { direction: ltr; }
 /* لا نكسر المعادلة القصيرة بين سطرين */
 .katex { white-space: nowrap; }
+.katex.wrap { white-space: normal; }
 
 /* سبب الخطوة في الحلول المفصّلة */
 .reason { display: block; margin-top: 0.15rem; color: var(--muted); font-size: 0.88em; line-height: 1.7; }

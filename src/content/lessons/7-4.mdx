@@ -1,7 +1,7 @@
 ---
 section: "7.4"
-summary: "متطابقات ضعف الزاوية (sin 2A و cos 2A بصيغها الثلاث و tan 2A)، وصيغ خفض القوة، وتحويل الضرب إلى مجموع وبالعكس، ومتطابقات نصف الزاوية مع اختيار الإشارة، وإثبات متطابقات بها."
-minutes: 45
+summary: "متطابقات ضعف الزاوية (sin 2A و cos 2A بصيغها الثلاث و tan 2A) ومن أين تأتي، وصيغ خفض القوة، وتحويل الضرب إلى مجموع وبالعكس، ومتطابقات نصف الزاوية مع اختيار الإشارة، وإثبات متطابقات بها."
+minutes: 55
 prerequisites: ["7.3"]
 terms:
   - { ar: "متطابقات ضعف الزاوية", en: "Double-Angle Identities", def: "sin 2A = 2 sin A cos A ، cos 2A = cos²A − sin²A ، tan 2A = 2tan A/(1 − tan²A)." }
@@ -14,10 +14,11 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import DoubleAngle from '../../components/widgets/DoubleAngle.astro';
 
-ضع $B = A$ في متطابقات المجموع، فتحصل مباشرة على صيغ **ضعف الزاوية**. واقلبها، فتحصل على صيغ **نصف الزاوية**. هذا الدرس ليس قوانين جديدة بقدر ما هو قراءات مختلفة لقوانين الدرس السابق.
+ضع $B = A$ في متطابقات المجموع، فتحصل مباشرة على صيغ **ضعف الزاوية**. واقلبها، فتحصل على صيغ **نصف الزاوية**. هذا الدرس ليس قوانين جديدة بقدر ما هو قراءات مختلفة لقوانين الدرس السابق. إن فهمت من أين تأتي كل صيغة، فلن تحتاج إلى حفظ إلا القليل.
 
 ## متطابقات ضعف الزاوية <span class="en" lang="en">Double-Angle Identities</span>
 
@@ -31,33 +32,61 @@ $$\tan 2A = \frac{2\tan A}{1 - \tan^2 A}$$
 الصيغتان الأخيرتان لـ $\cos 2A$ من الأولى بتعويض $\cos^2 A = 1 - \sin^2 A$ أو $\sin^2 A = 1 - \cos^2 A$. اختر منها ما يناسب المعطيات.
 </Box>
 
+<Deep title="الاشتقاق في سطر واحد لكل صيغة">
+ضع $B = A$ في صيغ المجموع من الدرس 7.3:
+
+$$\sin(A + A) = \sin A\cos A + \cos A\sin A$$
+
+$$= 2\sin A\cos A$$
+
+$$\cos(A + A) = \cos A\cos A - \sin A\sin A$$
+
+$$= \cos^2 A - \sin^2 A$$
+
+$$\tan(A + A) = \frac{\tan A + \tan A}{1 - \tan A\tan A} = \frac{2\tan A}{1 - \tan^2 A}$$
+
+ثم الصيغتان الأخريان لـ $\cos 2A$: عوّض $\sin^2 A = 1 - \cos^2 A$ فتحصل على $\cos^2 A - (1 - \cos^2 A) = 2\cos^2 A - 1$، أو عوّض $\cos^2 A = 1 - \sin^2 A$ فتحصل على $1 - 2\sin^2 A$.
+
+**كيف تختار؟** إن كان معك $\sin A$ فقط فاستخدم $1 - 2\sin^2 A$، وإن كان معك $\cos A$ فقط فاستخدم $2\cos^2 A - 1$؛ هكذا تتجنب حساب الدالة الأخرى وتحديد إشارتها.
+</Deep>
+
 <Box kind="mistake" title="sin 2A ليست 2 sin A">
 $\sin 60^\circ = \tfrac{\sqrt3}{2} \approx 0.87$، بينما $2\sin 30^\circ = 1$. المضاعفة داخل الدالة تغيّر **الدورة**، لا الارتفاع.
 </Box>
 
 <DoubleAngle />
 
-<Example n="1" title="من دالة إلى ضعف الزاوية">
-إذا كان $\cos\theta = \tfrac35$ و $\sin\theta < 0$، فأوجد $\sin 2\theta$ و $\cos 2\theta$ و $\tan 2\theta$.
+<Example n="1" title="بداية سهلة">
+إذا كان $\sin A = \tfrac{5}{13}$ و $A$ حادة، فأوجد $\sin 2A$.
 
 <Solution>
-$\theta$ في الربع الرابع، و $\sin\theta = -\tfrac45$.
+$\cos A = \sqrt{1 - \tfrac{25}{169}} = \tfrac{12}{13}$ <span class="reason">صيغة $\sin 2A$ تحتاج $\cos A$ أيضًا؛ والزاوية حادة فجيب التمام موجب</span>
 
-$\sin 2\theta = 2\left(-\tfrac45\right)\left(\tfrac35\right) = -\tfrac{24}{25}$، و $\cos 2\theta = \tfrac{9}{25} - \tfrac{16}{25} = -\tfrac{7}{25}$
-
-$\tan 2\theta = \dfrac{\sin 2\theta}{\cos 2\theta} = \dfrac{-24/25}{-7/25} = \dfrac{24}{7}$
+$\sin 2A = 2\cdot\tfrac{5}{13}\cdot\tfrac{12}{13} = \tfrac{120}{169}$ <span class="reason">صيغة ضعف الزاوية للجيب</span>
 </Solution>
 </Example>
 
-<Example n="2" title="ثلاثة أضعاف الزاوية">
+<Example n="2" title="من دالة إلى ضعف الزاوية">
+إذا كان $\cos\theta = \tfrac35$ و $\sin\theta < 0$، فأوجد $\sin 2\theta$ و $\cos 2\theta$ و $\tan 2\theta$.
+
+<Solution>
+$\theta$ في الربع الرابع، و $\sin\theta = -\tfrac45$. <span class="reason">جيب التمام موجب والجيب سالب معًا في الربع الرابع فقط؛ ثم فيثاغورس</span>
+
+$\sin 2\theta = 2\left(-\tfrac45\right)\left(\tfrac35\right) = -\tfrac{24}{25}$، و $\cos 2\theta = \tfrac{9}{25} - \tfrac{16}{25} = -\tfrac{7}{25}$ <span class="reason">صيغة $\cos^2 - \sin^2$ لأن الدالتين معروفتان الآن</span>
+
+$\tan 2\theta = \dfrac{\sin 2\theta}{\cos 2\theta} = \dfrac{-24/25}{-7/25} = \dfrac{24}{7}$ <span class="reason">القسمة أسرع من صيغة $\tan 2A$ ما دام الجيب وجيب التمام محسوبين</span>
+</Solution>
+</Example>
+
+<Example n="3" title="ثلاثة أضعاف الزاوية">
 اكتب $\sin 3x$ بدلالة $\sin x$.
 
 <Solution>
-$\sin 3x = \sin(2x + x) = \sin 2x\cos x + \cos 2x\sin x$
+$\sin 3x = \sin(2x + x) = \sin 2x\cos x + \cos 2x\sin x$ <span class="reason">نكتب $3x$ مجموعًا ونستخدم صيغة المجموع</span>
 
-$= 2\sin x\cos^2 x + (1 - 2\sin^2 x)\sin x = 2\sin x(1 - \sin^2 x) + \sin x - 2\sin^3 x$
+$= 2\sin x\cos^2 x + (1 - 2\sin^2 x)\sin x = 2\sin x(1 - \sin^2 x) + \sin x - 2\sin^3 x$ <span class="reason">ضعف الزاوية، واخترنا صيغة $\cos 2x$ التي بدلالة $\sin$ لأن المطلوب بدلالة $\sin$؛ ثم $\cos^2 x = 1 - \sin^2 x$</span>
 
-$= 3\sin x - 4\sin^3 x$
+$= 3\sin x - 4\sin^3 x$ <span class="reason">نجمع الحدود المتشابهة</span>
 </Solution>
 </Example>
 
@@ -71,23 +100,41 @@ $$\sin^2 x = \frac{1 - \cos 2x}{2} \qquad \cos^2 x = \frac{1 + \cos 2x}{2}$$
 تحوّل المربع إلى دالة من الدرجة الأولى بزاوية مضاعفة، وهي مفيدة جدًا في التفاضل والتكامل.
 </Box>
 
+<Box kind="tip" title="معنى الصيغة بالرسم">
+$\sin^2 x$ تتأرجح بين $0$ و $1$، فمتوسطها $\tfrac12$. والصيغة تقول ذلك بالضبط: $\tfrac12$ (المتوسط) ناقص $\tfrac12\cos 2x$ (تأرجح بسعة $\tfrac12$ ودورة $\pi$). أي أن مربع الجيب موجة جيب تمام مقلوبة ومرفوعة ومضغوطة.
+</Box>
+
+<Example n="4" title="مستوى الاختبار: خفض القوة الرابعة">
+اكتب $\cos^4 x$ دون أُسس أكبر من 1.
+
+<Solution>
+$\cos^4 x = (\cos^2 x)^2 = \left(\dfrac{1 + \cos 2x}{2}\right)^2$ <span class="reason">نخفض المربع الداخلي أولًا</span>
+
+$= \dfrac{1 + 2\cos 2x + \cos^2 2x}{4}$ <span class="reason">نفك المربع؛ ما زال فيه $\cos^2 2x$</span>
+
+$= \dfrac{1 + 2\cos 2x + \tfrac{1 + \cos 4x}{2}}{4}$ <span class="reason">نخفض مرة ثانية، والزاوية هنا $2x$ فتصير $4x$</span>
+
+$= \dfrac{3 + 4\cos 2x + \cos 4x}{8}$ <span class="reason">نضرب البسط والمقام في 2 لنتخلص من الكسر الداخلي</span>
+</Solution>
+</Example>
+
 ## تطبيق <span class="en" lang="en">An Application</span>
 
-<Example n="3" title="مدى المقذوف">
+<Example n="5" title="مدى المقذوف">
 مقذوف أُطلق بسرعة $v_0$ وزاوية $\theta$ يقطع أفقيًا المسافة $R = \dfrac{2v_0^2\sin\theta\cos\theta}{g}$. ما الزاوية التي تعطي أكبر مدى؟
 
 <Solution>
-$2\sin\theta\cos\theta = \sin 2\theta$، فإن $R = \dfrac{v_0^2\sin 2\theta}{g}$.
+$2\sin\theta\cos\theta = \sin 2\theta$، فإن $R = \dfrac{v_0^2\sin 2\theta}{g}$. <span class="reason">نقرأ صيغة ضعف الزاوية بالعكس فتصير العبارة دالة واحدة</span>
 
-أكبر قيمة لـ $\sin 2\theta$ هي 1 عندما $2\theta = 90^\circ$.
+أكبر قيمة لـ $\sin 2\theta$ هي 1 عندما $2\theta = 90^\circ$. <span class="reason">مدى الجيب $[-1, 1]$، و $v_0$ و $g$ ثابتان</span>
 
-$\theta = 45^\circ$. والصيغة المبسطة تبيّن أيضًا أن $30^\circ$ و $60^\circ$ تعطيان المدى نفسه، لأن $\sin 60^\circ = \sin 120^\circ$.
+$\theta = 45^\circ$. والصيغة المبسطة تبيّن أيضًا أن $30^\circ$ و $60^\circ$ تعطيان المدى نفسه، لأن $\sin 60^\circ = \sin 120^\circ$. <span class="reason">$\sin(180^\circ - x) = \sin x$، فكل زاويتين مجموعهما $90^\circ$ تعطيان المدى نفسه</span>
 </Solution>
 </Example>
 
 ## تحويل الضرب إلى مجموع وبالعكس <span class="en" lang="en">Product-to-Sum and Sum-to-Product</span>
 
-اجمع واطرح صيغ $\sin(A \pm B)$ و $\cos(A \pm B)$:
+اجمع واطرح صيغ $\sin(A \pm B)$ و $\cos(A \pm B)$. مثلًا بجمع $\cos(A - B)$ و $\cos(A + B)$ يختفي حدّا $\sin A\sin B$ ويبقى $2\cos A\cos B$:
 
 <Box kind="rule" title="الضرب إلى مجموع" en="Product-to-Sum Identities">
 $$\cos A\cos B = \tfrac12[\cos(A - B) + \cos(A + B)] \qquad \sin A\sin B = \tfrac12[\cos(A - B) - \cos(A + B)]$$
@@ -101,15 +148,15 @@ $$\sin A + \sin B = 2\sin\frac{A + B}{2}\cos\frac{A - B}{2} \qquad \cos A + \cos
 $$\sin A - \sin B = 2\cos\frac{A + B}{2}\sin\frac{A - B}{2} \qquad \cos A - \cos B = -2\sin\frac{A + B}{2}\sin\frac{A - B}{2}$$
 </Box>
 
-<Example n="4" title="ضرب إلى مجموع">
+<Example n="6" title="ضرب إلى مجموع">
 اكتب $4\cos 75^\circ\sin 25^\circ$ مجموعًا، ثم $\sin 2\theta - \sin 4\theta$ حاصل ضرب.
 
 <Solution>
-$4\cos 75^\circ\sin 25^\circ = 4\cdot\tfrac12[\sin 100^\circ - \sin 50^\circ] = 2\sin 100^\circ - 2\sin 50^\circ$
+$4\cos 75^\circ\sin 25^\circ = 4\cdot\tfrac12[\sin 100^\circ - \sin 50^\circ] = 2\sin 100^\circ - 2\sin 50^\circ$ <span class="reason">صيغة $\cos A\sin B$ مع $A = 75^\circ$ و $B = 25^\circ$</span>
 
-$\sin 2\theta - \sin 4\theta = 2\cos\dfrac{6\theta}{2}\sin\dfrac{-2\theta}{2} = 2\cos 3\theta\sin(-\theta)$
+$\sin 2\theta - \sin 4\theta = 2\cos\dfrac{6\theta}{2}\sin\dfrac{-2\theta}{2} = 2\cos 3\theta\sin(-\theta)$ <span class="reason">صيغة $\sin A - \sin B$: نصف المجموع ونصف الفرق</span>
 
-$= -2\cos 3\theta\sin\theta$
+$= -2\cos 3\theta\sin\theta$ <span class="reason">الجيب فردي: $\sin(-\theta) = -\sin\theta$</span>
 </Solution>
 </Example>
 
@@ -125,41 +172,55 @@ $$\tan\frac{A}{2} = \frac{1 - \cos A}{\sin A} = \frac{\sin A}{1 + \cos A}$$
 الإشارة $\pm$ يحددها **ربع الزاوية $\tfrac{A}{2}$**. وصيغتا الظل لا تحتاجان إشارة.
 </Box>
 
-<Example n="5" title="قيمة دقيقة بنصف الزاوية">
+<Deep title="لماذا لا تحتاج صيغتا الظل إلى ±؟">
+اكتب $\tan\tfrac{A}{2} = \dfrac{\sin(A/2)}{\cos(A/2)}$ واضرب البسط والمقام في $2\cos\tfrac{A}{2}$:
+
+$$\tan\frac{A}{2} = \frac{2\sin\frac{A}{2}\cos\frac{A}{2}}{2\cos^2\frac{A}{2}} = \frac{\sin A}{1 + \cos A}$$
+
+البسط صار $\sin A$ بصيغة ضعف الزاوية، والمقام صار $1 + \cos A$ بصيغة $2\cos^2 x = 1 + \cos 2x$. لم نأخذ أي جذر تربيعي، فلم تظهر $\pm$.
+
+والإشارة تأتي صحيحة تلقائيًا: المقام $1 + \cos A \ge 0$ دائمًا، فإشارة الناتج هي إشارة $\sin A$. وفعلًا: إذا كانت $0 < A < 2\pi$ فإن $\sin A$ موجب بالضبط حين $0 < \tfrac{A}{2} < \tfrac{\pi}{2}$، أي حين يكون $\tan\tfrac{A}{2}$ موجبًا.
+</Deep>
+
+<Example n="7" title="قيمة دقيقة بنصف الزاوية">
 أوجد القيمة الدقيقة لـ $\cos 112.5^\circ$.
 
 <Solution>
-$112.5^\circ = \tfrac{225^\circ}{2}$ في الربع الثاني، فجيب التمام **سالب**.
+$112.5^\circ = \tfrac{225^\circ}{2}$ في الربع الثاني، فجيب التمام **سالب**. <span class="reason">نختار زاوية ضعفها خاص، ونحدد الإشارة من ربع نصف الزاوية</span>
 
-$\cos 112.5^\circ = -\sqrt{\dfrac{1 + \cos 225^\circ}{2}} = -\sqrt{\dfrac{1 - \tfrac{\sqrt2}{2}}{2}}$
+$\cos 112.5^\circ = -\sqrt{\dfrac{1 + \cos 225^\circ}{2}} = -\sqrt{\dfrac{1 - \tfrac{\sqrt2}{2}}{2}}$ <span class="reason">$\cos 225^\circ = -\tfrac{\sqrt2}{2}$ (الربع الثالث)</span>
 
-$= -\dfrac{\sqrt{2 - \sqrt2}}{2} \approx -0.3827$
+$= -\dfrac{\sqrt{2 - \sqrt2}}{2} \approx -0.3827$ <span class="reason">نضرب البسط والمقام داخل الجذر في 2: $\tfrac{2 - \sqrt2}{4}$، وجذر 4 هو 2</span>
 </Solution>
 </Example>
 
-<Example n="6" title="نصف زاوية من معطيات">
+<Example n="8" title="نصف زاوية من معطيات">
 إذا كان $\cos s = \tfrac23$ و $\tfrac{3\pi}{2} < s < 2\pi$، فأوجد $\sin\tfrac{s}{2}$.
 
 <Solution>
-اقسم حدود الفترة على 2: $\tfrac{3\pi}{4} < \tfrac{s}{2} < \pi$، أي الربع الثاني، والجيب **موجب**.
+اقسم حدود الفترة على 2: $\tfrac{3\pi}{4} < \tfrac{s}{2} < \pi$، أي الربع الثاني، والجيب **موجب**. <span class="reason">الإشارة تحددها $\tfrac{s}{2}$ لا $s$</span>
 
-$\sin\dfrac{s}{2} = \sqrt{\dfrac{1 - \tfrac23}{2}} = \sqrt{\dfrac16}$
+$\sin\dfrac{s}{2} = \sqrt{\dfrac{1 - \tfrac23}{2}} = \sqrt{\dfrac16}$ <span class="reason">صيغة نصف الزاوية للجيب بالإشارة الموجبة</span>
 
-$= \dfrac{\sqrt6}{6}$
+$= \dfrac{\sqrt6}{6}$ <span class="reason">إنطاق المقام: $\tfrac{1}{\sqrt6} = \tfrac{\sqrt6}{6}$</span>
 </Solution>
 </Example>
 
+<Box kind="mistake" title="الإشارة من ربع A/2 لا من ربع A">
+في المثال الأخير $s$ في الربع الرابع حيث الجيب سالب، لكن $\tfrac{s}{2}$ في الربع الثاني حيث الجيب موجب. من يأخذ الإشارة من ربع $s$ يكتب $-\tfrac{\sqrt6}{6}$ وهو خطأ. احسب الفترة التي تقع فيها $\tfrac{A}{2}$ أولًا، ثم اختر الإشارة.
+</Box>
+
 ## إثبات متطابقة <span class="en" lang="en">Verifying an Identity</span>
 
-<Example n="7" title="ضعف زاوية في متطابقة">
+<Example n="9" title="ضعف زاوية في متطابقة">
 أثبت أن $\cot x\sin 2x = 1 + \cos 2x$.
 
 <Solution>
-الأيسر: $\dfrac{\cos x}{\sin x}\cdot 2\sin x\cos x = 2\cos^2 x$
+الأيسر: $\dfrac{\cos x}{\sin x}\cdot 2\sin x\cos x = 2\cos^2 x$ <span class="reason">نحوّل إلى زاوية واحدة $x$، ثم نختصر $\sin x$</span>
 
-والأيمن: $1 + (2\cos^2 x - 1) = 2\cos^2 x$
+والأيمن: $1 + (2\cos^2 x - 1) = 2\cos^2 x$ <span class="reason">اخترنا صيغة $\cos 2x$ التي تلغي الواحد</span>
 
-الطرفان متساويان ✓
+الطرفان متساويان ✓ <span class="reason">الطرفان يساويان العبارة نفسها</span>
 </Solution>
 </Example>
 
@@ -170,11 +231,23 @@ $= \dfrac{\sqrt6}{6}$
   explain="$\\cos 2A = 1 - 2\\sin^2 A = 1 - 2\\cdot\\tfrac{9}{25} = \\tfrac{7}{25}$."
 />
 
+<Check
+  q="ما قيمة $\\sin 15^\\circ\\cos 15^\\circ$؟"
+  options={["$\\tfrac12$", "$\\tfrac14$", "$\\tfrac{\\sqrt3}{4}$", "$\\tfrac{\\sqrt3}{2}$"]}
+  answer={1}
+  explain="$\\sin 15^\\circ\\cos 15^\\circ = \\tfrac12\\cdot 2\\sin 15^\\circ\\cos 15^\\circ = \\tfrac12\\sin 30^\\circ = \\tfrac14$."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+في حل المعادلات (7.6) تحوّل $\sin 2x$ و $\cos 2x$ إلى زاوية واحدة $x$ ثم تحلّل. وفي التفاضل والتكامل صيغ خفض القوة هي الطريقة المعتادة لتكامل $\sin^2 x$ و $\cos^2 x$. وفي الفيزياء يحسب المهندسون بها متوسط قدرة التيار المتردد، لأن القدرة تتناسب مع $\sin^2$ ومتوسطه $\tfrac12$.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
-- $\sin 2A = 2\sin A\cos A$، و $\cos 2A$ بثلاث صيغ، و $\tan 2A = \tfrac{2\tan A}{1 - \tan^2 A}$.
+- $\sin 2A = 2\sin A\cos A$، و $\cos 2A$ بثلاث صيغ، و $\tan 2A = \tfrac{2\tan A}{1 - \tan^2 A}$؛ كلها من صيغ المجموع بوضع $B = A$.
+- اختر صيغة $\cos 2A$ حسب الدالة المعطاة.
 - خفض القوة: $\sin^2 x = \tfrac{1 - \cos 2x}{2}$ و $\cos^2 x = \tfrac{1 + \cos 2x}{2}$.
 - الضرب إلى مجموع وبالعكس من جمع صيغ المجموع والفرق وطرحها.
-- نصف الزاوية: الإشارة من ربع $\tfrac{A}{2}$.
+- نصف الزاوية: الإشارة من ربع $\tfrac{A}{2}$، وصيغتا الظل بلا إشارة.
 
 <Practice set="7.4" count={6} />

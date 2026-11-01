@@ -153,5 +153,21 @@ const isActive = (p: string) => path.startsWith(base + p);
         nav a { padding: 0.4rem 0.5rem; }
       }
     </style>
+    <script>
+      // المعادلة القصيرة لا تنكسر؛ الطويلة (أعرض من سطرها) يُسمح بكسرها عند العمليات
+      const fitMath = () => {
+        document.querySelectorAll<HTMLElement>('.katex:not(.wrap)').forEach((k) => {
+          if (k.closest('.katex-display') || !k.offsetWidth) return;
+          const block = k.parentElement?.closest<HTMLElement>('p, li, td, th, summary, .reason, div');
+          if (block && k.offsetWidth > block.clientWidth - 4) k.classList.add('wrap');
+        });
+      };
+      const later = () => requestAnimationFrame(() => requestAnimationFrame(fitMath));
+      fitMath();
+      addEventListener('load', fitMath);
+      addEventListener('resize', later);
+      document.addEventListener('click', later, true);
+      document.addEventListener('toggle', later, true);
+    </script>
   </body>
 </html>

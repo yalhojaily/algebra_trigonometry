@@ -1,7 +1,7 @@
 ---
 section: "7.3"
-summary: "متطابقات جيب التمام والجيب والظل لمجموع زاويتين والفرق بينهما، ومنها متطابقات الدوال المتتامة، وحساب القيم الدقيقة لزوايا مثل 15° و 75°، وإيجاد sin(A + B) من معطيات، وتبسيط الإزاحات."
-minutes: 45
+summary: "متطابقات جيب التمام والجيب والظل لمجموع زاويتين والفرق بينهما ومن أين تأتي، ومنها متطابقات الدوال المتتامة، وحساب القيم الدقيقة لزوايا مثل 15° و 75° و 105°، وإيجاد sin(A + B) من معطيات، وتبسيط الإزاحات، وإثبات متطابقات بها."
+minutes: 55
 prerequisites: ["7.1", "5.3"]
 terms:
   - { ar: "متطابقة المجموع", en: "Sum Identity", def: "صيغة لـ f(A + B) بدلالة دوال A و B، مثل sin(A + B) = sin A cos B + cos A sin B." }
@@ -13,10 +13,15 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import SumAngle from '../../components/widgets/SumAngle.astro';
 
-هل $\sin(30^\circ + 60^\circ) = \sin 30^\circ + \sin 60^\circ$؟ الطرف الأيسر $\sin 90^\circ = 1$، والأيمن $\tfrac12 + \tfrac{\sqrt3}{2} \approx 1.37$. الدوال المثلثية **لا تتوزع** على الجمع. فكيف نحسب جيب مجموع زاويتين؟ هذا الدرس يعطي القوانين الصحيحة، ومنها تُشتق كل متطابقات الفصل تقريبًا.
+هل $\sin(30^\circ + 60^\circ) = \sin 30^\circ + \sin 60^\circ$؟ الطرف الأيسر $\sin 90^\circ = 1$، والأيمن $\tfrac12 + \tfrac{\sqrt3}{2} \approx 1.37$. الدوال المثلثية **لا تتوزع** على الجمع. فكيف نحسب جيب مجموع زاويتين؟ هذا الدرس يعطي القوانين الصحيحة، ومنها تُشتق كل متطابقات الفصل تقريبًا: ضعف الزاوية ونصفها (7.4) وتحويل الضرب إلى مجموع، كلها حالات خاصة مما ستراه هنا.
+
+<Box kind="mistake" title="الدالة لا تتوزع على الجمع">
+$\sin(A + B) \neq \sin A + \sin B$، و $\cos(A + B) \neq \cos A + \cos B$. الدالة ليست عددًا مضروبًا في القوس؛ $\sin(A + B)$ تعني «جيب الزاوية $A + B$»، لا «$\sin$ ضرب $(A + B)$». وكذلك $\sin 2x \neq 2\sin x$.
+</Box>
 
 ## جيب التمام للمجموع والفرق <span class="en" lang="en">Cosine Sum and Difference Identities</span>
 
@@ -28,27 +33,29 @@ $$\cos(A + B) = \cos A\cos B - \sin A\sin B$$
 لاحظ أن الإشارة في الوسط **عكس** الإشارة داخل القوس.
 </Box>
 
-<details class="derive">
-<summary>من أين جاءت صيغة cos(A − B)؟</summary>
-
+<Deep title="من أين جاءت صيغة cos(A − B)؟">
 ضع $A$ و $B$ على دائرة الوحدة: النقطتان $P = (\cos A, \sin A)$ و $Q = (\cos B, \sin B)$، والزاوية بينهما $A - B$. احسب مربع المسافة $PQ$ بطريقتين:
 
-بقانون المسافة: $(\cos A - \cos B)^2 + (\sin A - \sin B)^2 = 2 - 2(\cos A\cos B + \sin A\sin B)$.
+بقانون المسافة: $(\cos A - \cos B)^2 + (\sin A - \sin B)^2$. افتح الأقواس واجمع $\cos^2 A + \sin^2 A = 1$ و $\cos^2 B + \sin^2 B = 1$، فتحصل على $2 - 2(\cos A\cos B + \sin A\sin B)$.
 
-ولو دوّرنا الشكل حتى تصبح $Q$ عند $(1, 0)$ تصير $P$ عند $(\cos(A - B), \sin(A - B))$، ومربع المسافة $(\cos(A - B) - 1)^2 + \sin^2(A - B) = 2 - 2\cos(A - B)$.
+ولو دوّرنا الشكل حتى تصبح $Q$ عند $(1, 0)$ تصير $P$ عند النقطة $(\cos(A - B), \sin(A - B))$، ومربع المسافة:
 
-المسافة لا تتغير بالدوران، فبمساواة الصيغتين نحصل على القانون. وصيغة المجموع تأتي من كتابة $A + B = A - (-B)$.
-</details>
+$$(\cos(A - B) - 1)^2 + \sin^2(A - B)$$
+
+$$= 2 - 2\cos(A - B)$$
+
+المسافة لا تتغير بالدوران، فبمساواة الصيغتين نحصل على القانون. وصيغة المجموع تأتي من كتابة $A + B = A - (-B)$ واستخدام $\cos(-B) = \cos B$ و $\sin(-B) = -\sin B$، فتنقلب الإشارة.
+</Deep>
 
 <Example n="1" title="قيمة دقيقة">
 أوجد القيمة الدقيقة لـ $\cos 15^\circ$.
 
 <Solution>
-$15^\circ = 45^\circ - 30^\circ$
+$15^\circ = 45^\circ - 30^\circ$ <span class="reason">نكتب الزاوية فرقًا بين زاويتين نعرف قيمهما الدقيقة</span>
 
-$\cos 15^\circ = \cos 45^\circ\cos 30^\circ + \sin 45^\circ\sin 30^\circ = \dfrac{\sqrt2}{2}\cdot\dfrac{\sqrt3}{2} + \dfrac{\sqrt2}{2}\cdot\dfrac12$
+$\cos 15^\circ = \cos 45^\circ\cos 30^\circ + \sin 45^\circ\sin 30^\circ = \dfrac{\sqrt2}{2}\cdot\dfrac{\sqrt3}{2} + \dfrac{\sqrt2}{2}\cdot\dfrac12$ <span class="reason">صيغة الفرق: الإشارة في الوسط موجبة</span>
 
-$= \dfrac{\sqrt6 + \sqrt2}{4} \approx 0.9659$
+$= \dfrac{\sqrt6 + \sqrt2}{4} \approx 0.9659$ <span class="reason">$\sqrt2\cdot\sqrt3 = \sqrt6$؛ والتقريب يطابق الآلة الحاسبة</span>
 </Solution>
 </Example>
 
@@ -62,6 +69,8 @@ $$\cos(90^\circ - \theta) = \sin\theta \qquad \sin(90^\circ - \theta) = \cos\the
 وكذلك $\cot$ و $\sec$ و $\csc$. وبالراديان استبدل $90^\circ$ بـ $\tfrac{\pi}{2}$. وهي صحيحة لأي $\theta$، لا للزوايا الحادة فقط.
 </Box>
 
+ومن هنا جاء الاسم: «جيب التمام» هو جيب **الزاوية المتممة** $90^\circ - \theta$. في المثلث القائم، جيب إحدى الزاويتين الحادتين هو جيب تمام الأخرى.
+
 ## الجيب والظل للمجموع والفرق <span class="en" lang="en">Sine and Tangent Sum and Difference Identities</span>
 
 <Box kind="rule" title="الجيب والظل" en="Sine and Tangent of a Sum or Difference">
@@ -74,59 +83,127 @@ $$\tan(A + B) = \frac{\tan A + \tan B}{1 - \tan A\tan B} \qquad \tan(A - B) = \f
 في الجيب الإشارة **كما هي**، وفي جيب التمام تنعكس.
 </Box>
 
+<Deep title="اشتقاق صيغتي الجيب والظل من صيغة جيب التمام">
+**الجيب**: استخدم الدوال المتتامة لتحويل الجيب إلى جيب تمام، ثم صيغة الفرق:
+
+$$\sin(A + B) = \cos\big(90^\circ - (A + B)\big) = \cos\big((90^\circ - A) - B\big)$$
+
+$$= \cos(90^\circ - A)\cos B + \sin(90^\circ - A)\sin B = \sin A\cos B + \cos A\sin B$$
+
+**الظل**: اكتب $\tan(A + B) = \dfrac{\sin(A + B)}{\cos(A + B)}$ واقسم البسط والمقام على $\cos A\cos B$:
+
+$$\frac{\dfrac{\sin A\cos B}{\cos A\cos B} + \dfrac{\cos A\sin B}{\cos A\cos B}}{\dfrac{\cos A\cos B}{\cos A\cos B} - \dfrac{\sin A\sin B}{\cos A\cos B}} = \frac{\tan A + \tan B}{1 - \tan A\tan B}$$
+
+فالقوانين الستة كلها تعود إلى صيغة واحدة هي $\cos(A - B)$، وهي بدورها تعود إلى قانون المسافة. لا تحتاج حفظ ستة قوانين منفصلة إذا فهمت هذه السلسلة.
+</Deep>
+
 <SumAngle />
 
-<Example n="2" title="تبسيط إزاحة">
+<Example n="2" title="قيمة دقيقة بالمجموع">
+أوجد القيمة الدقيقة لـ $\sin 75^\circ$.
+
+<Solution>
+$75^\circ = 45^\circ + 30^\circ$ <span class="reason">مجموع زاويتين خاصتين</span>
+
+$\sin 75^\circ = \sin 45^\circ\cos 30^\circ + \cos 45^\circ\sin 30^\circ$ <span class="reason">صيغة مجموع الجيب: الإشارة كما هي</span>
+
+$= \dfrac{\sqrt2}{2}\cdot\dfrac{\sqrt3}{2} + \dfrac{\sqrt2}{2}\cdot\dfrac12 = \dfrac{\sqrt6 + \sqrt2}{4} \approx 0.9659$ <span class="reason">النتيجة نفسها لـ $\cos 15^\circ$، وهذا متوقع لأن $75^\circ$ و $15^\circ$ متتامتان</span>
+</Solution>
+</Example>
+
+<Example n="3" title="قيمة دقيقة للظل">
+أوجد القيمة الدقيقة لـ $\tan 105^\circ$.
+
+<Solution>
+$105^\circ = 60^\circ + 45^\circ$، و $\tan 60^\circ = \sqrt3$ و $\tan 45^\circ = 1$. <span class="reason">نختار زاويتين ظلّاهما معروفان</span>
+
+$\tan 105^\circ = \dfrac{\sqrt3 + 1}{1 - \sqrt3 \cdot 1} = \dfrac{\sqrt3 + 1}{1 - \sqrt3}$ <span class="reason">صيغة مجموع الظل: في المقام $1 -$ حاصل الضرب</span>
+
+$= \dfrac{(\sqrt3 + 1)(1 + \sqrt3)}{(1 - \sqrt3)(1 + \sqrt3)} = \dfrac{4 + 2\sqrt3}{-2}$ <span class="reason">إنطاق المقام بالضرب في المرافق؛ $(\sqrt3 + 1)^2 = 3 + 2\sqrt3 + 1$</span>
+
+$= -2 - \sqrt3 \approx -3.732$ <span class="reason">سالب كما يجب، فالزاوية $105^\circ$ في الربع الثاني حيث الظل سالب</span>
+</Solution>
+</Example>
+
+<Example n="4" title="تبسيط إزاحة">
 اكتب $\sin\left(x + \tfrac{3\pi}{2}\right)$ بدلالة دالة واحدة.
 
 <Solution>
-$\sin x\cos\tfrac{3\pi}{2} + \cos x\sin\tfrac{3\pi}{2}$
+$\sin x\cos\tfrac{3\pi}{2} + \cos x\sin\tfrac{3\pi}{2}$ <span class="reason">صيغة مجموع الجيب مع $A = x$ و $B = \tfrac{3\pi}{2}$</span>
 
-$= \sin x \cdot 0 + \cos x\cdot(-1)$
+$= \sin x \cdot 0 + \cos x\cdot(-1)$ <span class="reason">النقطة عند $\tfrac{3\pi}{2}$ على دائرة الوحدة هي $(0, -1)$</span>
 
-$= -\cos x$
+$= -\cos x$ <span class="reason">إزاحة الجيب بثلاثة أرباع دورة تعطي جيب التمام مقلوبًا</span>
 </Solution>
 </Example>
+
+<Box kind="mistake" title="انتبه لإشارة جيب التمام ولمقام الظل">
+أكثر الأخطاء شيوعًا في هذا الدرس خطآن. الأول: كتابة $\cos(A + B)$ بإشارة موجبة في الوسط؛ في جيب التمام **تنعكس** الإشارة فتصير سالبة. الثاني: كتابة مقام $\tan(A + B)$ على صورة $1 + \tan A\tan B$؛ المقام في المجموع بالطرح، وفي الفرق بالجمع.
+
+للتأكد بسرعة: عوّض $A = B = 45^\circ$. يجب أن تحصل على $\cos 90^\circ = 0$ و $\tan 0^\circ = 0$.
+</Box>
 
 ## تطبيقات <span class="en" lang="en">Applications</span>
 
-<Example n="3" title="من المعطيات">
+<Example n="5" title="من المعطيات">
 إذا كان $\sin A = \tfrac45$ و $A$ في الربع الثاني، و $\cos B = -\tfrac{5}{13}$ و $B$ في الربع الثالث، فأوجد $\sin(A + B)$ و $\cos(A - B)$، وفي أي ربع تقع $A + B$؟
 
 <Solution>
-$\cos A = -\tfrac35$ (الربع الثاني) و $\sin B = -\tfrac{12}{13}$ (الربع الثالث).
+$\cos A = -\tfrac35$ (الربع الثاني) و $\sin B = -\tfrac{12}{13}$ (الربع الثالث). <span class="reason">الصيغ تحتاج الدوال الأربع؛ نكمل الناقص بفيثاغورس، والربع يحدد الإشارة</span>
 
-$\sin(A + B) = \tfrac45\left(-\tfrac{5}{13}\right) + \left(-\tfrac35\right)\left(-\tfrac{12}{13}\right) = \tfrac{-20 + 36}{65} = \tfrac{16}{65}$، و $\cos(A - B) = \left(-\tfrac35\right)\left(-\tfrac{5}{13}\right) + \tfrac45\left(-\tfrac{12}{13}\right) = \tfrac{15 - 48}{65} = -\tfrac{33}{65}$.
+$\sin(A + B) = \tfrac45\left(-\tfrac{5}{13}\right) + \left(-\tfrac35\right)\left(-\tfrac{12}{13}\right) = \tfrac{-20 + 36}{65} = \tfrac{16}{65}$ <span class="reason">صيغة مجموع الجيب</span>
 
-ولتحديد ربع $A + B$ نحسب $\cos(A + B) = \tfrac{15}{65} + \tfrac{48}{65} = \tfrac{63}{65} > 0$. الجيب موجب وجيب التمام موجب، فـ $A + B$ في الربع الأول (بعد طرح دورة كاملة).
+$\cos(A - B) = \left(-\tfrac35\right)\left(-\tfrac{5}{13}\right) + \tfrac45\left(-\tfrac{12}{13}\right) = \tfrac{15 - 48}{65} = -\tfrac{33}{65}$ <span class="reason">صيغة فرق جيب التمام: الإشارة في الوسط موجبة</span>
+
+ولتحديد ربع $A + B$ نحسب $\cos(A + B) = \tfrac{15}{65} + \tfrac{48}{65} = \tfrac{63}{65} > 0$. الجيب موجب وجيب التمام موجب، فـ $A + B$ في الربع الأول (بعد طرح دورة كاملة). <span class="reason">إشارة الجيب وحدها لا تكفي، فهو موجب في الربعين الأول والثاني</span>
 </Solution>
 </Example>
 
-<Example n="4" title="جهد كهربائي">
+<Example n="6" title="جهد كهربائي">
 جهد التيار المتردد $V = 163\sin(120\pi t)$. اكتبه بدلالة جيب التمام.
 
 <Solution>
-$\sin\theta = \cos\left(\tfrac{\pi}{2} - \theta\right) = \cos\left(\theta - \tfrac{\pi}{2}\right)$ (جيب التمام زوجي).
+$\sin\theta = \cos\left(\tfrac{\pi}{2} - \theta\right) = \cos\left(\theta - \tfrac{\pi}{2}\right)$ <span class="reason">الدوال المتتامة، ثم $\cos$ زوجية فلا يتغير شيء إذا قلبنا ما داخل القوس</span>
 
-$V = 163\cos\left(120\pi t - \tfrac{\pi}{2}\right)$
+$V = 163\cos\left(120\pi t - \tfrac{\pi}{2}\right)$ <span class="reason">نعوّض $\theta = 120\pi t$</span>
 
-أي أن موجة الجيب هي موجة جيب تمام متأخرة بربع دورة.
+أي أن موجة الجيب هي موجة جيب تمام متأخرة بربع دورة. <span class="reason">$-\tfrac{\pi}{2}$ داخل القوس إزاحة لليمين (الدرس 6.4) بربع الدورة $2\pi$</span>
 </Solution>
 </Example>
 
 ## إثبات متطابقة <span class="en" lang="en">Verifying an Identity</span>
 
-<Example n="5" title="متطابقة بمجموع">
+<Example n="7" title="متطابقة بمجموع">
 أثبت أن $\dfrac{\sin(A + B)}{\cos A\cos B} = \tan A + \tan B$.
 
 <Solution>
-$\dfrac{\sin A\cos B + \cos A\sin B}{\cos A\cos B}$
+$\dfrac{\sin A\cos B + \cos A\sin B}{\cos A\cos B}$ <span class="reason">نفتح البسط بصيغة المجموع</span>
 
-$= \dfrac{\sin A\cos B}{\cos A\cos B} + \dfrac{\cos A\sin B}{\cos A\cos B}$
+$= \dfrac{\sin A\cos B}{\cos A\cos B} + \dfrac{\cos A\sin B}{\cos A\cos B}$ <span class="reason">نفصل الكسر لأن بسطه مجموع</span>
 
-$= \tan A + \tan B$ ✓
+$= \tan A + \tan B$ ✓ <span class="reason">نختصر $\cos B$ من الأول و $\cos A$ من الثاني</span>
 </Solution>
 </Example>
+
+<Example n="8" title="مستوى الاختبار: ضرب مجموع في فرق">
+أثبت أن $\cos(x + y)\cos(x - y) = \cos^2 x - \sin^2 y$.
+
+<Solution>
+الأيسر $= (\cos x\cos y - \sin x\sin y)$ $\times (\cos x\cos y + \sin x\sin y)$ <span class="reason">نفتح القوسين بصيغتي المجموع والفرق؛ لاحظ أنهما مترافقان</span>
+
+$= \cos^2 x\cos^2 y - \sin^2 x\sin^2 y$ <span class="reason">$(a - b)(a + b) = a^2 - b^2$</span>
+
+$= \cos^2 x(1 - \sin^2 y) - (1 - \cos^2 x)\sin^2 y$ <span class="reason">الطرف الأيمن فيه $\cos^2 x$ و $\sin^2 y$ فقط، فنستبدل $\cos^2 y$ و $\sin^2 x$ بفيثاغورس</span>
+
+$= \cos^2 x - \cos^2 x\sin^2 y - \sin^2 y + \cos^2 x\sin^2 y$ <span class="reason">نوزّع</span>
+
+$= \cos^2 x - \sin^2 y$ ✓ <span class="reason">الحدان الأوسطان يختصران</span>
+</Solution>
+</Example>
+
+<Box kind="tip" title="تعرّف على الصيغة وهي «مفتوحة»">
+كثيرًا ما تأتيك العبارة جاهزة على شكل أحد الطرفين الأيمنين، فاقرأها بالعكس: $\sin 40^\circ\cos 20^\circ + \cos 40^\circ\sin 20^\circ$ هي $\sin 60^\circ$ مباشرة. علامتها: حاصلا ضرب، كل منهما دالتان لزاويتين مختلفتين، بالترتيب الذي في الصيغة.
+</Box>
 
 <Check
   q="ما قيمة $\\cos 50^\\circ\\cos 10^\\circ - \\sin 50^\\circ\\sin 10^\\circ$؟"
@@ -135,11 +212,24 @@ $= \tan A + \tan B$ ✓
   explain="هذه صيغة $\\cos(A + B)$: $\\cos 60^\\circ = \\tfrac12$."
 />
 
+<Check
+  q="بسّط $\\sin(\\pi - x)$."
+  options={["$-\\sin x$", "$\\sin x$", "$\\cos x$", "$-\\cos x$"]}
+  answer={1}
+  explain="$\\sin\\pi\\cos x - \\cos\\pi\\sin x = 0 - (-1)\\sin x = \\sin x$. ولهذا للزاويتين $x$ و $\\pi - x$ الجيب نفسه."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+في الدرس 7.4 مباشرة: ضع $B = A$ فتحصل على صيغ ضعف الزاوية. وفي الفيزياء تُستخدم صيغة $\sin(A + B)$ لجمع موجتين بالتردد نفسه في موجة واحدة. وفي التفاضل والتكامل هي الأداة التي تثبت أن مشتقة $\sin x$ هي $\cos x$.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
+- الدالة لا تتوزع على الجمع: $\sin(A + B) \neq \sin A + \sin B$.
 - $\cos(A \pm B) = \cos A\cos B \mp \sin A\sin B$ (الإشارة تنعكس).
 - $\sin(A \pm B) = \sin A\cos B \pm \cos A\sin B$ (الإشارة كما هي).
 - $\tan(A \pm B) = \dfrac{\tan A \pm \tan B}{1 \mp \tan A\tan B}$.
 - الدوال المتتامة: $f(90^\circ - \theta) = \text{co-}f(\theta)$.
+- كل الصيغ تُشتق من $\cos(A - B)$، وهي من قانون المسافة على دائرة الوحدة.
 
 <Practice set="7.3" count={6} />

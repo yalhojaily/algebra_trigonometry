@@ -33,7 +33,9 @@ import Exponents from '../../components/widgets/Exponents.astro';
 <Box kind="def" title="الأس السالب" en="Negative Exponent">
 لأي عدد حقيقي $a \ne 0$ وأي عدد صحيح $n$:
 
-$$a^{-n} = \frac{1}{a^n} \qquad\text{and}\qquad \frac{1}{a^{-n}} = a^n \qquad\text{and}\qquad \left(\frac{a}{b}\right)^{-n} = \left(\frac{b}{a}\right)^n$$
+$$a^{-n} = \frac{1}{a^n} \qquad \frac{1}{a^{-n}} = a^n$$
+
+$$\left(\frac{a}{b}\right)^{-n} = \left(\frac{b}{a}\right)^n$$
 </Box>
 
 <Box kind="mistake" title="الأس السالب لا يعني عددًا سالبًا">
@@ -111,7 +113,11 @@ $$a^{m/n} = \left(a^{1/n}\right)^m = \left(a^m\right)^{1/n}$$
 <Box kind="rule" title="القواعد كلها تعمل مع الأسس النسبية" en="Rules for rational exponents">
 لأي أعداد نسبية $m$ و $n$ (حيث كل المقادير حقيقية ومعرّفة):
 
-$$a^m a^n = a^{m+n} \qquad \frac{a^m}{a^n} = a^{m-n} \qquad (a^m)^n = a^{mn} \qquad (ab)^m = a^m b^m \qquad a^{-m} = \frac{1}{a^m}$$
+$$a^m a^n = a^{m+n} \qquad \frac{a^m}{a^n} = a^{m-n}$$
+
+$$(a^m)^n = a^{mn} \qquad (ab)^m = a^m b^m$$
+
+$$a^{-m} = \frac{1}{a^m}$$
 </Box>
 
 <Example n="3" title="تبسيط بأسس نسبية">
@@ -154,7 +160,9 @@ $$\frac{\dfrac{1}{x + y}}{\dfrac{1}{x} + \dfrac{1}{y}}$$
 
 نضرب البسط والمقام في $xy(x + y)$، المقام المشترك لكل الكسور الصغيرة:
 
-$$\frac{xy}{y(x + y) + x(x + y)} = \frac{xy}{(x + y)(x + y)} = \frac{xy}{(x + y)^2}$$
+$$\frac{xy}{y(x + y) + x(x + y)} = \frac{xy}{(x + y)(x + y)}$$
+
+$$= \frac{xy}{(x + y)^2}$$
 </Solution>
 </Example>
 

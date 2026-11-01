@@ -179,6 +179,12 @@ const isActive = (p: string) => path.startsWith(base + p);
       addEventListener('resize', later);
       document.addEventListener('click', later, true);
       document.addEventListener('toggle', later, true);
+      let pending = false;
+      new MutationObserver(() => {
+        if (pending) return;
+        pending = true;
+        requestAnimationFrame(() => { pending = false; fitMath(); });
+      }).observe(document.getElementById('main') ?? document.body, { childList: true, subtree: true });
     </script>
   </body>
 </html>

@@ -1,7 +1,7 @@
 ---
 section: "8.4"
-summary: "المتجهات جبريًا بالمركبات ⟨a, b⟩: المقدار وزاوية الاتجاه، والكتابة من المقدار والزاوية، والجمع والضرب في عدد، ومتجهات الوحدة i و j، ثم الضرب النقطي وخصائصه والزاوية بين متجهين والتعامد."
-minutes: 40
+summary: "المتجهات جبريًا بالمركبات ⟨a, b⟩: المقدار وزاوية الاتجاه، والكتابة من المقدار والزاوية، والجمع والضرب في عدد، ومتجهات الوحدة i و j، ومحصلة عدة قوى بالمركبات، ثم الضرب النقطي ومن أين تأتي صيغته الهندسية ومعناه، والزاوية بين متجهين والتعامد."
+minutes: 55
 prerequisites: ["8.3"]
 terms:
   - { ar: "متجه الموضع", en: "Position Vector", def: "متجه ذيله عند الأصل ورأسه عند النقطة (a, b)، ويُكتب ⟨a, b⟩." }
@@ -15,30 +15,45 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import DotProduct from '../../components/widgets/DotProduct.astro';
 
 رسم متوازيات الأضلاع وحل المثلثات لكل جمع يصبح مرهقًا مع ثلاثة متجهات أو أكثر. الحل: ضع كل متجه بذيله عند الأصل، فيتحدد بنقطة رأسه $(a, b)$. عندئذ يصير الجمع جمع أعداد، والهندسة جبرًا.
+
+الفكرة كلها في جملة واحدة: **حلّل كل متجه إلى مركبتين، واجمع الأفقي مع الأفقي والرأسي مع الرأسي، ثم ركّب النتيجة**. لا قانون جيوب، ولا قانون جيوب تمام، ولا متوازي أضلاع.
 
 ## التفسير الجبري للمتجهات <span class="en" lang="en">Algebraic Interpretation of Vectors</span>
 
 <Box kind="def" title="المتجه بالمركبات" en="Component form">
 المتجه الذي ذيله عند الأصل ورأسه عند $(a, b)$ يُكتب $\mathbf{v} = \langle a, b\rangle$، و $a$ و $b$ مركبتاه الأفقية والرأسية.
 
-$$|\mathbf{v}| = \sqrt{a^2 + b^2} \qquad \tan\theta = \frac{b}{a}\ (a \ne 0)$$
+$$|\mathbf{v}| = \sqrt{a^2 + b^2}$$
+
+$$\tan\theta = \frac{b}{a}\ (a \ne 0)$$
 
 وبالعكس، إذا عُلم المقدار $|\mathbf{v}|$ وزاوية الاتجاه $\theta$: $\mathbf{v} = \langle |\mathbf{v}|\cos\theta,\ |\mathbf{v}|\sin\theta\rangle$.
 </Box>
 
-<Example n="1" title="المقدار والاتجاه">
+<Example n="1" title="بداية سهلة">
+أوجد مقدار $\mathbf{v} = \langle 5, 12\rangle$ وزاوية اتجاهه.
+
+<Solution>
+$|\mathbf{v}| = \sqrt{25 + 144} = \sqrt{169} = 13$ <span class="reason">المقدار وتر مثلث قائم ضلعاه المركبتان</span>
+
+$\theta = \tan^{-1}\tfrac{12}{5} \approx 67.4^\circ$ <span class="reason">المركبتان موجبتان، فالمتجه في الربع الأول، و $\tan^{-1}$ تعطي الزاوية مباشرة</span>
+</Solution>
+</Example>
+
+<Example n="2" title="المقدار والاتجاه في ربع آخر">
 أوجد مقدار $\mathbf{v} = \langle -4, 3\rangle$ وزاوية اتجاهه.
 
 <Solution>
-$|\mathbf{v}| = \sqrt{16 + 9} = 5$
+$|\mathbf{v}| = \sqrt{16 + 9} = 5$ <span class="reason">الإشارة لا تؤثر في المقدار لأن المركبات تُربّع</span>
 
-$\tan^{-1}\left(\tfrac{3}{-4}\right) \approx -36.87^\circ$، لكن المتجه في الربع الثاني ($a < 0$، $b > 0$).
+$\tan^{-1}\left(\tfrac{3}{-4}\right) \approx -36.87^\circ$، لكن المتجه في الربع الثاني ($a < 0$، $b > 0$). <span class="reason">$\tan^{-1}$ تعطي زاوية في الربع الرابع، وهذا خاطئ لهذا المتجه</span>
 
-$\theta = 180^\circ - 36.87^\circ = 143.13^\circ$
+$\theta = 180^\circ - 36.87^\circ = 143.13^\circ$ <span class="reason">الظل دورته $180^\circ$، فإضافة $180^\circ$ للناتج تنقلنا إلى الربع الصحيح</span>
 </Solution>
 </Example>
 
@@ -46,15 +61,15 @@ $\theta = 180^\circ - 36.87^\circ = 143.13^\circ$
 $\tan^{-1}$ تعطي زاوية في الربع الأول أو الرابع فقط. ارسم المتجه دائمًا لتعرف ربعه، وأضف $180^\circ$ إذا كانت $a < 0$.
 </Box>
 
-<Example n="2" title="من المقدار والزاوية">
+<Example n="3" title="من المقدار والزاوية">
 اكتب بالمركبات المتجه الذي مقداره 25.0 واتجاهه $41.7^\circ$.
 
 <Solution>
-$a = 25.0\cos 41.7^\circ \approx 18.7$
+$a = 25.0\cos 41.7^\circ \approx 18.7$ <span class="reason">المركبة الأفقية: المقدار ضرب جيب تمام الزاوية</span>
 
-$b = 25.0\sin 41.7^\circ \approx 16.6$
+$b = 25.0\sin 41.7^\circ \approx 16.6$ <span class="reason">المركبة الرأسية: المقدار ضرب الجيب</span>
 
-$\mathbf{v} \approx \langle 18.7, 16.6\rangle$
+$\mathbf{v} \approx \langle 18.7, 16.6\rangle$ <span class="reason">تحقق: $\sqrt{18.7^2 + 16.6^2} \approx 25.0$</span>
 </Solution>
 </Example>
 
@@ -63,20 +78,40 @@ $\mathbf{v} \approx \langle 18.7, 16.6\rangle$
 <Box kind="rule" title="العمليات بالمركبات" en="Vector operations">
 لـ $\mathbf{u} = \langle a, b\rangle$ و $\mathbf{v} = \langle c, d\rangle$ والعدد $k$:
 
-$$\mathbf{u} + \mathbf{v} = \langle a + c,\ b + d\rangle \qquad k\mathbf{u} = \langle ka,\ kb\rangle \qquad \mathbf{u} - \mathbf{v} = \langle a - c,\ b - d\rangle$$
+$$\mathbf{u} + \mathbf{v} = \langle a + c,\ b + d\rangle$$
+
+$$k\mathbf{u} = \langle ka,\ kb\rangle$$
+
+$$\mathbf{u} - \mathbf{v} = \langle a - c,\ b - d\rangle$$
 
 ومتجها الوحدة $\mathbf{i} = \langle 1, 0\rangle$ و $\mathbf{j} = \langle 0, 1\rangle$ يسمحان بالكتابة $\langle a, b\rangle = a\mathbf{i} + b\mathbf{j}$.
 </Box>
 
-<Example n="3" title="عمليات">
+<Example n="4" title="عمليات">
 لـ $\mathbf{u} = \langle -2, 1\rangle$ و $\mathbf{v} = \langle 4, 3\rangle$، أوجد $\mathbf{u} + \mathbf{v}$ و $-2\mathbf{u}$ و $4\mathbf{u} - 3\mathbf{v}$.
 
 <Solution>
-$\mathbf{u} + \mathbf{v} = \langle 2, 4\rangle$
+$\mathbf{u} + \mathbf{v} = \langle 2, 4\rangle$ <span class="reason">نجمع كل مركبة مع نظيرتها: $-2 + 4$ و $1 + 3$</span>
 
-$-2\mathbf{u} = \langle 4, -2\rangle$
+$-2\mathbf{u} = \langle 4, -2\rangle$ <span class="reason">نضرب المركبتين في $-2$؛ المتجه يتضاعف وينعكس</span>
 
-$4\mathbf{u} - 3\mathbf{v} = \langle -8, 4\rangle - \langle 12, 9\rangle = \langle -20, -5\rangle$
+$4\mathbf{u} - 3\mathbf{v} = \langle -8, 4\rangle - \langle 12, 9\rangle = \langle -20, -5\rangle$ <span class="reason">نضرب كلًّا في عدده أولًا، ثم نطرح مركبةً مركبة</span>
+</Solution>
+</Example>
+
+<Example n="5" title="مستوى الاختبار: محصلة ثلاث قوى">
+تؤثر في جسم ثلاث قوى: 20 N باتجاه $30^\circ$، و 30 N باتجاه $135^\circ$، و 15 N باتجاه $250^\circ$ (الزوايا من محور $x$ الموجب). أوجد مقدار المحصلة واتجاهها.
+
+<Solution>
+$\mathbf{F}_1 = \langle 20\cos 30^\circ, 20\sin 30^\circ\rangle \approx \langle 17.32, 10.00\rangle$ <span class="reason">نحلل كل قوة إلى مركبتيها</span>
+
+$\mathbf{F}_2 \approx \langle -21.21, 21.21\rangle$ و $\mathbf{F}_3 \approx \langle -5.13, -14.10\rangle$ <span class="reason">الإشارات تأتي تلقائيًا من $\cos$ و $\sin$ للزوايا في الربعين الثاني والثالث</span>
+
+$\mathbf{R} \approx \langle 17.32 - 21.21 - 5.13,\ 10.00 + 21.21 - 14.10\rangle = \langle -9.02, 17.12\rangle$ <span class="reason">نجمع الأفقيات معًا والرأسيات معًا</span>
+
+$|\mathbf{R}| = \sqrt{9.02^2 + 17.12^2} \approx 19.4$ N <span class="reason">المقدار من المركبتين</span>
+
+$\theta \approx 180^\circ - \tan^{-1}\tfrac{17.12}{9.02} \approx 180^\circ - 62.2^\circ = 117.8^\circ$ <span class="reason">المحصلة في الربع الثاني ($a < 0$، $b > 0$)</span>
 </Solution>
 </Example>
 
@@ -91,36 +126,70 @@ $$\langle a, b\rangle \cdot \langle c, d\rangle = ac + bd$$
 ومن قانون جيوب التمام في المثلث المكوَّن من $\mathbf{u}$ و $\mathbf{v}$ و $\mathbf{u} - \mathbf{v}$ نحصل على الصيغة الهندسية:
 
 <Box kind="rule" title="الزاوية بين متجهين" en="Geometric interpretation">
-$$\mathbf{u}\cdot\mathbf{v} = |\mathbf{u}||\mathbf{v}|\cos\theta \qquad\Longrightarrow\qquad \cos\theta = \frac{\mathbf{u}\cdot\mathbf{v}}{|\mathbf{u}||\mathbf{v}|}$$
+$$\mathbf{u}\cdot\mathbf{v} = |\mathbf{u}||\mathbf{v}|\cos\theta$$
+
+ومنها:
+
+$$\cos\theta = \frac{\mathbf{u}\cdot\mathbf{v}}{|\mathbf{u}||\mathbf{v}|}$$
 
 حيث $0^\circ \le \theta \le 180^\circ$. فإشارة الضرب النقطي تخبرك بنوع الزاوية: موجب ← حادة، صفر ← **متعامدان**، سالب ← منفرجة.
 </Box>
 
+<Deep title="الاشتقاق من قانون جيوب التمام، ومعنى الضرب النقطي">
+**الاشتقاق**: ارسم $\mathbf{u}$ و $\mathbf{v}$ من نقطة واحدة، والزاوية بينهما $\theta$. الضلع الثالث للمثلث هو $\mathbf{u} - \mathbf{v}$. بقانون جيوب التمام:
+
+$$|\mathbf{u} - \mathbf{v}|^2 = |\mathbf{u}|^2 + |\mathbf{v}|^2$$
+
+$$- 2|\mathbf{u}||\mathbf{v}|\cos\theta$$
+
+واحسب الطرف الأيسر بالمركبات: $(a - c)^2 + (b - d)^2 = (a^2 + b^2) + (c^2 + d^2) - 2(ac + bd)$. الحدان الأولان هما $|\mathbf{u}|^2 + |\mathbf{v}|^2$ فيختصران مع الطرف الأيمن، ويبقى $ac + bd = |\mathbf{u}||\mathbf{v}|\cos\theta$.
+
+**المعنى**: $|\mathbf{v}|\cos\theta$ هو طول **ظل** $\mathbf{v}$ على اتجاه $\mathbf{u}$، أي الجزء من $\mathbf{v}$ الذي يسير في اتجاه $\mathbf{u}$. فالضرب النقطي يقيس «كم يتفق المتجهان في الاتجاه». ولهذا يساوي صفرًا للمتعامدين: لا جزء من أحدهما في اتجاه الآخر.
+
+وفي الفيزياء: **الشغل** الذي تبذله قوة $\mathbf{F}$ عند تحريك جسم إزاحة $\mathbf{d}$ هو $\mathbf{F}\cdot\mathbf{d}$. القوة العمودية على الحركة لا تبذل شغلًا.
+</Deep>
+
 <DotProduct />
 
-<Example n="4" title="الزاوية بين متجهين">
+<Example n="6" title="الزاوية بين متجهين">
 أوجد الزاوية بين $\mathbf{u} = \langle 3, 4\rangle$ و $\mathbf{v} = \langle 2, 1\rangle$.
 
 <Solution>
-$\mathbf{u}\cdot\mathbf{v} = 6 + 4 = 10$، و $|\mathbf{u}| = 5$، و $|\mathbf{v}| = \sqrt5$.
+$\mathbf{u}\cdot\mathbf{v} = 6 + 4 = 10$، و $|\mathbf{u}| = 5$، و $|\mathbf{v}| = \sqrt5$. <span class="reason">الصيغة تحتاج ثلاثة أشياء: الضرب النقطي والمقدارين</span>
 
-$\cos\theta = \dfrac{10}{5\sqrt5} = \dfrac{2}{\sqrt5} \approx 0.8944$
+$\cos\theta = \dfrac{10}{5\sqrt5} = \dfrac{2}{\sqrt5} \approx 0.8944$ <span class="reason">نعوّض في $\cos\theta = \tfrac{\mathbf{u}\cdot\mathbf{v}}{|\mathbf{u}||\mathbf{v}|}$</span>
 
-$\theta \approx 26.57^\circ$
+$\theta \approx 26.57^\circ$ <span class="reason">$\cos^{-1}$ تعطي الزاوية مباشرة بين $0^\circ$ و $180^\circ$، فلا مشكلة أرباع هنا</span>
 </Solution>
 </Example>
 
-<Example n="5" title="التعامد">
+<Example n="7" title="التعامد">
 هل $\langle 6, -4\rangle$ و $\langle 2, 3\rangle$ متعامدان؟
 
 <Solution>
-$\langle 6, -4\rangle\cdot\langle 2, 3\rangle = 12 - 12$
+$\langle 6, -4\rangle\cdot\langle 2, 3\rangle = 12 - 12$ <span class="reason">نضرب المركبات المتناظرة ونجمع</span>
 
-$= 0$
+$= 0$ <span class="reason">$\cos\theta = 0$ يعني $\theta = 90^\circ$</span>
 
-نعم، متعامدان.
+نعم، متعامدان. <span class="reason">ولا نحتاج حساب المقدارين أصلًا</span>
 </Solution>
 </Example>
+
+<Example n="8" title="إيجاد قيمة تجعلهما متعامدين">
+أوجد $k$ بحيث يكون $\langle k, 3\rangle$ عموديًا على $\langle 2, -4\rangle$.
+
+<Solution>
+$\langle k, 3\rangle\cdot\langle 2, -4\rangle = 2k - 12$ <span class="reason">التعامد يعني أن الضرب النقطي صفر</span>
+
+$2k - 12 = 0$ ← $k = 6$ <span class="reason">معادلة خطية في $k$</span>
+
+تحقق: $\langle 6, 3\rangle\cdot\langle 2, -4\rangle = 12 - 12 = 0$ ✓ <span class="reason">نعوّض للتأكد</span>
+</Solution>
+</Example>
+
+<Box kind="mistake" title="الضرب النقطي ليس ضرب المركبات متجهًا">
+$\langle 2, -5\rangle\cdot\langle 3, 1\rangle$ **ليس** $\langle 6, -5\rangle$. بعد ضرب المركبات المتناظرة **تجمعها** فيصير الناتج عددًا واحدًا: $6 + (-5) = 1$. ولهذا لا معنى لعبارة مثل $(\mathbf{u}\cdot\mathbf{v})\cdot\mathbf{w}$ كضرب نقطي، لأن $\mathbf{u}\cdot\mathbf{v}$ عدد.
+</Box>
 
 <Check
   q="ما $\\langle 2, -5\\rangle \\cdot \\langle 3, 1\\rangle$؟"
@@ -129,11 +198,23 @@ $= 0$
   explain="$2\\cdot 3 + (-5)\\cdot 1 = 6 - 5 = 1$. والناتج عدد لا متجه."
 />
 
+<Check
+  q="الضرب النقطي لمتجهين يساوي $-8$. ما نوع الزاوية بينهما؟"
+  options={["حادة", "قائمة", "منفرجة", "لا يمكن التحديد دون المقدارين"]}
+  answer={2}
+  explain="المقداران موجبان دائمًا، فإشارة $\\cos\\theta$ هي إشارة الضرب النقطي. سالب يعني $\\cos\\theta < 0$، أي زاوية منفرجة."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+في الفيزياء: محصلة القوى بالمركبات أساس كل مسائل الاتزان والحركة، والشغل ضرب نقطي. وفي رسومات الحاسوب والألعاب يُحسب سطوع كل سطح بالضرب النقطي بين اتجاه الضوء والعمودي على السطح. وفي تعلم الآلة يُقاس تشابه نصين أو صورتين بجيب تمام الزاوية بين متجهيهما، بالصيغة نفسها التي رأيتها هنا.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
 - $\langle a, b\rangle$: المقدار $\sqrt{a^2 + b^2}$، والاتجاه من $\tan\theta = \tfrac{b}{a}$ مع الربع.
 - $\langle |\mathbf{v}|\cos\theta, |\mathbf{v}|\sin\theta\rangle$ من المقدار والزاوية.
-- الجمع والضرب في عدد مركبةً مركبة.
+- الجمع والضرب في عدد مركبةً مركبة؛ ومحصلة أي عدد من القوى: حلّل، واجمع، وركّب.
 - $\mathbf{u}\cdot\mathbf{v} = ac + bd = |\mathbf{u}||\mathbf{v}|\cos\theta$، والتعامد حين يساوي صفرًا.
+- الضرب النقطي عدد يقيس اتفاق المتجهين في الاتجاه.
 
 <Practice set="8.4" count={6} />

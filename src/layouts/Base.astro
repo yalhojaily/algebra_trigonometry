@@ -161,6 +161,17 @@ const isActive = (p: string) => path.startsWith(base + p);
           const block = k.parentElement?.closest<HTMLElement>('p, li, td, th, summary, .reason, div');
           if (block && k.offsetWidth > block.clientWidth - 4) k.classList.add('wrap');
         });
+        // المعادلة المنفصلة الأعرض قليلًا من الشاشة تُصغَّر حتى تتسع (إلى 72% كحد أدنى)
+        document.querySelectorAll<HTMLElement>('.katex-display:not([data-fit])').forEach((d) => {
+          if (!d.clientWidth) return;
+          d.dataset.fit = '1';
+          const ratio = d.clientWidth / d.scrollWidth;
+          if (ratio >= 1) return;
+          const k = d.querySelector<HTMLElement>(':scope > .katex');
+          if (!k) return;
+          const size = parseFloat(getComputedStyle(k).fontSize);
+          k.style.fontSize = size * Math.max(ratio * 0.97, 0.72) + 'px';
+        });
       };
       const later = () => requestAnimationFrame(() => requestAnimationFrame(fitMath));
       fitMath();

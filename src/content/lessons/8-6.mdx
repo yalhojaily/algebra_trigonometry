@@ -1,7 +1,7 @@
 ---
 section: "8.6"
-summary: "نظرية دي موافر لرفع عدد مركب إلى قوة: [r cis θ]ⁿ = rⁿ cis nθ، ثم استخدامها بالعكس لإيجاد كل الجذور النونية لعدد مركب، ولماذا تقع على دائرة كرؤوس مضلع منتظم، وحل معادلات مثل x³ = −8."
-minutes: 40
+summary: "نظرية دي موافر لرفع عدد مركب إلى قوة: [r cis θ]ⁿ = rⁿ cis nθ، ثم استخدامها بالعكس لإيجاد كل الجذور النونية لعدد مركب، ولماذا عددها n بالضبط وتقع على دائرة كرؤوس مضلع منتظم، وجذور الوحدة، وحل معادلات مثل x³ = −8 و x⁴ = −16."
+minutes: 55
 prerequisites: ["8.5"]
 terms:
   - { ar: "نظرية دي موافر", en: "De Moivre's Theorem", def: "[r(cos θ + i sin θ)]ⁿ = rⁿ(cos nθ + i sin nθ) لكل عدد صحيح موجب n." }
@@ -13,6 +13,7 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import ComplexRoots from '../../components/widgets/ComplexRoots.astro';
 
@@ -28,27 +29,39 @@ $$[r(\cos\theta + i\sin\theta)]^n = r^n(\cos n\theta + i\sin n\theta)$$
 أو باختصار $[r\operatorname{cis}\theta]^n = r^n\operatorname{cis}(n\theta)$. وهي تطبيق متكرر لقاعدة الضرب.
 </Box>
 
-<Example n="1" title="قوة كبيرة">
-أوجد $(1 + \sqrt3 i)^8$.
+<Example n="1" title="بداية سهلة">
+أوجد $(1 + i)^4$.
 
 <Solution>
-$r = \sqrt{1 + 3} = 2$ و $\theta = 60^\circ$: $1 + \sqrt3 i = 2\operatorname{cis} 60^\circ$.
+$1 + i = \sqrt2\operatorname{cis} 45^\circ$ <span class="reason">$r = \sqrt{1 + 1}$، والنقطة $(1, 1)$ على منصف الربع الأول</span>
 
-$(2\operatorname{cis} 60^\circ)^8 = 256\operatorname{cis} 480^\circ = 256\operatorname{cis} 120^\circ$
+$(1 + i)^4 = (\sqrt2)^4\operatorname{cis}(4 \cdot 45^\circ) = 4\operatorname{cis} 180^\circ$ <span class="reason">دي موافر: الطول للقوة 4، والزاوية في 4</span>
 
-$= 256\left(-\tfrac12 + \tfrac{\sqrt3}{2}i\right) = -128 + 128\sqrt3\, i$
+$= -4$ <span class="reason">تحقق جبريًا: $(1 + i)^2 = 2i$، و $(2i)^2 = -4$</span>
 </Solution>
 </Example>
 
-<Example n="2" title="عدد بطول 1">
+<Example n="2" title="قوة كبيرة">
+أوجد $(1 + \sqrt3 i)^8$.
+
+<Solution>
+$r = \sqrt{1 + 3} = 2$ و $\theta = 60^\circ$: $1 + \sqrt3 i = 2\operatorname{cis} 60^\circ$. <span class="reason">نحوّل إلى الصيغة المثلثية أولًا؛ النقطة في الربع الأول و $\tan\theta = \sqrt3$</span>
+
+$(2\operatorname{cis} 60^\circ)^8 = 256\operatorname{cis} 480^\circ = 256\operatorname{cis} 120^\circ$ <span class="reason">$2^8 = 256$؛ ونطرح $360^\circ$ من الزاوية</span>
+
+$= 256\left(-\tfrac12 + \tfrac{\sqrt3}{2}i\right) = -128 + 128\sqrt3\, i$ <span class="reason">قيم $120^\circ$ الخاصة، ثم التوزيع</span>
+</Solution>
+</Example>
+
+<Example n="3" title="عدد بطول 1">
 أوجد $(\cos 15^\circ + i\sin 15^\circ)^{12}$.
 
 <Solution>
-الطول 1، فالقوة لا تغيّره.
+الطول 1، فالقوة لا تغيّره. <span class="reason">$1^{12} = 1$؛ العدد يدور فقط على دائرة الوحدة</span>
 
-$= \cos 180^\circ + i\sin 180^\circ$
+$= \cos 180^\circ + i\sin 180^\circ$ <span class="reason">$12 \times 15^\circ = 180^\circ$</span>
 
-$= -1$
+$= -1$ <span class="reason">نصف دورة من النقطة $1$</span>
 </Solution>
 </Example>
 
@@ -59,34 +72,62 @@ $= -1$
 <Box kind="rule" title="الجذور النونية" en="nth Root Theorem">
 لكل عدد مركب غير صفري $r\operatorname{cis}\theta$ بالضبط $n$ جذرًا نونيًا مختلفًا:
 
-$$w_k = \sqrt[n]{r}\operatorname{cis}\left(\frac{\theta + 360^\circ k}{n}\right), \qquad k = 0, 1, \dots, n - 1$$
+$$w_k = \sqrt[n]{r}\operatorname{cis}\left(\frac{\theta + 360^\circ k}{n}\right)$$
+
+حيث $k = 0, 1, \dots, n - 1$.
 
 (وبالراديان: $\tfrac{\theta + 2\pi k}{n}$.) كلها على دائرة نصف قطرها $\sqrt[n]{r}$، والزاوية بين كل اثنين متتاليين $\tfrac{360^\circ}{n}$.
 </Box>
 
+<Deep title="لماذا n جذرًا بالضبط، لا أكثر ولا أقل؟">
+الزاوية $\theta$ وكل $\theta + 360^\circ k$ تمثل **النقطة نفسها**، لأن الدوران دورة كاملة لا يغيّر شيئًا. لكن بعد القسمة على $n$ تصير الزوايا $\tfrac{\theta}{n} + \tfrac{360^\circ}{n}k$، وهذه **مختلفة** لكل $k = 0, 1, \dots, n - 1$ لأنها تختلف بأقل من دورة كاملة.
+
+عند $k = n$ تصبح الزاوية $\tfrac{\theta}{n} + 360^\circ$، أي الجذر $w_0$ نفسه مرة أخرى. وعند $k = n + 1$ نعود إلى $w_1$، وهكذا. فالجذور تتكرر بعد $n$ قيم، ولذلك عددها $n$ بالضبط.
+
+ولماذا مضلع منتظم؟ كل الجذور لها الطول نفسه $\sqrt[n]{r}$، فهي على دائرة واحدة. والزوايا بينها متساوية $\tfrac{360^\circ}{n}$، فهي موزعة بانتظام على الدائرة. وهذا تعريف رؤوس المضلع المنتظم. ومن التماثل نستنتج أن **مجموع الجذور صفر** (لـ $n \ge 2$): المتجهات المتماثلة حول المركز تلغي بعضها.
+</Deep>
+
 <ComplexRoots />
 
-<Example n="3" title="الجذور الرابعة">
+<Example n="4" title="الجذور الرابعة">
 أوجد الجذور الرابعة لـ $-8 + 8\sqrt3\, i$.
 
 <Solution>
-$r = \sqrt{64 + 192} = 16$ و $\theta = 120^\circ$. والجذور طولها $\sqrt[4]{16} = 2$.
+$r = \sqrt{64 + 192} = 16$ و $\theta = 120^\circ$. والجذور طولها $\sqrt[4]{16} = 2$. <span class="reason">النقطة في الربع الثاني ومرجعها $60^\circ$؛ والطول الجذر الرابع للمقياس</span>
 
-الزوايا $\dfrac{120^\circ + 360^\circ k}{4} = 30^\circ + 90^\circ k$: أي $30^\circ, 120^\circ, 210^\circ, 300^\circ$.
+الزوايا $\dfrac{120^\circ + 360^\circ k}{4} = 30^\circ + 90^\circ k$: أي $30^\circ, 120^\circ, 210^\circ, 300^\circ$. <span class="reason">نقسم البسط كله على 4، فتظهر المسافة الثابتة $90^\circ$ بين الجذور</span>
 
-$w_0 = 2\operatorname{cis} 30^\circ = \sqrt3 + i$، و $w_1 = 2\operatorname{cis} 120^\circ = -1 + \sqrt3 i$، و $w_2 = 2\operatorname{cis} 210^\circ = -\sqrt3 - i$، و $w_3 = 2\operatorname{cis} 300^\circ = 1 - \sqrt3 i$.
+$w_0 = 2\operatorname{cis} 30^\circ = \sqrt3 + i$، و $w_1 = 2\operatorname{cis} 120^\circ = -1 + \sqrt3 i$، و $w_2 = 2\operatorname{cis} 210^\circ = -\sqrt3 - i$، و $w_3 = 2\operatorname{cis} 300^\circ = 1 - \sqrt3 i$. <span class="reason">كلها زوايا خاصة؛ لاحظ أن $w_2 = -w_0$ و $w_3 = -w_1$: رؤوس مربع</span>
 </Solution>
 </Example>
 
-<Example n="4" title="حل معادلة">
+<Box kind="mistake" title="اقسم الزاوية كلها، بما فيها 360°k">
+خطأ شائع أن تكتب $\tfrac{\theta}{n} + 360^\circ k$، فتحصل على الجذر نفسه $n$ مرات. الصحيح $\tfrac{\theta + 360^\circ k}{n}$: المسافة بين الجذور $\tfrac{360^\circ}{n}$ لا $360^\circ$.
+</Box>
+
+<Example n="5" title="حل معادلة">
 حل $x^3 + 8 = 0$ في الأعداد المركبة.
 
 <Solution>
-$x^3 = -8 = 8\operatorname{cis} 180^\circ$. الطول $\sqrt[3]{8} = 2$، والزوايا $\dfrac{180^\circ + 360^\circ k}{3} = 60^\circ, 180^\circ, 300^\circ$.
+$x^3 = -8 = 8\operatorname{cis} 180^\circ$. الطول $\sqrt[3]{8} = 2$، والزوايا $\dfrac{180^\circ + 360^\circ k}{3} = 60^\circ, 180^\circ, 300^\circ$. <span class="reason">نحوّل المعادلة إلى «جذور تكعيبية لعدد»؛ و $-8$ على المحور الحقيقي السالب</span>
 
-$x = 2\operatorname{cis} 60^\circ = 1 + \sqrt3 i$، و $x = 2\operatorname{cis} 180^\circ = -2$، و $x = 2\operatorname{cis} 300^\circ = 1 - \sqrt3 i$.
+$x = 2\operatorname{cis} 60^\circ = 1 + \sqrt3 i$، و $x = 2\operatorname{cis} 180^\circ = -2$، و $x = 2\operatorname{cis} 300^\circ = 1 - \sqrt3 i$. <span class="reason">نحوّل كل جذر إلى الصيغة الجبرية بالقيم الخاصة</span>
 
-جذر حقيقي واحد ($-2$) وجذران مركبان مترافقان، كما تتوقع من النظرية الأساسية في الجبر (الدرس 3.3).
+جذر حقيقي واحد ($-2$) وجذران مركبان مترافقان، كما تتوقع من النظرية الأساسية في الجبر (الدرس 3.3). <span class="reason">كثيرة حدود من الدرجة 3 بمعاملات حقيقية: ثلاثة جذور، والمركبة تأتي أزواجًا مترافقة</span>
+</Solution>
+</Example>
+
+<Example n="6" title="مستوى الاختبار: معادلة من الدرجة الرابعة">
+حل $x^4 + 16 = 0$ واكتب الحلول بالصيغة الجبرية، ثم حلّل $x^4 + 16$ إلى عاملين تربيعيين بمعاملات حقيقية.
+
+<Solution>
+$x^4 = -16 = 16\operatorname{cis} 180^\circ$، فالطول $\sqrt[4]{16} = 2$ والزوايا $\dfrac{180^\circ + 360^\circ k}{4} = 45^\circ, 135^\circ, 225^\circ, 315^\circ$. <span class="reason">لا حل حقيقي، لأن القوة الرابعة لا تكون سالبة؛ لكن الحلول المركبة أربعة</span>
+
+$x = \sqrt2 + \sqrt2\, i$، و $-\sqrt2 + \sqrt2\, i$، و $-\sqrt2 - \sqrt2\, i$، و $\sqrt2 - \sqrt2\, i$ <span class="reason">$2\cos 45^\circ = 2\cdot\tfrac{\sqrt2}{2} = \sqrt2$، والإشارات من الأرباع</span>
+
+الزوجان المترافقان $\sqrt2 \pm \sqrt2 i$ يعطيان $x^2 - 2\sqrt2\, x + 4$، والزوجان $-\sqrt2 \pm \sqrt2 i$ يعطيان $x^2 + 2\sqrt2\, x + 4$. <span class="reason">لجذرين $p \pm qi$: المجموع $2p$ وحاصل الضرب $p^2 + q^2 = 2 + 2 = 4$، والعامل هو $x^2$ ناقص المجموع ضرب $x$ زائد حاصل الضرب</span>
+
+$x^4 + 16 = (x^2 - 2\sqrt2\, x + 4)(x^2 + 2\sqrt2\, x + 4)$ <span class="reason">تحقق: الحاصل $(x^2 + 4)^2 - 8x^2 = x^4 + 8x^2 + 16 - 8x^2$</span>
 </Solution>
 </Example>
 
@@ -105,10 +146,22 @@ $\sqrt[3]{-8} = -2$ في الأعداد الحقيقية، لكن المعادل
   explain="لكل عدد غير صفري $n$ جذرًا نونيًا بالضبط، فهنا 5 جذور على دائرة نصف قطرها 2."
 />
 
+<Check
+  q="ما الزاوية بين كل جذرين متتاليين من الجذور السادسة لأي عدد مركب غير صفري؟"
+  options={["$30^\\circ$", "$60^\\circ$", "$90^\\circ$", "تعتمد على العدد"]}
+  answer={1}
+  explain="الجذور موزعة بانتظام: $\\tfrac{360^\\circ}{6} = 60^\\circ$، أيًّا كان العدد. العدد يحدد نصف قطر الدائرة وزاوية البداية فقط."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+جذور الوحدة هي أساس **تحويل فورييه السريع** <span class="en" lang="en">(FFT)</span>، الخوارزمية التي تحلل الصوت والصور في هاتفك إلى ترددات. ودي موافر طريق سريع لاشتقاق صيغ مثل $\cos 3\theta$ و $\sin 3\theta$: افتح $(\cos\theta + i\sin\theta)^3$ وقارن الجزأين الحقيقي والتخيلي. وفي الدرس التالي (8.7) يصير الزوج $(r, \theta)$ نظام إحداثيات كاملًا للمستوى.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
 - دي موافر: $[r\operatorname{cis}\theta]^n = r^n\operatorname{cis} n\theta$.
-- الجذور النونية: $\sqrt[n]{r}\operatorname{cis}\tfrac{\theta + 360^\circ k}{n}$ لـ $k = 0, \dots, n - 1$.
-- هي رؤوس مضلع منتظم على دائرة نصف قطرها $\sqrt[n]{r}$.
+- الجذور النونية: $\sqrt[n]{r}\operatorname{cis}\tfrac{\theta + 360^\circ k}{n}$ لـ $k = 0, \dots, n - 1$؛ عددها $n$ بالضبط.
+- هي رؤوس مضلع منتظم على دائرة نصف قطرها $\sqrt[n]{r}$، بزاوية $\tfrac{360^\circ}{n}$ بين المتتاليين.
+- الجذور المركبة لمعادلة بمعاملات حقيقية تأتي أزواجًا مترافقة، وكل زوج يعطي عاملًا تربيعيًا.
 
 <Practice set="8.6" count={5} />

@@ -25,7 +25,9 @@ import DoubleAngle from '../../components/widgets/DoubleAngle.astro';
 <Box kind="rule" title="ضعف الزاوية" en="Double-Angle Identities">
 $$\sin 2A = 2\sin A\cos A$$
 
-$$\cos 2A = \cos^2 A - \sin^2 A = 1 - 2\sin^2 A = 2\cos^2 A - 1$$
+$$\cos 2A = \cos^2 A - \sin^2 A$$
+
+$$= 1 - 2\sin^2 A = 2\cos^2 A - 1$$
 
 $$\tan 2A = \frac{2\tan A}{1 - \tan^2 A}$$
 
@@ -43,7 +45,9 @@ $$\cos(A + A) = \cos A\cos A - \sin A\sin A$$
 
 $$= \cos^2 A - \sin^2 A$$
 
-$$\tan(A + A) = \frac{\tan A + \tan A}{1 - \tan A\tan A} = \frac{2\tan A}{1 - \tan^2 A}$$
+$$\tan(A + A) = \frac{\tan A + \tan A}{1 - \tan A\tan A}$$
+
+$$= \frac{2\tan A}{1 - \tan^2 A}$$
 
 ثم الصيغتان الأخريان لـ $\cos 2A$: عوّض $\sin^2 A = 1 - \cos^2 A$ فتحصل على $\cos^2 A - (1 - \cos^2 A) = 2\cos^2 A - 1$، أو عوّض $\cos^2 A = 1 - \sin^2 A$ فتحصل على $1 - 2\sin^2 A$.
 
@@ -95,7 +99,9 @@ $= 3\sin x - 4\sin^3 x$ <span class="reason">نجمع الحدود المتشا�
 حل $\cos 2x = 1 - 2\sin^2 x$ و $\cos 2x = 2\cos^2 x - 1$ لـ $\sin^2 x$ و $\cos^2 x$:
 
 <Box kind="rule" title="صيغ خفض القوة" en="Power-Reducing Identities">
-$$\sin^2 x = \frac{1 - \cos 2x}{2} \qquad \cos^2 x = \frac{1 + \cos 2x}{2}$$
+$$\sin^2 x = \frac{1 - \cos 2x}{2}$$
+
+$$\cos^2 x = \frac{1 + \cos 2x}{2}$$
 
 تحوّل المربع إلى دالة من الدرجة الأولى بزاوية مضاعفة، وهي مفيدة جدًا في التفاضل والتكامل.
 </Box>
@@ -137,15 +143,23 @@ $\theta = 45^\circ$. والصيغة المبسطة تبيّن أيضًا أن $3
 اجمع واطرح صيغ $\sin(A \pm B)$ و $\cos(A \pm B)$. مثلًا بجمع $\cos(A - B)$ و $\cos(A + B)$ يختفي حدّا $\sin A\sin B$ ويبقى $2\cos A\cos B$:
 
 <Box kind="rule" title="الضرب إلى مجموع" en="Product-to-Sum Identities">
-$$\cos A\cos B = \tfrac12[\cos(A - B) + \cos(A + B)] \qquad \sin A\sin B = \tfrac12[\cos(A - B) - \cos(A + B)]$$
+$$\cos A\cos B = \tfrac12[\cos(A - B) + \cos(A + B)]$$
 
-$$\sin A\cos B = \tfrac12[\sin(A + B) + \sin(A - B)] \qquad \cos A\sin B = \tfrac12[\sin(A + B) - \sin(A - B)]$$
+$$\sin A\sin B = \tfrac12[\cos(A - B) - \cos(A + B)]$$
+
+$$\sin A\cos B = \tfrac12[\sin(A + B) + \sin(A - B)]$$
+
+$$\cos A\sin B = \tfrac12[\sin(A + B) - \sin(A - B)]$$
 </Box>
 
 <Box kind="rule" title="المجموع إلى ضرب" en="Sum-to-Product Identities">
-$$\sin A + \sin B = 2\sin\frac{A + B}{2}\cos\frac{A - B}{2} \qquad \cos A + \cos B = 2\cos\frac{A + B}{2}\cos\frac{A - B}{2}$$
+$$\sin A + \sin B = 2\sin\frac{A + B}{2}\cos\frac{A - B}{2}$$
 
-$$\sin A - \sin B = 2\cos\frac{A + B}{2}\sin\frac{A - B}{2} \qquad \cos A - \cos B = -2\sin\frac{A + B}{2}\sin\frac{A - B}{2}$$
+$$\cos A + \cos B = 2\cos\frac{A + B}{2}\cos\frac{A - B}{2}$$
+
+$$\sin A - \sin B = 2\cos\frac{A + B}{2}\sin\frac{A - B}{2}$$
+
+$$\cos A - \cos B = -2\sin\frac{A + B}{2}\sin\frac{A - B}{2}$$
 </Box>
 
 <Example n="6" title="ضرب إلى مجموع">
@@ -165,7 +179,9 @@ $= -2\cos 3\theta\sin\theta$ <span class="reason">الجيب فردي: $\sin(-\t
 ضع $x = \tfrac{A}{2}$ في صيغ خفض القوة وخذ الجذر:
 
 <Box kind="rule" title="نصف الزاوية" en="Half-Angle Identities">
-$$\sin\frac{A}{2} = \pm\sqrt{\frac{1 - \cos A}{2}} \qquad \cos\frac{A}{2} = \pm\sqrt{\frac{1 + \cos A}{2}}$$
+$$\sin\frac{A}{2} = \pm\sqrt{\frac{1 - \cos A}{2}}$$
+
+$$\cos\frac{A}{2} = \pm\sqrt{\frac{1 + \cos A}{2}}$$
 
 $$\tan\frac{A}{2} = \frac{1 - \cos A}{\sin A} = \frac{\sin A}{1 + \cos A}$$
 

@@ -1,7 +1,7 @@
 ---
 section: "8.7"
-summary: "نظام الإحداثيات القطبية (r, θ) والتحويل من وإلى الديكارتي، ورسم المعادلات القطبية (الدوائر، والحلازين والقلبية، والورود، واللمنسكيت، والحلزون)، والتماثل، والتحويل بين المعادلات القطبية والديكارتية، وتصنيف المنحنيات."
-minutes: 45
+summary: "نظام الإحداثيات القطبية (r, θ) والتحويل من وإلى الديكارتي، ورسم المعادلات القطبية (الدوائر، والحلازين والقلبية، والورود، واللمنسكيت، والحلزون)، والتماثل، ولماذا يختلف عدد بتلات الوردة بين n و 2n، والتحويل بين المعادلات القطبية والديكارتية، وتصنيف المنحنيات."
+minutes: 55
 prerequisites: ["8.5", "6.3"]
 terms:
   - { ar: "الإحداثيات القطبية", en: "Polar Coordinates", def: "تحديد النقطة ببعدها r عن القطب وزاويتها θ من المحور القطبي." }
@@ -17,10 +17,13 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import PolarGraph from '../../components/widgets/PolarGraph.astro';
 
 رادار المطار لا يقول «الطائرة عند $x = 12$، $y = 5$»، بل «على بعد 13 كم باتجاه $23^\circ$». هذه **الإحداثيات القطبية**: بعد وزاوية. وبعض المنحنيات التي تحتاج معادلات ديكارتية معقدة (مثل الورود واللوالب) تصير في الصورة القطبية بسيطة جدًا.
+
+الفكرة نفسها رأيتها في الدرس 8.5: العدد المركب $r\operatorname{cis}\theta$ هو نقطة بإحداثيين قطبيين. هنا نستخدم النظام لكل نقاط المستوى ولرسم المنحنيات.
 
 ## نظام الإحداثيات القطبية <span class="en" lang="en">Polar Coordinate System</span>
 
@@ -32,20 +35,42 @@ import PolarGraph from '../../components/widgets/PolarGraph.astro';
 </Box>
 
 <Box kind="rule" title="التحويل" en="Rectangular ↔ Polar">
-$$x = r\cos\theta \qquad y = r\sin\theta \qquad r^2 = x^2 + y^2 \qquad \tan\theta = \frac{y}{x}\ (x \ne 0)$$
+$$x = r\cos\theta$$
+
+$$y = r\sin\theta$$
+
+$$r^2 = x^2 + y^2$$
+
+$$\tan\theta = \frac{y}{x}\ (x \ne 0)$$
 </Box>
 
-<Example n="1" title="من القطبي إلى الديكارتي وبالعكس">
+<Example n="1" title="بداية سهلة">
+حوّل النقطة القطبية $(2, 60^\circ)$ إلى إحداثيات ديكارتية.
+
+<Solution>
+$x = 2\cos 60^\circ = 2\cdot\tfrac12 = 1$ <span class="reason">الإحداثي الأفقي: البعد ضرب جيب تمام الزاوية</span>
+
+$y = 2\sin 60^\circ = 2\cdot\tfrac{\sqrt3}{2} = \sqrt3$ <span class="reason">الإحداثي الرأسي: البعد ضرب الجيب</span>
+
+النقطة $(1, \sqrt3)$ <span class="reason">تحقق: $\sqrt{1 + 3} = 2$ وهو البعد المعطى</span>
+</Solution>
+</Example>
+
+<Example n="2" title="من القطبي إلى الديكارتي وبالعكس">
 (أ) حوّل $(-4, 135^\circ)$ إلى ديكارتي. (ب) حوّل $(1, -\sqrt3)$ إلى قطبي بطريقتين.
 
 <Solution>
-(أ) $x = -4\cos 135^\circ = 2\sqrt2$ و $y = -4\sin 135^\circ = -2\sqrt2$: النقطة $(2\sqrt2, -2\sqrt2)$ في الربع الرابع، لأن $r$ السالب عكس الاتجاه.
+(أ) $x = -4\cos 135^\circ = 2\sqrt2$ و $y = -4\sin 135^\circ = -2\sqrt2$: النقطة $(2\sqrt2, -2\sqrt2)$ في الربع الرابع. <span class="reason">الصيغ تعمل كما هي مع $r$ السالب؛ والنتيجة عكس اتجاه $135^\circ$، أي عند $315^\circ$</span>
 
-(ب) $r = \sqrt{1 + 3} = 2$، والنقطة في الربع الرابع: $\theta = 300^\circ$. إذن $(2, 300^\circ)$.
+(ب) $r = \sqrt{1 + 3} = 2$، والنقطة في الربع الرابع: $\theta = 300^\circ$. إذن $(2, 300^\circ)$. <span class="reason">$\tan\theta = -\sqrt3$ والمرجع $60^\circ$؛ والربع من الرسم</span>
 
-وتمثيل آخر: $(2, -60^\circ)$ أو $(-2, 120^\circ)$.
+وتمثيل آخر: $(2, -60^\circ)$ أو $(-2, 120^\circ)$. <span class="reason">$-60^\circ$ تكافئ $300^\circ$؛ و $r$ السالب مع $120^\circ$ يشير إلى $120^\circ + 180^\circ = 300^\circ$</span>
 </Solution>
 </Example>
+
+<Box kind="mistake" title="الآلة لا تعرف الربع">
+للنقطة $(-1, \sqrt3)$: $\tan^{-1}\tfrac{\sqrt3}{-1} = -60^\circ$، لكن النقطة في الربع الثاني فزاويتها $120^\circ$. كما في المتجهات والأعداد المركبة: ارسم النقطة أولًا، وأضف $180^\circ$ إذا كانت $x < 0$.
+</Box>
 
 ## رسوم المعادلات القطبية <span class="en" lang="en">Graphs of Polar Equations</span>
 
@@ -57,15 +82,15 @@ $$x = r\cos\theta \qquad y = r\sin\theta \qquad r^2 = x^2 + y^2 \qquad \tan\thet
 - حول القطب: إذا لم تتغير باستبدال $r$ بـ $-r$.
 </Box>
 
-<Example n="2" title="قلبية">
+<Example n="3" title="قلبية">
 ارسم $r = 1 + \cos\theta$.
 
 <Solution>
-متماثلة حول المحور القطبي (فيها $\cos$ فقط)، فنكفي بـ $0 \le \theta \le \pi$: عند $0^\circ$ يكون $r = 2$، وعند $60^\circ$: $1.5$، وعند $90^\circ$: $1$، وعند $120^\circ$: $0.5$، وعند $180^\circ$: $0$.
+متماثلة حول المحور القطبي (فيها $\cos$ فقط)، فنكفي بـ $0 \le \theta \le \pi$. <span class="reason">$\cos(-\theta) = \cos\theta$، فالنصف السفلي انعكاس للعلوي</span>
 
-نصل النقاط ونعكس النصف العلوي حول المحور.
+عند $0^\circ$ يكون $r = 2$، وعند $60^\circ$: $1.5$، وعند $90^\circ$: $1$، وعند $120^\circ$: $0.5$، وعند $180^\circ$: $0$. <span class="reason">جدول قيم بزوايا خاصة يكفي لرسم الشكل العام</span>
 
-الشكل قلب يلمس القطب عند $\theta = 180^\circ$.
+نصل النقاط ونعكس النصف العلوي حول المحور. الشكل قلب يلمس القطب عند $\theta = 180^\circ$. <span class="reason">$r = 0$ عند $180^\circ$ فقط، وهي «نقرة» القلب</span>
 </Solution>
 </Example>
 
@@ -82,46 +107,85 @@ $$x = r\cos\theta \qquad y = r\sin\theta \qquad r^2 = x^2 + y^2 \qquad \tan\thet
 | حلزون أرخميدس | $r = a\theta$ | لولب يبتعد بانتظام |
 </Box>
 
-<Example n="3" title="وردة بأربع بتلات">
+<Example n="4" title="وردة بأربع بتلات">
 ارسم $r = 3\cos 2\theta$.
 
 <Solution>
-$n = 2$ زوجي، فلها 4 بتلات طول كل منها 3.
+$n = 2$ زوجي، فلها 4 بتلات طول كل منها 3. <span class="reason">أكبر قيمة لـ $|r|$ هي $|a| = 3$ لأن $|\cos 2\theta| \le 1$</span>
 
-البتلات حيث $|\cos 2\theta| = 1$: عند $\theta = 0^\circ, 90^\circ, 180^\circ, 270^\circ$، والقطب حيث $\cos 2\theta = 0$: عند $45^\circ, 135^\circ, \dots$
+البتلات حيث $|\cos 2\theta| = 1$: عند $\theta = 0^\circ, 90^\circ, 180^\circ, 270^\circ$، والقطب حيث $\cos 2\theta = 0$: عند $45^\circ, 135^\circ, \dots$ <span class="reason">رؤوس البتلات حيث $|r|$ أكبر ما يمكن، وكل بتلة تبدأ وتنتهي عند القطب</span>
 
-عندما يكون $r < 0$ (مثلًا عند $\theta = 90^\circ$: $r = -3$) تُرسم البتلة في الاتجاه المعاكس، أي عند $270^\circ$.
+عندما يكون $r < 0$ (مثلًا عند $\theta = 90^\circ$: $r = -3$) تُرسم البتلة في الاتجاه المعاكس، أي عند $270^\circ$. <span class="reason">قاعدة $r$ السالب؛ وهذا ما يجعل البتلات موزعة على الاتجاهات الأربعة</span>
 </Solution>
 </Example>
+
+<Deep title="لماذا n بتلة للفردي و 2n للزوجي؟">
+عندما تدور $\theta$ دورة كاملة من $0^\circ$ إلى $360^\circ$، تكمل $\cos n\theta$ عدد $n$ دورات. وفي كل دورة نصف موجب (بتلة في اتجاه الزاوية) ونصف سالب (بتلة في الاتجاه المعاكس). فينتج $2n$ «نصف دورة»، كل منها يرسم بتلة.
+
+السؤال: هل البتلة المرسومة بـ $r$ سالب **جديدة**، أم تقع فوق بتلة موجودة؟ البتلة السالبة عند الزاوية $\theta$ تظهر عند $\theta + 180^\circ$. وعند تلك الزاوية قيمة الدالة $\cos(n\theta + 180^\circ n)$:
+
+- إذا كان $n$ **زوجيًا** فإن $180^\circ n$ مضاعف لـ $360^\circ$، فالقيمة هناك $\cos n\theta$ نفسه، وهو سالب، فلا بتلة موجبة في ذلك الاتجاه. البتلة السالبة تملأ مكانًا فارغًا: **$2n$ بتلة**.
+- إذا كان $n$ **فرديًا** فإن $180^\circ n$ يعكس الإشارة، فالقيمة هناك موجبة: توجد بتلة موجبة في ذلك الاتجاه أصلًا، والبتلة السالبة ترسم فوقها. فالمنحنى يُرسم مرتين: **$n$ بتلة** فقط.
+</Deep>
 
 ## التحويل إلى المعادلات الديكارتية <span class="en" lang="en">Conversion from Polar to Rectangular Equations</span>
 
-<Example n="4" title="معادلة قطبية إلى ديكارتية">
+<Box kind="tip" title="حيل التحويل">
+اضرب الطرفين في $r$ لتُظهر $r\cos\theta = x$ أو $r\sin\theta = y$ أو $r^2 = x^2 + y^2$. مثلًا $r = 6\cos\theta$ ← $r^2 = 6r\cos\theta$ ← $x^2 + y^2 = 6x$: دائرة.
+</Box>
+
+<Example n="5" title="دائرة تمر بالقطب">
+حوّل $r = 4\sin\theta$ إلى معادلة ديكارتية وصف المنحنى.
+
+<Solution>
+$r^2 = 4r\sin\theta$ <span class="reason">نضرب في $r$ لنُظهر $r\sin\theta = y$ و $r^2$</span>
+
+$x^2 + y^2 = 4y$ <span class="reason">نعوّض $r^2 = x^2 + y^2$ و $r\sin\theta = y$</span>
+
+$x^2 + (y - 2)^2 = 4$: دائرة مركزها $(0, 2)$ ونصف قطرها 2. <span class="reason">إكمال المربع في $y$: $y^2 - 4y + 4$؛ والدائرة تمر بالقطب كما في الجدول</span>
+</Solution>
+</Example>
+
+<Example n="6" title="معادلة قطبية إلى ديكارتية">
 حوّل $r = \dfrac{4}{1 + \sin\theta}$ إلى معادلة ديكارتية.
 
 <Solution>
-اضرب في المقام: $r + r\sin\theta = 4$ ← $r + y = 4$ ← $r = 4 - y$.
+اضرب في المقام: $r + r\sin\theta = 4$ ← $r + y = 4$ ← $r = 4 - y$. <span class="reason">نتخلص من الكسر ونعوّض $r\sin\theta = y$، ثم نعزل $r$ الوحيد الباقي</span>
 
-ربّع: $r^2 = (4 - y)^2$ ← $x^2 + y^2 = 16 - 8y + y^2$.
+ربّع: $r^2 = (4 - y)^2$ ← $x^2 + y^2 = 16 - 8y + y^2$. <span class="reason">التربيع يحوّل $r$ إلى $x^2 + y^2$</span>
 
-$x^2 = -8(y - 2)$: قطع مكافئ مفتوح للأسفل رأسه $(0, 2)$.
+$x^2 = -8(y - 2)$: قطع مكافئ مفتوح للأسفل رأسه $(0, 2)$. <span class="reason">$y^2$ يختصر من الطرفين، ويبقى $x^2 = 16 - 8y$</span>
 </Solution>
 </Example>
 
-<Example n="5" title="ديكارتية إلى قطبية">
+<Example n="7" title="ديكارتية إلى قطبية">
 حوّل $x + y = 4$ إلى معادلة قطبية.
 
 <Solution>
-$r\cos\theta + r\sin\theta = 4$
+$r\cos\theta + r\sin\theta = 4$ <span class="reason">نعوّض $x$ و $y$ بصيغتيهما القطبيتين</span>
 
-$r(\cos\theta + \sin\theta) = 4$
+$r(\cos\theta + \sin\theta) = 4$ <span class="reason">نخرج $r$ عاملًا مشتركًا</span>
 
-$r = \dfrac{4}{\cos\theta + \sin\theta}$
+$r = \dfrac{4}{\cos\theta + \sin\theta}$ <span class="reason">نعزل $r$؛ المستقيم في الصورة القطبية أعقد منه في الديكارتية</span>
 </Solution>
 </Example>
 
-<Box kind="tip" title="حيل التحويل">
-اضرب الطرفين في $r$ لتُظهر $r\cos\theta = x$ أو $r\sin\theta = y$ أو $r^2 = x^2 + y^2$. مثلًا $r = 6\cos\theta$ ← $r^2 = 6r\cos\theta$ ← $x^2 + y^2 = 6x$: دائرة.
+<Example n="8" title="مستوى الاختبار: اللمنسكيت">
+حوّل $r^2 = 4\sin 2\theta$ إلى معادلة ديكارتية.
+
+<Solution>
+$r^2 = 8\sin\theta\cos\theta$ <span class="reason">صيغة ضعف الزاوية: $\sin 2\theta = 2\sin\theta\cos\theta$؛ فلا نعرف تحويلًا مباشرًا لـ $\sin 2\theta$</span>
+
+$r^2 \cdot r^2 = 8(r\sin\theta)(r\cos\theta)$ <span class="reason">نضرب في $r^2$ لتظهر $r\sin\theta = y$ و $r\cos\theta = x$</span>
+
+$(x^2 + y^2)^2 = 8xy$ <span class="reason">$r^4 = (r^2)^2 = (x^2 + y^2)^2$</span>
+
+معادلة ديكارتية من الدرجة الرابعة، بينما الصورة القطبية سطر قصير. <span class="reason">لهذا نفضّل القطبية لهذه العائلة من المنحنيات</span>
+</Solution>
+</Example>
+
+<Box kind="mistake" title="لا تقسم على r">
+من $r^2 = 6r\cos\theta$ قد يغريك القسمة على $r$. هذا يعيدك إلى المعادلة الأصلية وهو مقبول هنا، لكن في معادلات أخرى قد يحذف **القطب** من الحلول (حين $r = 0$). الضرب في $r$ آمن غالبًا، والقسمة عليه تحتاج تحققًا.
 </Box>
 
 <Check
@@ -131,11 +195,23 @@ $r = \dfrac{4}{\cos\theta + \sin\theta}$
   explain="$n = 5$ فردي، فعدد البتلات $n = 5$."
 />
 
+<Check
+  q="ما منحنى $r = 6\\cos\\theta$؟"
+  options={["دائرة مركزها القطب ونصف قطرها 6", "دائرة مركزها $(3, 0)$ ونصف قطرها 3", "قلبية", "وردة بست بتلات"]}
+  answer={1}
+  explain="$r^2 = 6r\\cos\\theta$ ← $x^2 + y^2 = 6x$ ← $(x - 3)^2 + y^2 = 9$: دائرة تمر بالقطب، قطرها 6."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+في الفصل 10 تُكتب القطوع المخروطية كلها بصيغة قطبية واحدة، ومنها تُحسب مدارات الكواكب والأقمار الصناعية حول الشمس أو الأرض الواقعة في القطب. وفي التفاضل والتكامل تحسب مساحة البتلة أو القلبية بتكامل قطبي. وفي الهندسة يُرسم نمط إشعاع الهوائيات والميكروفونات بمنحنيات قطبية، وأشهرها نمط الميكروفون «القلبي».
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
 - $(r, \theta)$: بعد وزاوية، و $r < 0$ يعني الاتجاه المعاكس.
-- $x = r\cos\theta$، $y = r\sin\theta$، $r^2 = x^2 + y^2$.
+- $x = r\cos\theta$، $y = r\sin\theta$، $r^2 = x^2 + y^2$، والزاوية من الرسم.
 - استخدم التماثل وجدول القيم للرسم، وتعرّف على العائلات: الدوائر، والحلازين، والورود، واللمنسكيت.
-- للتحويل: اضرب في $r$ وعوّض.
+- الوردة: $n$ بتلة للفردي و $2n$ للزوجي، لأن البتلات السالبة تتطابق مع الموجبة في الفردي.
+- للتحويل: اضرب في $r$ وعوّض، واستخدم المتطابقات عند الحاجة.
 
 <Practice set="8.7" count={5} />

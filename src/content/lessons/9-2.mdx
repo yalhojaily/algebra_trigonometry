@@ -1,7 +1,7 @@
 ---
 section: "9.2"
-summary: "تمثيل النظام بمصفوفة موسّعة، وعمليات الصفوف الثلاث، وطريقة غاوس-جوردان للوصول إلى الصيغة الدرجية المختزلة، وقراءة الحل منها، والتعرف على الأنظمة غير المتسقة والمعتمدة."
-minutes: 40
+summary: "تمثيل النظام بمصفوفة موسّعة، وعمليات الصفوف الثلاث، وطريقة غاوس-جوردان للوصول إلى الصيغة الدرجية المختزلة، وقراءة الحل منها، ولماذا لا تغيّر عمليات الصفوف الحلول، والتعرف على الأنظمة غير المتسقة والمعتمدة، وأنظمة بمعاملات مجهولة."
+minutes: 50
 prerequisites: ["9.1"]
 terms:
   - { ar: "مصفوفة", en: "Matrix", def: "ترتيب مستطيل من الأعداد في صفوف وأعمدة." }
@@ -15,10 +15,13 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import GaussJordan from '../../components/widgets/GaussJordan.astro';
 
 في طريقة الحذف نكتب $x$ و $y$ و $z$ مرة بعد مرة، مع أن ما يتغير فعلًا هو المعاملات فقط. فلنكتب المعاملات وحدها في جدول، ونطبق عليها الخطوات نفسها بترتيب ثابت. هذه هي طريقة **غاوس-جوردان**، وهي الطريقة التي تحل بها الحواسيب أنظمة فيها آلاف المجاهيل.
+
+الجديد هنا ليس الرياضيات بل **التنظيم**: الخطوات نفسها التي فعلتها في الدرس 9.1، لكن بترتيب لا يتغير، فلا تحتاج أن «تفكر» في أي معادلة تضرب وفي أي عدد. هذا ما يجعلها مناسبة للأنظمة الكبيرة وللبرمجة.
 
 ## المصفوفة الموسّعة <span class="en" lang="en">Augmented Matrix</span>
 
@@ -30,6 +33,10 @@ $$\left[\begin{array}{cc|c} 1 & 3 & 5 \\ 2 & -1 & 3 \end{array}\right]$$
 كل صف معادلة، وكل عمود قبل الخط معاملات متغير، والعمود الأخير الثوابت.
 </Box>
 
+<Box kind="mistake" title="رتّب المتغيرات وضع الأصفار">
+قبل كتابة المصفوفة اكتب كل معادلة بالترتيب نفسه للمتغيرات، والثابت في الطرف الأيمن. وإذا غاب متغير من معادلة فمعامله **صفر** ويجب كتابته: $2x + z = 4$ تصير الصف $[2 \ \ 0 \ \ 1 \mid 4]$، لا $[2 \ \ 1 \mid 4]$.
+</Box>
+
 <Box kind="rule" title="عمليات الصفوف" en="Matrix Row Transformations">
 العمليات الآتية تعطي نظامًا **مكافئًا** (له الحلول نفسها):
 
@@ -39,6 +46,16 @@ $$\left[\begin{array}{cc|c} 1 & 3 & 5 \\ 2 & -1 & 3 \end{array}\right]$$
 
 وهي العمليات نفسها التي نفعلها على المعادلات في الحذف.
 </Box>
+
+<Deep title="لماذا لا تغيّر هذه العمليات الحلول؟">
+كل عملية **يمكن التراجع عنها** بعملية من النوع نفسه:
+
+- تبديل صفين يُلغى بتبديلهما مرة أخرى.
+- ضرب صف في $k$ يُلغى بضربه في $\tfrac1k$. ولهذا يُشترط $k \ne 0$: الضرب في صفر يمحو المعادلة ولا رجوع منه.
+- إضافة $kR_j$ إلى $R_i$ تُلغى بطرح $kR_j$ منه، لأن $R_j$ نفسه لم يتغير.
+
+أي حل للنظام القديم يحقق النظام الجديد (لأن العمليات حسابات صحيحة على معادلات صحيحة). وبما أننا نستطيع الرجوع، فأي حل للجديد يحقق القديم أيضًا. فالنظامان لهما **الحلول نفسها بالضبط**.
+</Deep>
 
 ## طريقة غاوس-جوردان <span class="en" lang="en">The Gauss-Jordan Method</span>
 
@@ -52,31 +69,55 @@ $$\left[\begin{array}{cc|c} 1 & 3 & 5 \\ 2 & -1 & 3 \end{array}\right]$$
 في النهاية: $\left[\begin{array}{cc|c} 1 & 0 & a \\ 0 & 1 & b \end{array}\right]$ ← الحل $x = a$، $y = b$.
 </Box>
 
-<Example n="1" title="نظام 2 × 2">
+<Example n="1" title="بداية سهلة">
+حل $\begin{cases} x + 3y = 5 \\ 2x - y = 3 \end{cases}$ بالمصفوفات.
+
+<Solution>
+$\left[\begin{array}{cc|c} 1 & 3 & 5 \\ 2 & -1 & 3 \end{array}\right]$ <span class="reason">المحور الأول يساوي 1 أصلًا، فنبدأ بتصفير ما تحته</span>
+
+$\xrightarrow{R_2 - 2R_1} \left[\begin{array}{cc|c} 1 & 3 & 5 \\ 0 & -7 & -7 \end{array}\right]$ <span class="reason">نطرح ضعف الصف الأول من الثاني، **بما في ذلك** عمود الثوابت: $3 - 10 = -7$</span>
+
+$\xrightarrow{-\frac17 R_2} \left[\begin{array}{cc|c} 1 & 3 & 5 \\ 0 & 1 & 1 \end{array}\right]$ <span class="reason">نجعل المحور الثاني 1</span>
+
+$\xrightarrow{R_1 - 3R_2} \left[\begin{array}{cc|c} 1 & 0 & 2 \\ 0 & 1 & 1 \end{array}\right]$: الحل $(2, 1)$. <span class="reason">نصفّر ما **فوق** المحور الثاني أيضًا، فيُقرأ الحل مباشرة</span>
+</Solution>
+</Example>
+
+<Example n="2" title="نظام 2 × 2 بكسور">
 حل $\begin{cases} 3x - 4y = 1 \\ 5x + 2y = 19 \end{cases}$ بغاوس-جوردان.
 
 <Solution>
-$\left[\begin{array}{cc|c} 3 & -4 & 1 \\ 5 & 2 & 19 \end{array}\right] \xrightarrow{\frac13 R_1} \left[\begin{array}{cc|c} 1 & -\tfrac43 & \tfrac13 \\ 5 & 2 & 19 \end{array}\right] \xrightarrow{R_2 - 5R_1} \left[\begin{array}{cc|c} 1 & -\tfrac43 & \tfrac13 \\ 0 & \tfrac{26}{3} & \tfrac{52}{3} \end{array}\right]$
+$\left[\begin{array}{cc|c} 3 & -4 & 1 \\ 5 & 2 & 19 \end{array}\right]$ <span class="reason">نكتب المصفوفة الموسّعة؛ لا محور يساوي 1</span>
 
-$\xrightarrow{\frac{3}{26} R_2} \left[\begin{array}{cc|c} 1 & -\tfrac43 & \tfrac13 \\ 0 & 1 & 2 \end{array}\right] \xrightarrow{R_1 + \frac43 R_2} \left[\begin{array}{cc|c} 1 & 0 & 3 \\ 0 & 1 & 2 \end{array}\right]$
+$\xrightarrow{\frac13 R_1} \left[\begin{array}{cc|c} 1 & -\tfrac43 & \tfrac13 \\ 5 & 2 & 19 \end{array}\right]$ <span class="reason">المحور 3 فنقسم الصف عليه؛ الكسور لا مفر منها هنا</span>
 
-الحل $(3, 2)$.
+$\xrightarrow{R_2 - 5R_1} \left[\begin{array}{cc|c} 1 & -\tfrac43 & \tfrac13 \\ 0 & \tfrac{26}{3} & \tfrac{52}{3} \end{array}\right]$ <span class="reason">$2 - 5\left(-\tfrac43\right) = \tfrac{26}{3}$ و $19 - \tfrac53 = \tfrac{52}{3}$</span>
+
+$\xrightarrow{\frac{3}{26} R_2} \left[\begin{array}{cc|c} 1 & -\tfrac43 & \tfrac13 \\ 0 & 1 & 2 \end{array}\right]$ <span class="reason">المحور الثاني يصير 1، و $\tfrac{52}{3}\cdot\tfrac{3}{26} = 2$</span>
+
+$\xrightarrow{R_1 + \frac43 R_2} \left[\begin{array}{cc|c} 1 & 0 & 3 \\ 0 & 1 & 2 \end{array}\right]$: الحل $(3, 2)$. <span class="reason">$\tfrac13 + \tfrac43\cdot 2 = 3$</span>
 </Solution>
 </Example>
 
 <GaussJordan />
 
-<Example n="2" title="نظام 3 × 3">
+<Example n="3" title="نظام 3 × 3">
 حل $\begin{cases} x - y + 5z = -6 \\ 3x + 3y - z = 10 \\ x + 3y + 2z = 5 \end{cases}$
 
 <Solution>
-$R_2 - 3R_1$ و $R_3 - R_1$: $\left[\begin{array}{ccc|c} 1 & -1 & 5 & -6 \\ 0 & 6 & -16 & 28 \\ 0 & 4 & -3 & 11 \end{array}\right]$. ثم $\tfrac16R_2$، و $R_1 + R_2$، و $R_3 - 4R_2$: $\left[\begin{array}{ccc|c} 1 & 0 & \tfrac73 & -\tfrac43 \\ 0 & 1 & -\tfrac83 & \tfrac{14}{3} \\ 0 & 0 & \tfrac{23}{3} & -\tfrac{23}{3} \end{array}\right]$
+$R_2 - 3R_1$ و $R_3 - R_1$: $\left[\begin{array}{ccc|c} 1 & -1 & 5 & -6 \\ 0 & 6 & -16 & 28 \\ 0 & 4 & -3 & 11 \end{array}\right]$ <span class="reason">المحور الأول 1؛ نصفّر العمود الأول تحته</span>
 
-$\tfrac{3}{23}R_3$ يعطي $z = -1$. ثم $R_1 - \tfrac73R_3$ و $R_2 + \tfrac83R_3$:
+ثم $\tfrac16R_2$، و $R_1 + R_2$، و $R_3 - 4R_2$: $\left[\begin{array}{ccc|c} 1 & 0 & \tfrac73 & -\tfrac43 \\ 0 & 1 & -\tfrac83 & \tfrac{14}{3} \\ 0 & 0 & \tfrac{23}{3} & -\tfrac{23}{3} \end{array}\right]$ <span class="reason">العمود الثاني: محور 1، ثم أصفار فوقه وتحته</span>
 
-$\left[\begin{array}{ccc|c} 1 & 0 & 0 & 1 \\ 0 & 1 & 0 & 2 \\ 0 & 0 & 1 & -1 \end{array}\right]$: الحل $(1, 2, -1)$.
+$\tfrac{3}{23}R_3$ يعطي $z = -1$. ثم $R_1 - \tfrac73R_3$ و $R_2 + \tfrac83R_3$: <span class="reason">العمود الثالث بالطريقة نفسها</span>
+
+$\left[\begin{array}{ccc|c} 1 & 0 & 0 & 1 \\ 0 & 1 & 0 & 2 \\ 0 & 0 & 1 & -1 \end{array}\right]$: الحل $(1, 2, -1)$. <span class="reason">تحقق في الثالثة: $1 + 6 - 2 = 5$</span>
 </Solution>
 </Example>
+
+<Box kind="mistake" title="العملية تغيّر صفًا واحدًا فقط">
+في $R_2 \to R_2 - 3R_1$ يتغير الصف **الثاني** وحده، ويبقى الصف الأول كما هو لتستخدمه في العمليات التالية. ولا تنسَ عمود الثوابت: العملية تُطبَّق على **كل** عناصر الصف.
+</Box>
 
 ## أنظمة خاصة <span class="en" lang="en">Special Systems</span>
 
@@ -85,15 +126,29 @@ $\left[\begin{array}{ccc|c} 1 & 0 & 0 & 1 \\ 0 & 1 & 0 & 2 \\ 0 & 0 & 1 & -1 \en
 - صف كله أصفار $[0 \ 0 \ \cdots \ 0 \mid 0]$ لا يضيف قيدًا. إذا قلّت الصفوف غير الصفرية عن عدد المجاهيل: **حلول لا نهائية** بمتغيرات حرة.
 </Box>
 
-<Example n="3" title="حلول لا نهائية">
+<Example n="4" title="حلول لا نهائية">
 حل $\begin{cases} 2x - 5y + 3z = 1 \\ x - 2y - 2z = 8 \end{cases}$
 
 <Solution>
-بعد الاختزال: $\left[\begin{array}{ccc|c} 1 & 0 & -16 & 38 \\ 0 & 1 & -7 & 15 \end{array}\right]$. صفان لثلاثة مجاهيل، فـ $z$ حر.
+بعد الاختزال: $\left[\begin{array}{ccc|c} 1 & 0 & -16 & 38 \\ 0 & 1 & -7 & 15 \end{array}\right]$. صفان لثلاثة مجاهيل، فـ $z$ حر. <span class="reason">العمود الذي لا محور فيه يقابل متغيرًا حرًّا يأخذ أي قيمة</span>
 
-$x = 38 + 16z$، $y = 15 + 7z$.
+$x = 38 + 16z$، $y = 15 + 7z$. <span class="reason">نقرأ كل صف معادلة وننقل حد $z$ إلى الطرف الأيمن</span>
 
-الحلول $\{(38 + 16z,\ 15 + 7z,\ z)\}$ لكل عدد $z$.
+الحلول $\{(38 + 16z,\ 15 + 7z,\ z)\}$ لكل عدد $z$. <span class="reason">هندسيًا: مستويان يتقاطعان في خط، وهذا تمثيله الوسيطي</span>
+</Solution>
+</Example>
+
+<Example n="5" title="مستوى الاختبار: نظام بمعامل مجهول">
+للنظام $\begin{cases} x + 2y = 3 \\ 2x + ky = c \end{cases}$: متى يكون له حل وحيد، ومتى لا حل، ومتى حلول لا نهائية؟
+
+<Solution>
+$\xrightarrow{R_2 - 2R_1} \left[\begin{array}{cc|c} 1 & 2 & 3 \\ 0 & k - 4 & c - 6 \end{array}\right]$ <span class="reason">نختزل كالمعتاد مع ترك $k$ و $c$ رمزين</span>
+
+إذا كان $k \ne 4$ فالمحور الثاني غير صفري: **حل وحيد** أيًّا كان $c$. <span class="reason">نستطيع القسمة على $k - 4$ وإكمال الاختزال</span>
+
+إذا كان $k = 4$ و $c \ne 6$ صار الصف $[0 \ \ 0 \mid c - 6]$: **لا حل**. <span class="reason">$0 = c - 6 \ne 0$؛ المستقيمان متوازيان (الميل نفسه)</span>
+
+إذا كان $k = 4$ و $c = 6$ صار الصف أصفارًا: **حلول لا نهائية**. <span class="reason">المعادلة الثانية ضعف الأولى تمامًا: المستقيم نفسه</span>
 </Solution>
 </Example>
 
@@ -104,10 +159,21 @@ $x = 38 + 16z$، $y = 15 + 7z$.
   explain="الصف الثاني يعني $0x + 0y = 4$، أي $0 = 4$: مستحيل."
 />
 
+<Check
+  q="أي عملية **غير** مسموحة على صفوف المصفوفة الموسّعة؟"
+  options={["$R_1 \\leftrightarrow R_3$", "$R_2 \\to -5R_2$", "$R_2 \\to 0\\cdot R_2$", "$R_3 \\to R_3 + 2R_1$"]}
+  answer={2}
+  explain="الضرب في صفر يمحو المعادلة ولا يمكن التراجع عنه، فقد يضيف حلولًا ليست حلولًا للنظام الأصلي."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+في الدرس 9.8 تستخدم عمليات الصفوف نفسها لإيجاد معكوس المصفوفة. وفي الحاسوب، برامج مثل الجداول الحسابية وأدوات الهندسة تحل الأنظمة الكبيرة بنسخ محسّنة من غاوس-جوردان. وفي مقرر الجبر الخطي ستجد أن هذه الطريقة تجيب عن أسئلة أبعد من حل الأنظمة، مثل استقلال المتجهات.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
-- المصفوفة الموسّعة تحمل المعاملات والثوابت فقط.
-- عمليات الصفوف الثلاث لا تغيّر الحلول.
+- المصفوفة الموسّعة تحمل المعاملات والثوابت فقط؛ رتّب المتغيرات واكتب الأصفار.
+- عمليات الصفوف الثلاث لا تغيّر الحلول لأن كلًّا منها يمكن التراجع عنه.
 - غاوس-جوردان: محور = 1، ثم أصفار فوقه وتحته، عمودًا عمودًا.
 - $[0 \cdots 0 \mid c \ne 0]$ لا حل، وصفوف أقل من المجاهيل حلول لا نهائية.
 

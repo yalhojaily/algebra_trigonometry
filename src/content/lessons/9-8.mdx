@@ -1,7 +1,7 @@
 ---
 section: "9.8"
-summary: "مصفوفة الوحدة كمحايد للضرب، والمعكوس الضربي للمصفوفة المربعة ومتى يوجد، وإيجاده بعمليات الصفوف على [A | I] وبالصيغة المختصرة لـ 2 × 2، وحل النظام AX = B بالحل X = A⁻¹B."
-minutes: 40
+summary: "مصفوفة الوحدة كمحايد للضرب، والمعكوس الضربي للمصفوفة المربعة ومتى يوجد، وإيجاده بعمليات الصفوف على [A | I] وبالصيغة المختصرة لـ 2 × 2، ولماذا تنجح الطريقتان، وحل النظام AX = B بالحل X = A⁻¹B."
+minutes: 55
 prerequisites: ["9.7", "9.3"]
 terms:
   - { ar: "مصفوفة الوحدة", en: "Identity Matrix", def: "مصفوفة مربعة قطرها الرئيسي آحاد وبقية عناصرها أصفار، وتحقق AI = IA = A." }
@@ -13,6 +13,7 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import MatInverse from '../../components/widgets/MatInverse.astro';
 
@@ -34,39 +35,65 @@ $A^{-1}$ معكوس المصفوفة المربعة $A$ إذا كان $AA^{-1} =
 ويوجد المعكوس **إذا وفقط إذا** كان $\det A \ne 0$. والمصفوفة التي محددها صفر <Term ar="منفردة" en="singular" /> ليس لها معكوس.
 </Box>
 
+<Example n="1" title="بداية سهلة: التحقق من معكوس">
+بيّن أن $\begin{bmatrix} 3 & -1 \\ -5 & 2 \end{bmatrix}$ معكوس $A = \begin{bmatrix} 2 & 1 \\ 5 & 3 \end{bmatrix}$.
+
+<Solution>
+$\begin{bmatrix} 2 & 1 \\ 5 & 3 \end{bmatrix}\begin{bmatrix} 3 & -1 \\ -5 & 2 \end{bmatrix} = \begin{bmatrix} 6 - 5 & -2 + 2 \\ 15 - 15 & -5 + 6 \end{bmatrix}$ <span class="reason">التعريف: حاصل الضرب يجب أن يكون $I$؛ نضرب صفًا في عمود</span>
+
+$= \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} = I$ ✓ <span class="reason">للمصفوفات المربعة يكفي التحقق في اتجاه واحد؛ إن كان $AB = I$ فإن $BA = I$ تلقائيًا</span>
+</Solution>
+</Example>
+
+<Box kind="mistake" title="المعكوس ليس مقلوب العناصر">
+$\begin{bmatrix} 2 & 1 \\ 5 & 3 \end{bmatrix}^{-1} \ne \begin{bmatrix} \tfrac12 & 1 \\ \tfrac15 & \tfrac13 \end{bmatrix}$. المعكوس هو ما يعطي $I$ عند **ضرب المصفوفات**، وهو في المثال السابق $\begin{bmatrix} 3 & -1 \\ -5 & 2 \end{bmatrix}$. وكذلك الرمز $A^{-1}$ لا يعني $\tfrac{1}{A}$، فلا قسمة مصفوفات.
+</Box>
+
 <Box kind="rule" title="إيجاد المعكوس بعمليات الصفوف" en="Finding A⁻¹ by row operations">
 1. اكتب المصفوفة الموسّعة $[A \mid I]$.
 2. طبّق غاوس-جوردان حتى يصير الجزء الأيسر $I$.
 3. الجزء الأيمن عندئذ هو $A^{-1}$: $[I \mid A^{-1}]$. وإذا ظهر صف أصفار في الجزء الأيسر فلا معكوس.
 </Box>
 
-<Example n="1" title="معكوس 3 × 3">
+<Example n="2" title="معكوس 3 × 3">
 أوجد معكوس $A = \begin{bmatrix} 1 & 0 & 1 \\ 2 & -2 & -1 \\ 3 & 0 & 0 \end{bmatrix}$.
 
 <Solution>
-$\left[\begin{array}{ccc|ccc} 1 & 0 & 1 & 1 & 0 & 0 \\ 2 & -2 & -1 & 0 & 1 & 0 \\ 3 & 0 & 0 & 0 & 0 & 1 \end{array}\right]$. بـ $R_2 - 2R_1$ و $R_3 - 3R_1$ ثم $-\tfrac12R_2$ و $-\tfrac13R_3$:
+$\left[\begin{array}{ccc|ccc} 1 & 0 & 1 & 1 & 0 & 0 \\ 2 & -2 & -1 & 0 & 1 & 0 \\ 3 & 0 & 0 & 0 & 0 & 1 \end{array}\right]$. بـ $R_2 - 2R_1$ و $R_3 - 3R_1$ ثم $-\tfrac12R_2$ و $-\tfrac13R_3$: <span class="reason">نضع $I$ بجانب $A$ ونطبق كل عملية على الصف كاملًا، بجزأيه</span>
 
-$\left[\begin{array}{ccc|ccc} 1 & 0 & 1 & 1 & 0 & 0 \\ 0 & 1 & \tfrac32 & 1 & -\tfrac12 & 0 \\ 0 & 0 & 1 & 1 & 0 & -\tfrac13 \end{array}\right]$، ثم $R_1 - R_3$ و $R_2 - \tfrac32R_3$:
+$\left[\begin{array}{ccc|ccc} 1 & 0 & 1 & 1 & 0 & 0 \\ 0 & 1 & \tfrac32 & 1 & -\tfrac12 & 0 \\ 0 & 0 & 1 & 1 & 0 & -\tfrac13 \end{array}\right]$، ثم $R_1 - R_3$ و $R_2 - \tfrac32R_3$: <span class="reason">صارت المحاور 1 وما تحتها أصفار؛ بقي تصفير ما فوق المحور الثالث</span>
 
-$A^{-1} = \begin{bmatrix} 0 & 0 & \tfrac13 \\ -\tfrac12 & -\tfrac12 & \tfrac12 \\ 1 & 0 & -\tfrac13 \end{bmatrix}$. وتحقق بأن $AA^{-1} = I$.
+$A^{-1} = \begin{bmatrix} 0 & 0 & \tfrac13 \\ -\tfrac12 & -\tfrac12 & \tfrac12 \\ 1 & 0 & -\tfrac13 \end{bmatrix}$. وتحقق بأن $AA^{-1} = I$. <span class="reason">الجزء الأيسر صار $I$، فالأيمن هو المعكوس؛ مثلًا الصف الأول من $A$ مع العمود الأول: $0 + 0 + 1 = 1$</span>
 </Solution>
 </Example>
 
-<Box kind="rule" title="الصيغة المختصرة لـ 2 × 2" en="Inverse of a 2 × 2 matrix">
-$$\begin{bmatrix} a & b \\ c & d \end{bmatrix}^{-1} = \frac{1}{ad - bc}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix}, \qquad ad - bc \ne 0$$
+<Deep title="لماذا تنجح طريقة [A | I]؟">
+كل عملية صفوف تكافئ الضرب من اليسار في مصفوفة بسيطة $E$ (تسمى مصفوفة أولية). فإذا حوّلنا $A$ إلى $I$ بعمليات $E_1, E_2, \ldots, E_k$، فإن $E_k\cdots E_2E_1A = I$. أي أن حاصل ضرب هذه المصفوفات هو $A^{-1}$ نفسه.
 
-بدّل عنصري القطر الرئيسي، وغيّر إشارتي القطر الآخر، واقسم على المحدد.
+نحن نطبق العمليات نفسها على $I$ في الجانب الأيمن، فيصير $E_k\cdots E_2E_1I = A^{-1}$. الجانب الأيمن «يسجّل» كل ما فعلناه بالجانب الأيسر، فيخرج المعكوس جاهزًا.
+
+وإذا لم نستطع الوصول إلى $I$ (ظهر صف أصفار)، فالمصفوفة منفردة: محددها صفر، ولا معكوس لها.
+</Deep>
+
+<Box kind="rule" title="الصيغة المختصرة لـ 2 × 2" en="Inverse of a 2 × 2 matrix">
+$$\begin{bmatrix} a & b \\ c & d \end{bmatrix}^{-1} = \frac{1}{ad - bc}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$$
+
+بشرط $ad - bc \ne 0$. بدّل عنصري القطر الرئيسي، وغيّر إشارتي القطر الآخر، واقسم على المحدد.
 </Box>
 
-<Example n="2" title="معكوس 2 × 2">
+<Box kind="tip" title="لماذا تنجح الصيغة؟">
+اضرب: $\begin{bmatrix} a & b \\ c & d \end{bmatrix}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix} = \begin{bmatrix} ad - bc & 0 \\ 0 & ad - bc \end{bmatrix} = (ad - bc)I$. فالقسمة على $ad - bc$ تعطي $I$ بالضبط. ومن هنا يتضح لماذا لا معكوس حين يكون المحدد صفرًا: لا يمكن القسمة عليه.
+</Box>
+
+<Example n="3" title="معكوس 2 × 2">
 أوجد معكوس $\begin{bmatrix} 2 & 4 \\ -1 & 2 \end{bmatrix}$.
 
 <Solution>
-$\det = 4 + 4 = 8$
+$\det = 4 + 4 = 8$ <span class="reason">$ad - bc = 2 \cdot 2 - 4 \cdot (-1)$؛ غير صفري فالمعكوس موجود</span>
 
-$A^{-1} = \dfrac18\begin{bmatrix} 2 & -4 \\ 1 & 2 \end{bmatrix}$
+$A^{-1} = \dfrac18\begin{bmatrix} 2 & -4 \\ 1 & 2 \end{bmatrix}$ <span class="reason">بدّلنا $2$ و $2$ على القطر الرئيسي، وغيّرنا إشارتي $4$ و $-1$</span>
 
-$= \begin{bmatrix} \tfrac14 & -\tfrac12 \\ \tfrac18 & \tfrac14 \end{bmatrix}$
+$= \begin{bmatrix} \tfrac14 & -\tfrac12 \\ \tfrac18 & \tfrac14 \end{bmatrix}$ <span class="reason">نقسم كل عنصر على 8</span>
 </Solution>
 </Example>
 
@@ -74,19 +101,35 @@ $= \begin{bmatrix} \tfrac14 & -\tfrac12 \\ \tfrac18 & \tfrac14 \end{bmatrix}$
 
 النظام $\begin{cases} a_1x + b_1y = c_1 \\ a_2x + b_2y = c_2 \end{cases}$ يُكتب $AX = B$ حيث $A$ مصفوفة المعاملات، و $X = \begin{bmatrix} x \\ y \end{bmatrix}$، و $B = \begin{bmatrix} c_1 \\ c_2 \end{bmatrix}$. اضرب الطرفين **من اليسار** في $A^{-1}$:
 
-$$A^{-1}AX = A^{-1}B \ \Longrightarrow\ IX = A^{-1}B \ \Longrightarrow\ X = A^{-1}B$$
+$$A^{-1}AX = A^{-1}B$$
+
+$$IX = A^{-1}B \ \Longrightarrow\ X = A^{-1}B$$
 
 <MatInverse />
 
-<Example n="3" title="نظام بالمعكوس">
+<Example n="4" title="نظام بالمعكوس">
 حل $\begin{cases} 2x - 3y = 4 \\ x + 5y = 2 \end{cases}$
 
 <Solution>
-$A = \begin{bmatrix} 2 & -3 \\ 1 & 5 \end{bmatrix}$، $\det A = 10 + 3 = 13$، و $A^{-1} = \dfrac{1}{13}\begin{bmatrix} 5 & 3 \\ -1 & 2 \end{bmatrix}$.
+$A = \begin{bmatrix} 2 & -3 \\ 1 & 5 \end{bmatrix}$، $\det A = 10 + 3 = 13$، و $A^{-1} = \dfrac{1}{13}\begin{bmatrix} 5 & 3 \\ -1 & 2 \end{bmatrix}$. <span class="reason">الصيغة المختصرة لـ $2 \times 2$</span>
 
-$X = A^{-1}B = \dfrac{1}{13}\begin{bmatrix} 5 & 3 \\ -1 & 2 \end{bmatrix}\begin{bmatrix} 4 \\ 2 \end{bmatrix} = \dfrac{1}{13}\begin{bmatrix} 26 \\ 0 \end{bmatrix}$
+$X = A^{-1}B = \dfrac{1}{13}\begin{bmatrix} 5 & 3 \\ -1 & 2 \end{bmatrix}\begin{bmatrix} 4 \\ 2 \end{bmatrix} = \dfrac{1}{13}\begin{bmatrix} 26 \\ 0 \end{bmatrix}$ <span class="reason">$5 \cdot 4 + 3 \cdot 2 = 26$ و $-4 + 4 = 0$</span>
 
-$x = 2$، $y = 0$.
+$x = 2$، $y = 0$. <span class="reason">تحقق: $4 - 0 = 4$ و $2 + 0 = 2$</span>
+</Solution>
+</Example>
+
+<Example n="5" title="مستوى الاختبار: نظام 3 × 3 بمعكوس جاهز">
+استخدم معكوس $A$ من المثال 2 لحل $\begin{cases} x + z = 2 \\ 2x - 2y - z = 1 \\ 3x = 3 \end{cases}$
+
+<Solution>
+مصفوفة المعاملات هي $A$ نفسها، و $B = \begin{bmatrix} 2 \\ 1 \\ 3 \end{bmatrix}$. <span class="reason">نقرأ المعاملات بترتيب $x, y, z$، مع الأصفار للمتغيرات الغائبة</span>
+
+$x = 0(2) + 0(1) + \tfrac13(3) = 1$ <span class="reason">الصف الأول من $A^{-1}$ مع $B$</span>
+
+$y = -\tfrac12(2) - \tfrac12(1) + \tfrac12(3) = 0$، و $z = 1(2) + 0(1) - \tfrac13(3) = 1$ <span class="reason">الصفان الثاني والثالث</span>
+
+الحل $(1, 0, 1)$. وتحقق: $1 + 1 = 2$، $2 - 0 - 1 = 1$، $3 = 3$ ✓ <span class="reason">المعكوس محسوب مسبقًا، فالحل ضرب واحد؛ وهذه ميزة الطريقة حين تتكرر الأنظمة بالمعاملات نفسها</span>
 </Solution>
 </Example>
 
@@ -105,11 +148,23 @@ $X = A^{-1}B$ وليس $BA^{-1}$: الضرب غير إبدالي، وفي الغ
   explain="المحدد $2k - 6 = 0$ ← $k = 3$: يصبح الصف الثاني نصف الأول."
 />
 
+<Check
+  q="ما معكوس $\\begin{bmatrix} 4 & 7 \\\\ 1 & 2 \\end{bmatrix}$؟"
+  options={["$\\begin{bmatrix} 2 & -7 \\\\ -1 & 4 \\end{bmatrix}$", "$\\begin{bmatrix} \\tfrac14 & \\tfrac17 \\\\ 1 & \\tfrac12 \\end{bmatrix}$", "$\\begin{bmatrix} -2 & 7 \\\\ 1 & -4 \\end{bmatrix}$", "لا معكوس لها"]}
+  answer={0}
+  explain="المحدد $8 - 7 = 1$، فالمعكوس $\\tfrac11\\begin{bmatrix} 2 & -7 \\\\ -1 & 4 \\end{bmatrix}$. والخيار الثاني مقلوب العناصر، وهو خطأ شائع."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+في التشفير: تُحوَّل الرسالة إلى أعداد وتُضرب في مصفوفة سرية، ولا يفك الرسالة إلا من يعرف معكوسها (شيفرة هِل). وفي الاقتصاد يحسب نموذج ليونتيف الإنتاج اللازم لكل قطاع بمعكوس مصفوفة. وفي رسومات الحاسوب، المعكوس «يلغي» تحويلًا، مثل إعادة الكاميرا إلى موضعها الأصلي.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
 - $I$ محايد الضرب: $AI = IA = A$.
 - $A^{-1}$ موجود إذا وفقط إذا $\det A \ne 0$، ويُوجد بـ $[A \mid I] \to [I \mid A^{-1}]$.
-- لـ 2 × 2: $\tfrac{1}{ad - bc}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$.
-- $AX = B$ ← $X = A^{-1}B$.
+- لـ 2 × 2: $\tfrac{1}{ad - bc}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$، لأن الضرب يعطي $(ad - bc)I$.
+- $AX = B$ ← $X = A^{-1}B$ (من اليسار).
+- المعكوس ليس مقلوب العناصر.
 
 <Practice set="9.8" count={5} />

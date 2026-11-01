@@ -1,7 +1,7 @@
 ---
 section: "9.7"
-summary: "جبر المصفوفات: الأبعاد والتساوي، والجمع والطرح، والمصفوفة الصفرية والمعاكسة، والضرب في عدد، وضرب المصفوفات صفًا في عمود وشرط تعريفه، ولماذا لا يكون إبداليًا، مع تطبيق على حساب التكاليف."
-minutes: 40
+summary: "جبر المصفوفات: الأبعاد والتساوي، والجمع والطرح، والمصفوفة الصفرية والمعاكسة، والضرب في عدد، وضرب المصفوفات صفًا في عمود وشرط تعريفه، ولماذا عُرِّف بهذه الطريقة، ولماذا لا يكون إبداليًا وماذا يترتب على ذلك، مع تطبيق على حساب التكاليف."
+minutes: 55
 prerequisites: ["9.2"]
 terms:
   - { ar: "أبعاد المصفوفة", en: "Dimensions", def: "m × n: عدد الصفوف × عدد الأعمدة." }
@@ -15,6 +15,7 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import MatMul from '../../components/widgets/MatMul.astro';
 
@@ -44,15 +45,25 @@ $$\begin{bmatrix} 1 & 5 \\ -2 & 3 \end{bmatrix} + \begin{bmatrix} 4 & -1 \\ 0 & 
 
 ## الضرب في عدد <span class="en" lang="en">Scalar Multiplication</span>
 
-<Example n="1" title="عمليات مركبة">
+<Example n="1" title="بداية سهلة">
+لـ $A = \begin{bmatrix} 1 & -2 \\ 3 & 0 \end{bmatrix}$ أوجد $4A$، ثم $A + \begin{bmatrix} 2 & 2 \\ 2 & 2 \end{bmatrix}$.
+
+<Solution>
+$4A = \begin{bmatrix} 4 & -8 \\ 12 & 0 \end{bmatrix}$ <span class="reason">الضرب في عدد يضرب **كل** عنصر فيه</span>
+
+$A + \begin{bmatrix} 2 & 2 \\ 2 & 2 \end{bmatrix} = \begin{bmatrix} 3 & 0 \\ 5 & 2 \end{bmatrix}$ <span class="reason">الأبعاد متساوية $2 \times 2$، فنجمع كل عنصر مع نظيره</span>
+</Solution>
+</Example>
+
+<Example n="2" title="عمليات مركبة">
 لـ $A = \begin{bmatrix} 2 & -3 \\ 0 & 4 \end{bmatrix}$ و $B = \begin{bmatrix} -1 & 2 \\ 5 & 1 \end{bmatrix}$، أوجد $3A - 2B$.
 
 <Solution>
-$3A = \begin{bmatrix} 6 & -9 \\ 0 & 12 \end{bmatrix}$ و $2B = \begin{bmatrix} -2 & 4 \\ 10 & 2 \end{bmatrix}$
+$3A = \begin{bmatrix} 6 & -9 \\ 0 & 12 \end{bmatrix}$ و $2B = \begin{bmatrix} -2 & 4 \\ 10 & 2 \end{bmatrix}$ <span class="reason">الضرب في العدد أولًا، كما في ترتيب العمليات مع الأعداد</span>
 
-اطرح عنصرًا بعنصر:
+اطرح عنصرًا بعنصر: <span class="reason">مثلًا العنصر الأول $6 - (-2) = 8$</span>
 
-$3A - 2B = \begin{bmatrix} 8 & -13 \\ -10 & 10 \end{bmatrix}$
+$3A - 2B = \begin{bmatrix} 8 & -13 \\ -10 & 10 \end{bmatrix}$ <span class="reason">انتبه لطرح العدد السالب في الموضعين الأول والثالث</span>
 </Solution>
 </Example>
 
@@ -66,49 +77,79 @@ $$c_{ij} = a_{i1}b_{1j} + a_{i2}b_{2j} + \cdots + a_{in}b_{nj}$$
 أي **الصف $i$ من $A$** «مضروبًا نقطيًا» في **العمود $j$ من $B$** (كما في الدرس 8.4). والشرط: عدد أعمدة $A$ = عدد صفوف $B$.
 </Box>
 
+<Box kind="tip" title="اختبار الأبعاد السريع">
+اكتب الأبعاد متجاورة: $(2 \times \mathbf{3})(\mathbf{3} \times 4)$. إن تساوى العددان **الداخليان** فالضرب معرّف، والعددان **الخارجيان** هما أبعاد الناتج: $2 \times 4$.
+</Box>
+
+<Deep title="لماذا نضرب صفًا في عمود ولا نضرب عنصرًا في عنصر؟">
+**من الأنظمة**: النظام $\begin{cases} 2x + 3y = 7 \\ x - y = 1 \end{cases}$ يُكتب $\begin{bmatrix} 2 & 3 \\ 1 & -1 \end{bmatrix}\begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} 7 \\ 1 \end{bmatrix}$. الطرف الأيسر يجب أن يعطي $2x + 3y$ في الصف الأول، وهذا بالضبط «الصف الأول مضروبًا في العمود». فالتعريف مصمم ليجعل كل نظام خطي معادلة واحدة $AX = B$.
+
+**من التحويلات المتتالية**: لو حوّلت المتغيرات $(x, y)$ بمصفوفة $B$ ثم حوّلت الناتج بمصفوفة $A$، فالأثر الكلي تحويل واحد مصفوفته $AB$. ضرب المصفوفات هو **تركيب** التحويلات، مثل تركيب الدوال $(f \circ g)(x)$ في الدرس 2.8. ولهذا الترتيب مهم: $f(g(x))$ غير $g(f(x))$ عمومًا، و $AB$ غير $BA$.
+
+أما الضرب عنصرًا بعنصر فموجود ويسمى ضرب هادامار، لكنه لا يحقق أيًّا من هذين المعنيين، ولهذا ليس هو الضرب المعتاد.
+</Deep>
+
 <MatMul />
 
-<Example n="2" title="ضرب (2 × 3)(3 × 2)">
+<Example n="3" title="ضرب (2 × 3)(3 × 2)">
 أوجد $AB$ لـ $A = \begin{bmatrix} -3 & 4 & 2 \\ 5 & 0 & 4 \end{bmatrix}$ و $B = \begin{bmatrix} -6 & 4 \\ 2 & 3 \\ 3 & -2 \end{bmatrix}$.
 
 <Solution>
-الأبعاد $(2 \times 3)(3 \times 2) = 2 \times 2$. $c_{11} = (-3)(-6) + 4(2) + 2(3) = 32$، و $c_{12} = (-3)(4) + 4(3) + 2(-2) = -4$.
+الأبعاد $(2 \times 3)(3 \times 2) = 2 \times 2$. $c_{11} = (-3)(-6) + 4(2) + 2(3) = 32$، و $c_{12} = (-3)(4) + 4(3) + 2(-2) = -4$. <span class="reason">العددان الداخليان 3 و 3 متساويان؛ ثم الصف الأول من $A$ مع كل عمود من $B$</span>
 
-$c_{21} = 5(-6) + 0(2) + 4(3) = -18$، و $c_{22} = 5(4) + 0(3) + 4(-2) = 12$.
+$c_{21} = 5(-6) + 0(2) + 4(3) = -18$، و $c_{22} = 5(4) + 0(3) + 4(-2) = 12$. <span class="reason">الصف الثاني من $A$ مع العمودين</span>
 
-$AB = \begin{bmatrix} 32 & -4 \\ -18 & 12 \end{bmatrix}$
+$AB = \begin{bmatrix} 32 & -4 \\ -18 & 12 \end{bmatrix}$ <span class="reason">العنصر $c_{ij}$ في الصف $i$ والعمود $j$ من الناتج</span>
 </Solution>
 </Example>
+
+<Box kind="mistake" title="الضرب ليس عنصرًا بعنصر">
+$\begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}\begin{bmatrix} 5 & 6 \\ 7 & 8 \end{bmatrix} \neq \begin{bmatrix} 5 & 12 \\ 21 & 32 \end{bmatrix}$. العنصر الأول الصحيح $1 \cdot 5 + 2 \cdot 7 = 19$: الصف الأول كله مع العمود الأول كله.
+</Box>
 
 <Box kind="mistake" title="AB ≠ BA">
 ضرب المصفوفات **ليس إبداليًا**. في المثال السابق $BA$ أبعادها $3 \times 3$، فلا يمكن أن تساوي $AB$. وحتى مع المصفوفات المربعة يختلف الناتج عادة. لذلك انتبه دائمًا لترتيب الضرب.
 </Box>
 
-<Example n="3" title="الضرب غير إبدالي">
+<Example n="4" title="الضرب غير إبدالي">
 لـ $A = \begin{bmatrix} 1 & 2 \\ 0 & 1 \end{bmatrix}$ و $B = \begin{bmatrix} 1 & 0 \\ 3 & 1 \end{bmatrix}$ قارن $AB$ و $BA$.
 
 <Solution>
-$AB = \begin{bmatrix} 1 + 6 & 0 + 2 \\ 0 + 3 & 0 + 1 \end{bmatrix} = \begin{bmatrix} 7 & 2 \\ 3 & 1 \end{bmatrix}$
+$AB = \begin{bmatrix} 1 + 6 & 0 + 2 \\ 0 + 3 & 0 + 1 \end{bmatrix} = \begin{bmatrix} 7 & 2 \\ 3 & 1 \end{bmatrix}$ <span class="reason">صفوف $A$ مع أعمدة $B$</span>
 
-$BA = \begin{bmatrix} 1 & 2 \\ 3 & 6 + 1 \end{bmatrix} = \begin{bmatrix} 1 & 2 \\ 3 & 7 \end{bmatrix}$
+$BA = \begin{bmatrix} 1 & 2 \\ 3 & 6 + 1 \end{bmatrix} = \begin{bmatrix} 1 & 2 \\ 3 & 7 \end{bmatrix}$ <span class="reason">صفوف $B$ مع أعمدة $A$؛ مثلًا $c_{22} = 3 \cdot 2 + 1 \cdot 1$</span>
 
-$AB \ne BA$.
+$AB \ne BA$. <span class="reason">العنصران القطريان تبادلا موضعيهما؛ مثال واحد يكفي لنفي الإبدالية</span>
+</Solution>
+</Example>
+
+<Example n="5" title="مستوى الاختبار: هل يصح قانون المربع؟">
+للمصفوفتين $A$ و $B$ من المثال السابق، قارن $(A + B)^2$ بـ $A^2 + 2AB + B^2$.
+
+<Solution>
+$A + B = \begin{bmatrix} 2 & 2 \\ 3 & 2 \end{bmatrix}$، و $(A + B)^2 = \begin{bmatrix} 2 & 2 \\ 3 & 2 \end{bmatrix}\begin{bmatrix} 2 & 2 \\ 3 & 2 \end{bmatrix} = \begin{bmatrix} 10 & 8 \\ 12 & 10 \end{bmatrix}$ <span class="reason">المربع يعني ضرب المصفوفة في نفسها، لا تربيع كل عنصر</span>
+
+$A^2 = \begin{bmatrix} 1 & 4 \\ 0 & 1 \end{bmatrix}$ و $B^2 = \begin{bmatrix} 1 & 0 \\ 6 & 1 \end{bmatrix}$، و $2AB = \begin{bmatrix} 14 & 4 \\ 6 & 2 \end{bmatrix}$ <span class="reason">نحسب كل حد من القانون المعتاد</span>
+
+$A^2 + 2AB + B^2 = \begin{bmatrix} 16 & 8 \\ 12 & 4 \end{bmatrix} \ne (A + B)^2$ <span class="reason">القانون المعتاد يفترض أن $AB = BA$</span>
+
+الصحيح: $(A + B)^2 = A^2 + AB + BA + B^2$. وتحقق: $AB + BA = \begin{bmatrix} 8 & 4 \\ 6 & 8 \end{bmatrix}$ فيصير المجموع $\begin{bmatrix} 10 & 8 \\ 12 & 10 \end{bmatrix}$ ✓ <span class="reason">نفك $(A + B)(A + B)$ بالتوزيع مع الحفاظ على ترتيب كل ضرب</span>
 </Solution>
 </Example>
 
 ## تطبيق <span class="en" lang="en">An Application of Matrix Algebra</span>
 
-<Example n="4" title="تكلفة الإنتاج">
+<Example n="6" title="تكلفة الإنتاج">
 مطعم يحضّر نوعين من الوجبات. الكميات المطلوبة (كغ) من اللحم والأرز والخضار لكل وجبة في المصفوفة $Q$، وأسعار الكيلو في $P$. ما تكلفة كل وجبة؟
 
 $Q = \begin{bmatrix} 0.3 & 0.2 & 0.1 \\ 0.1 & 0.3 & 0.2 \end{bmatrix}$ (صف لكل وجبة)، و $P = \begin{bmatrix} 40 \\ 6 \\ 10 \end{bmatrix}$ (لحم، أرز، خضار)
 
 <Solution>
-التكلفة $QP$: $(2 \times 3)(3 \times 1) = 2 \times 1$.
+التكلفة $QP$: $(2 \times 3)(3 \times 1) = 2 \times 1$. <span class="reason">أعمدة $Q$ (المكونات) تطابق صفوف $P$ (أسعار المكونات نفسها)</span>
 
-الوجبة الأولى: $0.3(40) + 0.2(6) + 0.1(10) = 12 + 1.2 + 1 = 14.2$ ريالًا.
+الوجبة الأولى: $0.3(40) + 0.2(6) + 0.1(10) = 12 + 1.2 + 1 = 14.2$ ريالًا. <span class="reason">كمية كل مكون ضرب سعره، ثم الجمع: هذا هو الضرب صفًا في عمود</span>
 
-الثانية: $0.1(40) + 0.3(6) + 0.2(10) = 4 + 1.8 + 2 = 7.8$ ريالات.
+الثانية: $0.1(40) + 0.3(6) + 0.2(10) = 4 + 1.8 + 2 = 7.8$ ريالات. <span class="reason">الصف الثاني من $Q$ مع العمود نفسه</span>
 </Solution>
 </Example>
 
@@ -119,11 +160,23 @@ $Q = \begin{bmatrix} 0.3 & 0.2 & 0.1 \\ 0.1 & 0.3 & 0.2 \end{bmatrix}$ (صف ل�
   explain="$(3 \\times 2)(2 \\times 4) = 3 \\times 4$. أما $(2 \\times 4)(3 \\times 2)$ فـ $4 \\ne 3$، فلا يُعرّف."
 />
 
+<Check
+  q="ما العنصر $c_{21}$ في $\\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix}\\begin{bmatrix} 5 & 6 \\\\ 7 & 8 \\end{bmatrix}$؟"
+  options={["21", "43", "50", "15"]}
+  answer={1}
+  explain="الصف الثاني $(3, 4)$ مع العمود الأول $(5, 7)$: $3 \\cdot 5 + 4 \\cdot 7 = 15 + 28 = 43$."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+في الدرس التالي (9.8) تحل $AX = B$ بمعكوس المصفوفة. وفي رسومات الحاسوب والألعاب كل دوران وتكبير وإزاحة لشكل هو ضرب في مصفوفة، وتتابع الحركات ضرب مصفوفات بالترتيب. وفي التعلم الآلي، كل طبقة في الشبكة العصبية ضرب مصفوفة في متجه، وتدريب النماذج الكبيرة مليارات من هذه العمليات.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
 - الجمع والطرح عنصرًا بعنصر، وبالأبعاد نفسها فقط.
 - $kA$: اضرب كل عنصر.
 - $AB$: صف في عمود، و $(m \times n)(n \times p) = m \times p$.
-- $AB \ne BA$ عمومًا.
+- التعريف يجعل الأنظمة $AX = B$، ويمثل تركيب التحويلات.
+- $AB \ne BA$ عمومًا، فقوانين مثل $(A + B)^2 = A^2 + 2AB + B^2$ لا تصح.
 
 <Practice set="9.7" count={5} />

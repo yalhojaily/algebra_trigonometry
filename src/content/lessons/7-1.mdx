@@ -1,10 +1,11 @@
 ---
 section: "7.1"
-summary: "المتطابقات الأساسية في مكان واحد (المقلوب، والقسمة، وفيثاغورس، والزوجية والفردية)، واستخدامها لإيجاد قيم الدوال، وكتابة دالة بدلالة أخرى، وتبسيط العبارات المثلثية."
-minutes: 35
+summary: "المتطابقات الأساسية في مكان واحد (المقلوب، والقسمة، وفيثاغورس، والزوجية والفردية) ومن أين تأتي، واستخدامها لإيجاد قيم الدوال، وكتابة دالة بدلالة أخرى، وتبسيط العبارات المثلثية خطوة بخطوة."
+minutes: 50
 prerequisites: ["5.2", "6.2"]
 terms:
   - { ar: "متطابقة", en: "Identity", def: "معادلة صحيحة لكل قيمة يكون فيها الطرفان معرّفين." }
+  - { ar: "معادلة شرطية", en: "Conditional Equation", def: "معادلة صحيحة لبعض القيم فقط، مثل sin x = 1/2." }
   - { ar: "متطابقات الزوجية والفردية", en: "Even-Odd (Negative-Angle) Identities", def: "sin(−x) = −sin x ، cos(−x) = cos x ، tan(−x) = −tan x." }
   - { ar: "المتطابقات الأساسية", en: "Fundamental Identities", def: "متطابقات المقلوب والقسمة وفيثاغورس والزوايا السالبة." }
 ---
@@ -13,10 +14,21 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import IdentityGraph from '../../components/widgets/IdentityGraph.astro';
 
-المعادلة $2x + 3 = 7$ صحيحة لقيمة واحدة. أما $\sin^2 x + \cos^2 x = 1$ فصحيحة **لكل** $x$. هذا النوع من المعادلات يسمى <Term ar="متطابقة" en="identity" />. والمتطابقات أداة تحويل: تكتب العبارة المعقدة في صورة أبسط، أو تحوّل معادلة صعبة إلى معادلة نعرف حلها. هذا الفصل كله مبني على مجموعة صغيرة منها تجمعها في هذا الدرس.
+المعادلة $2x + 3 = 7$ صحيحة لقيمة واحدة فقط هي $x = 2$. والمعادلة $\sin x = \tfrac12$ صحيحة لبعض القيم ($\tfrac{\pi}{6}$، $\tfrac{5\pi}{6}$، …) وخاطئة لغيرها، ولذلك تسمى <Term ar="معادلة شرطية" en="conditional equation" />. أما $\sin^2 x + \cos^2 x = 1$ فصحيحة **لكل** $x$ دون استثناء. هذا النوع يسمى <Term ar="متطابقة" en="identity" />.
+
+لماذا نهتم؟ لأن المتطابقة تعطينا **طريقتين لكتابة الشيء نفسه**، فنختار في كل موقف الكتابة الأنسب: نحوّل عبارة معقدة إلى أبسط، أو نحوّل معادلة لا نعرف حلها إلى معادلة نعرفه. كل الفصل 7 مبني على مجموعة صغيرة من المتطابقات نجمعها في هذا الدرس، فإتقانها هنا يوفّر عليك كثيرًا لاحقًا.
+
+<Box kind="def" title="المتطابقة" en="Identity">
+المتطابقة معادلة صحيحة لكل قيمة للمتغير **يكون فيها الطرفان معرّفين**. مثلًا $\tan x = \dfrac{\sin x}{\cos x}$ متطابقة رغم أن الطرفين غير معرّفين عند $x = \tfrac{\pi}{2}$، لأن الشرط يشمل فقط القيم التي يُعرَّف فيها الطرفان.
+</Box>
+
+<Box kind="tip" title="كيف تختبر هل العبارة متطابقة؟">
+ارسم الطرفين على المحاور نفسها: إن انطبق المنحنيان تمامًا فالأرجح أنها متطابقة، وإن افترقا ولو في نقطة واحدة فليست متطابقة. وللنفي يكفي **مثال مضاد واحد**: عوّض قيمة سهلة مثل $x = 0$ أو $x = \tfrac{\pi}{4}$؛ إن اختلف الطرفان فالعبارة ليست متطابقة. أما الإثبات فيحتاج خطوات جبرية (الدرس 7.2)، لأن تطابق الرسم أو بضع قيم لا يكفي برهانًا.
+</Box>
 
 ## المتطابقات الأساسية <span class="en" lang="en">Fundamental Identities</span>
 
@@ -40,65 +52,185 @@ $$\sin(-x) = -\sin x \qquad \cos(-x) = \cos x \qquad \tan(-x) = -\tan x$$
 وكذلك $\csc(-x) = -\csc x$، $\sec(-x) = \sec x$، $\cot(-x) = -\cot x$.
 </Box>
 
+<Deep title="من أين تأتي هذه المتطابقات؟">
+كلها نتائج مباشرة لتعريف الدوال على دائرة الوحدة (الدرس 6.2): الزاوية $x$ تحدد نقطة $P = (\cos x, \sin x)$ على الدائرة $X^2 + Y^2 = 1$.
+
+- **المقلوب والقسمة** ليست اكتشافًا بل **تعريفات**: عرّفنا $\tan x = \tfrac{Y}{X} = \tfrac{\sin x}{\cos x}$، و $\sec x = \tfrac{1}{X}$، وهكذا.
+- **فيثاغورس**: النقطة $P$ تقع على الدائرة، فإحداثياها يحققان معادلتها: $\cos^2 x + \sin^2 x = 1$. وهذه نفسها نظرية فيثاغورس في المثلث القائم الذي وتره نصف القطر 1.
+- **الزوايا السالبة**: الزاوية $-x$ هي انعكاس الزاوية $x$ في المحور الأفقي، فتصير النقطة $(\cos x, -\sin x)$. الإحداثي الأفقي لم يتغير ($\cos(-x) = \cos x$)، والرأسي غيّر إشارته ($\sin(-x) = -\sin x$). ومنهما $\tan(-x) = \tfrac{-\sin x}{\cos x} = -\tan x$.
+
+لهذا تسمى $\cos$ و $\sec$ دالتين **زوجيتين** (رسمهما متماثل حول المحور الرأسي)، والأربع الباقية **فردية** (رسمها متماثل حول نقطة الأصل).
+</Deep>
+
 <Box kind="tip" title="لا تحفظ الثلاث كلها">
-تكفي $\sin^2 x + \cos^2 x = 1$: اقسمها على $\cos^2 x$ تحصل على الثانية، وعلى $\sin^2 x$ تحصل على الثالثة. وكل صيغة تُقرأ بطرق متعددة: $\sin^2 x = 1 - \cos^2 x$، و $\cos^2 x = 1 - \sin^2 x$، و $\sec^2 x - \tan^2 x = 1$.
+تكفي $\sin^2 x + \cos^2 x = 1$: اقسم طرفيها على $\cos^2 x$ تحصل على $\tan^2 x + 1 = \sec^2 x$، واقسمها على $\sin^2 x$ تحصل على $1 + \cot^2 x = \csc^2 x$. وتعوّد أن تقرأ كل متطابقة بكل صورها، لأن المسألة قد تحتاج أي صورة منها:
+
+$$\sin^2 x = 1 - \cos^2 x \qquad \cos^2 x = 1 - \sin^2 x$$
+
+$$\sec^2 x - \tan^2 x = 1 \qquad \csc^2 x - \cot^2 x = 1$$
 </Box>
+
+جرّب في الأداة: ارسم $\sin^2 x + \cos^2 x$ لترى أنه خط أفقي عند 1 مهما كانت $x$، ثم قارن طرفي متطابقات أخرى.
 
 <IdentityGraph />
 
 ## استخدامات المتطابقات <span class="en" lang="en">Uses of the Fundamental Identities</span>
 
-### إيجاد بقية الدوال
+### إيجاد بقية الدوال من دالة واحدة
 
-<Example n="1" title="من دالة إلى أخرى">
+إذا عرفت قيمة دالة واحدة والربع الذي تقع فيه الزاوية، فبقية الدوال الست كلها محددة. الطريق دائمًا: متطابقة فيثاغورس المناسبة تعطيك دالة ثانية **مع علامة ±**، ثم **الربع** يحسم العلامة، ثم القسمة والمقلوب يعطيانك الباقي.
+
+<Box kind="rule" title="الإشارة من الربع" en="Signs by quadrant">
+| الربع | الدوال الموجبة |
+|---|---|
+| الأول | كلها |
+| الثاني | $\sin$ و $\csc$ فقط |
+| الثالث | $\tan$ و $\cot$ فقط |
+| الرابع | $\cos$ و $\sec$ فقط |
+</Box>
+
+<Example n="1" title="من الجيب إلى الدوال الست">
+إذا كان $\sin\theta = \tfrac35$ و $\theta$ في الربع الثاني، فأوجد بقية الدوال المثلثية.
+
+<Solution>
+$\cos^2\theta = 1 - \sin^2\theta = 1 - \tfrac{9}{25} = \tfrac{16}{25}$ <span class="reason">فيثاغورس بصورة $\cos^2 = 1 - \sin^2$</span>
+
+$\cos\theta = \pm\tfrac45$، ونختار $\cos\theta = -\tfrac45$ <span class="reason">في الربع الثاني جيب التمام سالب</span>
+
+$\tan\theta = \dfrac{\sin\theta}{\cos\theta} = \dfrac{3/5}{-4/5} = -\dfrac34$ <span class="reason">متطابقة القسمة</span>
+
+$\csc\theta = \tfrac53$، $\sec\theta = -\tfrac54$، $\cot\theta = -\tfrac43$ <span class="reason">مقلوبات الثلاث السابقة</span>
+</Solution>
+</Example>
+
+<Example n="2" title="من الظل إلى الجيب وجيب التمام">
 إذا كان $\tan\theta = -\tfrac53$ و $\theta$ في الربع الثاني، فأوجد $\sin\theta$ و $\cos\theta$.
 
 <Solution>
-$\sec^2\theta = 1 + \tan^2\theta = 1 + \tfrac{25}{9} = \tfrac{34}{9}$ ← $\sec\theta = \pm\tfrac{\sqrt{34}}{3}$. في الربع الثاني $\cos$ سالب، فـ $\sec\theta = -\tfrac{\sqrt{34}}{3}$.
+$\sec^2\theta = 1 + \tan^2\theta = 1 + \tfrac{25}{9} = \tfrac{34}{9}$ <span class="reason">المتطابقة التي تربط $\tan$ بدالة أخرى مباشرة هي $1 + \tan^2 = \sec^2$</span>
 
-$\cos\theta = \dfrac{1}{\sec\theta} = -\dfrac{3}{\sqrt{34}} = -\dfrac{3\sqrt{34}}{34}$
+$\sec\theta = \pm\tfrac{\sqrt{34}}{3}$، ونختار $\sec\theta = -\tfrac{\sqrt{34}}{3}$ <span class="reason">في الربع الثاني $\cos$ سالب، و $\sec$ مقلوبه فهو سالب أيضًا</span>
 
-$\sin\theta = \tan\theta\cos\theta = \left(-\tfrac53\right)\left(-\tfrac{3\sqrt{34}}{34}\right) = \dfrac{5\sqrt{34}}{34}$ (موجب كما يجب في الربع الثاني).
+$\cos\theta = \dfrac{1}{\sec\theta} = -\dfrac{3}{\sqrt{34}} = -\dfrac{3\sqrt{34}}{34}$ <span class="reason">المقلوب، ثم إنطاق المقام</span>
+
+$\sin\theta = \tan\theta\cos\theta = \left(-\tfrac53\right)\left(-\tfrac{3\sqrt{34}}{34}\right) = \dfrac{5\sqrt{34}}{34}$ <span class="reason">من $\tan = \tfrac{\sin}{\cos}$ نضرب في $\cos$؛ والناتج موجب كما يجب في الربع الثاني</span>
+</Solution>
+</Example>
+
+<Box kind="mistake" title="الجذر يعطي ± دائمًا">
+من $\cos^2\theta = \tfrac{16}{25}$ لا يصح أن تكتب $\cos\theta = \tfrac45$ مباشرة. الجذر التربيعي يعطي قيمتين، والربع وحده يحسم أيهما. نسيان هذه الخطوة أكثر خطأ شائع في هذا النوع من المسائل.
+</Box>
+
+### الزوايا السالبة
+
+<Example n="3" title="استخدام الزوجية والفردية">
+بسّط $\sin(-x)\csc x + \cos(-x)\sec(-x)$.
+
+<Solution>
+$\sin(-x) = -\sin x$، و $\cos(-x) = \cos x$، و $\sec(-x) = \sec x$ <span class="reason">$\sin$ فردية، و $\cos$ و $\sec$ زوجيتان</span>
+
+$= -\sin x \cdot \dfrac{1}{\sin x} + \cos x \cdot \dfrac{1}{\cos x}$ <span class="reason">المقلوب</span>
+
+$= -1 + 1 = 0$
 </Solution>
 </Example>
 
 ### كتابة دالة بدلالة أخرى
 
-<Example n="2" title="بدلالة الجيب">
-اكتب $\cot^2 x + \sec^2 x$ بدلالة $\sin x$ فقط.
+الفكرة: نستبدل كل دالة غير مرغوبة بصورة تحتوي الدالة المطلوبة فقط، مستخدمين القسمة والمقلوب وفيثاغورس.
+
+<Example n="4" title="الظل بدلالة الجيب">
+اكتب $\tan x$ بدلالة $\sin x$ فقط.
 
 <Solution>
-$\cot^2 x = \dfrac{\cos^2 x}{\sin^2 x} = \dfrac{1 - \sin^2 x}{\sin^2 x}$، و $\sec^2 x = \dfrac{1}{1 - \sin^2 x}$.
+$\tan x = \dfrac{\sin x}{\cos x}$ <span class="reason">القسمة: بقي أن نتخلص من $\cos x$</span>
 
-$\cot^2 x + \sec^2 x = \dfrac{1 - \sin^2 x}{\sin^2 x} + \dfrac{1}{1 - \sin^2 x}$
+$\cos x = \pm\sqrt{1 - \sin^2 x}$ <span class="reason">من فيثاغورس</span>
 
-بتوحيد المقامات: $\dfrac{(1 - \sin^2 x)^2 + \sin^2 x}{\sin^2 x(1 - \sin^2 x)} = \dfrac{1 - \sin^2 x + \sin^4 x}{\sin^2 x - \sin^4 x}$
+$\tan x = \dfrac{\sin x}{\pm\sqrt{1 - \sin^2 x}}$، والإشارة $+$ إذا كان $x$ في الربع الأول أو الرابع ($\cos$ موجب)، و $-$ في الثاني أو الثالث.
 </Solution>
 </Example>
 
-### تبسيط العبارات
+<Example n="5" title="عبارة أطول بدلالة الجيب">
+اكتب $\cot^2 x + \sec^2 x$ بدلالة $\sin x$ فقط.
+
+<Solution>
+$\cot^2 x = \dfrac{\cos^2 x}{\sin^2 x} = \dfrac{1 - \sin^2 x}{\sin^2 x}$ <span class="reason">القسمة، ثم $\cos^2 = 1 - \sin^2$. لا ± هنا لأننا نستخدم المربع لا الجذر</span>
+
+$\sec^2 x = \dfrac{1}{\cos^2 x} = \dfrac{1}{1 - \sin^2 x}$ <span class="reason">المقلوب، ثم فيثاغورس</span>
+
+$\cot^2 x + \sec^2 x = \dfrac{(1 - \sin^2 x)^2 + \sin^2 x}{\sin^2 x\,(1 - \sin^2 x)}$ <span class="reason">توحيد المقامات: المقام المشترك حاصل ضرب المقامين</span>
+
+$= \dfrac{1 - 2\sin^2 x + \sin^4 x + \sin^2 x}{\sin^2 x - \sin^4 x} = \dfrac{1 - \sin^2 x + \sin^4 x}{\sin^2 x - \sin^4 x}$ <span class="reason">فك المربع وجمع الحدود المتشابهة</span>
+</Solution>
+</Example>
+
+### تبسيط العبارات المثلثية
 
 <Box kind="rule" title="استراتيجية التبسيط" en="Simplifying">
-1. حوّل كل شيء إلى $\sin$ و $\cos$.
-2. وحّد المقامات واضرب.
-3. ابحث عن $\sin^2 x + \cos^2 x$ أو $1 - \sin^2 x$ أو أي صورة من صور فيثاغورس.
-4. اختصر.
+1. حوّل كل شيء إلى $\sin$ و $\cos$ (إلا إذا كانت العبارة مكتوبة أصلًا بصورة فيثاغورس جاهزة مثل $1 + \tan^2 x$).
+2. وحّد المقامات واجمع، أو اضرب الكسور.
+3. ابحث عن صورة من صور فيثاغورس: $\sin^2 x + \cos^2 x$، أو $1 - \sin^2 x$، أو $1 - \cos^2 x$.
+4. حلّل (فرق مربعين، عامل مشترك) واختصر.
+5. إن انتهيت بكسر بسيط فقد يكون له اسم: $\tfrac{1}{\sin x} = \csc x$، $\tfrac{\sin x}{\cos x} = \tan x$.
 </Box>
 
-<Example n="3" title="تبسيط">
+<Example n="6" title="تبسيط بالتوزيع">
 بسّط $\cos x(\tan x + \cot x)$.
 
 <Solution>
-$= \cos x\left(\dfrac{\sin x}{\cos x} + \dfrac{\cos x}{\sin x}\right) = \sin x + \dfrac{\cos^2 x}{\sin x}$
+$= \cos x\left(\dfrac{\sin x}{\cos x} + \dfrac{\cos x}{\sin x}\right)$ <span class="reason">الخطوة 1: كل شيء إلى $\sin$ و $\cos$</span>
 
-$= \dfrac{\sin^2 x + \cos^2 x}{\sin x} = \dfrac{1}{\sin x}$
+$= \sin x + \dfrac{\cos^2 x}{\sin x}$ <span class="reason">وزّع $\cos x$ واختصر في الحد الأول</span>
 
-$= \csc x$
+$= \dfrac{\sin^2 x + \cos^2 x}{\sin x}$ <span class="reason">وحّد المقام: $\sin x = \tfrac{\sin^2 x}{\sin x}$</span>
+
+$= \dfrac{1}{\sin x} = \csc x$ <span class="reason">فيثاغورس، ثم المقلوب</span>
+</Solution>
+</Example>
+
+<Example n="7" title="صورة فيثاغورس جاهزة">
+بسّط $\dfrac{1 + \tan^2 x}{1 + \cot^2 x}$.
+
+<Solution>
+$= \dfrac{\sec^2 x}{\csc^2 x}$ <span class="reason">البسط والمقام كلاهما صورة فيثاغورس جاهزة، فلا داعي للتحويل الطويل</span>
+
+$= \dfrac{1/\cos^2 x}{1/\sin^2 x} = \dfrac{\sin^2 x}{\cos^2 x}$ <span class="reason">المقلوب، والقسمة على كسر ضرب في مقلوبه</span>
+
+$= \tan^2 x$
+</Solution>
+</Example>
+
+<Example n="8" title="توحيد مقامات (مستوى الاختبار)">
+بسّط $\dfrac{1}{1 - \sin x} + \dfrac{1}{1 + \sin x}$.
+
+<Solution>
+$= \dfrac{(1 + \sin x) + (1 - \sin x)}{(1 - \sin x)(1 + \sin x)}$ <span class="reason">المقام المشترك حاصل ضرب المقامين</span>
+
+$= \dfrac{2}{1 - \sin^2 x}$ <span class="reason">في البسط يختفي $\sin x$، والمقام فرق مربعين</span>
+
+$= \dfrac{2}{\cos^2 x} = 2\sec^2 x$ <span class="reason">فيثاغورس: $1 - \sin^2 x = \cos^2 x$، ثم المقلوب</span>
+</Solution>
+</Example>
+
+<Example n="9" title="كسر مركّب">
+بسّط $\dfrac{\sec x - \cos x}{\tan x}$.
+
+<Solution>
+$= \dfrac{\tfrac{1}{\cos x} - \cos x}{\tfrac{\sin x}{\cos x}}$ <span class="reason">كل شيء إلى $\sin$ و $\cos$</span>
+
+$= \dfrac{1 - \cos^2 x}{\cos x} \cdot \dfrac{\cos x}{\sin x}$ <span class="reason">وحّد مقام البسط، والقسمة على كسر ضرب في مقلوبه</span>
+
+$= \dfrac{\sin^2 x}{\sin x} = \sin x$ <span class="reason">فيثاغورس: $1 - \cos^2 x = \sin^2 x$، ثم اختصر $\cos x$ و $\sin x$</span>
 </Solution>
 </Example>
 
 <Box kind="mistake" title="sin²x ليست sin(x²)">
 $\sin^2 x$ تعني $(\sin x)^2$. أما $\sin x^2$ فتعني جيب العدد $x^2$، وهي دالة مختلفة تمامًا. وعند الكتابة في التمارين اكتب `sin(x)^2` أو `sin^2(x)`.
+</Box>
+
+<Box kind="mistake" title="sin ليست عددًا يُختصر">
+في $\dfrac{\sin x}{x}$ لا يجوز «اختصار» $x$ لتحصل على $\sin$؛ فـ $\sin x$ ليست حاصل ضرب $\sin$ في $x$، بل دالة مطبّقة على $x$. وكذلك $\sin(a + b) \ne \sin a + \sin b$ (سترى الصيغة الصحيحة في الدرس 7.3).
 </Box>
 
 <Check
@@ -108,10 +240,23 @@ $\sin^2 x$ تعني $(\sin x)^2$. أما $\sin x^2$ فتعني جيب العدد
   explain="جيب التمام دالة زوجية: $\\cos(-\\theta) = \\cos\\theta$."
 />
 
+<Check
+  q="إذا كان $\\cos\\theta = -\\tfrac{5}{13}$ و $\\theta$ في الربع الثالث، فما $\\sin\\theta$؟"
+  options={["$\\tfrac{12}{13}$", "$-\\tfrac{12}{13}$", "$-\\tfrac{8}{13}$", "$\\tfrac{5}{12}$"]}
+  answer={1}
+  explain="$\\sin^2\\theta = 1 - \\tfrac{25}{169} = \\tfrac{144}{169}$، و $\\sin$ سالب في الربع الثالث، فـ $\\sin\\theta = -\\tfrac{12}{13}$."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+مهارة التبسيط هنا هي نفسها مهارة **إثبات المتطابقات** في الدرس 7.2: هناك تبسّط طرفًا حتى يصير مثل الطرف الآخر. وفي حل المعادلات المثلثية (7.5) تستخدم فيثاغورس لتكتب المعادلة بدالة واحدة ثم تحلها كمعادلة تربيعية.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
-- المقلوب والقسمة وفيثاغورس والزوايا السالبة هي أدوات الفصل كله.
+- المتطابقة صحيحة لكل قيمة يُعرَّف فيها الطرفان؛ والمثال المضاد الواحد ينفيها.
+- المقلوب والقسمة تعريفات، وفيثاغورس من دائرة الوحدة، والزوايا السالبة من التماثل.
 - $\cos$ و $\sec$ زوجيتان، والبقية فردية.
-- للتبسيط: إلى $\sin$ و $\cos$، ثم وحّد، ثم فيثاغورس.
+- من دالة واحدة وربع: فيثاغورس يعطي ±، والربع يحسم الإشارة.
+- للتبسيط: إلى $\sin$ و $\cos$، ثم وحّد، ثم ابحث عن فيثاغورس، ثم اختصر.
 
 <Practice set="7.1" count={6} />

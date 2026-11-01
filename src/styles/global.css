@@ -203,3 +203,8 @@ details.derive[open] summary { margin-bottom: 0.5rem; }
 input[type='range'] { direction: ltr; }
 /* لا نكسر المعادلة القصيرة بين سطرين */
 .katex { white-space: nowrap; }
+
+/* سبب الخطوة في الحلول المفصّلة */
+.reason { display: block; margin-top: 0.15rem; color: var(--muted); font-size: 0.88em; line-height: 1.7; }
+.reason::before { content: 'لماذا؟ '; font-family: var(--font-head); font-size: 0.85em; color: var(--accent); }
+[hidden] { display: none !important; }

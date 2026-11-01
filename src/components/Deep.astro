@@ -1,0 +1,26 @@
+---
+// قسم «تعمّق» قابل للطي: اشتقاق أو حدس إضافي لمن يريده، دون أن يزحم الدرس
+interface Props { title: string }
+const { title } = Astro.props;
+---
+<details class="deep">
+  <summary><span class="tag">تعمّق</span> {title}</summary>
+  <div class="body"><slot /></div>
+</details>
+<style>
+  .deep {
+    margin: 1.4rem 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-s);
+    background: var(--surface);
+  }
+  summary {
+    cursor: pointer;
+    padding: 0.7rem 1rem;
+    font: 700 0.98rem var(--font-head);
+    list-style-position: inside;
+  }
+  .tag { color: var(--accent); margin-inline-end: 0.35rem; }
+  .deep[open] summary { border-bottom: 1px solid var(--line); }
+  .body { padding: 0.3rem 1.1rem 0.6rem; }
+</style>

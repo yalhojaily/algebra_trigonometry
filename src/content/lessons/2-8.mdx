@@ -1,7 +1,7 @@
 ---
 section: "2.8"
 summary: "الدوال كأشياء نجمعها ونطرحها ونضربها ونقسمها، وخارج قسمة الفرق الذي يمهد للتفاضل، وتركيب الدوال f(g(x)) ومجاله، وتفكيك دالة إلى تركيب دالتين."
-minutes: 35
+minutes: 50
 prerequisites: ["2.3", "R.5"]
 terms:
   - { ar: "مجموع دالتين", en: "Sum", def: "(f + g)(x) = f(x) + g(x)." }
@@ -18,6 +18,7 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import Composition from '../../components/widgets/Composition.astro';
 import DiffQuotient from '../../components/widgets/DiffQuotient.astro';
@@ -40,17 +41,17 @@ $$\left(\frac{f}{g}\right)(x) = \frac{f(x)}{g(x)},\ g(x) \ne 0$$
 **المجال:** الأعداد المشتركة بين مجالي $f$ و $g$، وفي القسمة نستبعد أيضًا ما يجعل $g(x) = 0$.
 </Box>
 
-<Example n="1" title="عند قيمة محددة">
+<Example n="1" title="بداية سهلة: عند قيمة محددة">
 لتكن $f(x) = x^2 + 1$ و $g(x) = 3x + 5$. أوجد $(f + g)(1)$ و $(f - g)(-3)$ و $(fg)(5)$ و $\left(\tfrac{f}{g}\right)(0)$.
 
 <Solution>
-$(f + g)(1) = f(1) + g(1) = 2 + 8 = 10$
+$(f + g)(1) = f(1) + g(1) = 2 + 8 = 10$ <span class="reason">نحسب كل دالة عند المدخل وحدها، ثم نجمع الناتجين</span>
 
-$(f - g)(-3) = f(-3) - g(-3) = 10 - (-4) = 14$
+$(f - g)(-3) = f(-3) - g(-3) = 10 - (-4) = 14$ <span class="reason">$g(-3) = -9 + 5 = -4$، وطرح السالب جمع</span>
 
-$(fg)(5) = f(5) \cdot g(5) = 26 \cdot 20 = 520$
+$(fg)(5) = f(5) \cdot g(5) = 26 \cdot 20 = 520$ <span class="reason">أسهل من ضرب الصيغتين أولًا ثم التعويض</span>
 
-$\left(\tfrac{f}{g}\right)(0) = \dfrac{f(0)}{g(0)} = \dfrac{1}{5}$
+$\left(\tfrac{f}{g}\right)(0) = \dfrac{f(0)}{g(0)} = \dfrac{1}{5}$ <span class="reason">المقام $g(0) = 5 \ne 0$، فالقسمة مسموحة</span>
 </Solution>
 </Example>
 
@@ -58,15 +59,15 @@ $\left(\tfrac{f}{g}\right)(0) = \dfrac{f(0)}{g(0)} = \dfrac{1}{5}$
 لتكن $f(x) = 8x - 9$ و $g(x) = \sqrt{2x - 1}$. أوجد كل دالة ومجالها.
 
 <Solution>
-مجال $f$ هو $(-\infty, \infty)$، ومجال $g$ هو $\left[\tfrac{1}{2}, \infty\right)$، والمشترك $\left[\tfrac{1}{2}, \infty\right)$.
+المجال المشترك $\left[\tfrac{1}{2}, \infty\right)$. <span class="reason">مجال $f$ كل الأعداد، ومجال $g$ يشترط $2x - 1 \ge 0$، والتقاطع هو الأضيق</span>
 
-$(f + g)(x) = 8x - 9 + \sqrt{2x - 1}$، المجال $\left[\tfrac{1}{2}, \infty\right)$
+$(f + g)(x) = 8x - 9 + \sqrt{2x - 1}$، المجال $\left[\tfrac{1}{2}, \infty\right)$ <span class="reason">نحتاج أن تكون الدالتان معرّفتين معًا</span>
 
-$(f - g)(x) = 8x - 9 - \sqrt{2x - 1}$، المجال $\left[\tfrac{1}{2}, \infty\right)$
+$(f - g)(x) = 8x - 9 - \sqrt{2x - 1}$، المجال $\left[\tfrac{1}{2}, \infty\right)$ <span class="reason">القيد نفسه</span>
 
-$(fg)(x) = (8x - 9)\sqrt{2x - 1}$، المجال $\left[\tfrac{1}{2}, \infty\right)$
+$(fg)(x) = (8x - 9)\sqrt{2x - 1}$، المجال $\left[\tfrac{1}{2}, \infty\right)$ <span class="reason">القيد نفسه</span>
 
-$\left(\tfrac{f}{g}\right)(x) = \dfrac{8x - 9}{\sqrt{2x - 1}}$، المجال $\left(\tfrac{1}{2}, \infty\right)$، لأن $g\left(\tfrac{1}{2}\right) = 0$ يجعل المقام صفرًا.
+$\left(\tfrac{f}{g}\right)(x) = \dfrac{8x - 9}{\sqrt{2x - 1}}$، المجال $\left(\tfrac{1}{2}, \infty\right)$ <span class="reason">نحذف $\tfrac12$ لأن $g\left(\tfrac{1}{2}\right) = 0$ يجعل المقام صفرًا</span>
 </Solution>
 </Example>
 
@@ -94,17 +95,47 @@ $$\frac{f(x + h) - f(x)}{h}, \qquad h \ne 0$$
 أوجد خارج قسمة الفرق لـ $f(x) = 2x^2 - 3x$ وبسّطه.
 
 <Solution>
-**الخطوة 1:** $f(x + h) = 2(x + h)^2 - 3(x + h) = 2x^2 + 4xh + 2h^2 - 3x - 3h$
+$f(x + h) = 2(x + h)^2 - 3(x + h) = 2x^2 + 4xh + 2h^2 - 3x - 3h$ <span class="reason">نضع $x + h$ مكان كل $x$، و $(x + h)^2 = x^2 + 2xh + h^2$</span>
 
-**الخطوة 2:** $f(x + h) - f(x) = (2x^2 + 4xh + 2h^2 - 3x - 3h) - (2x^2 - 3x) = 4xh + 2h^2 - 3h$
+$f(x + h) - f(x) = 4xh + 2h^2 - 3h$ <span class="reason">نطرح $2x^2 - 3x$ كاملة بين قوسين، فتختفي كل الحدود التي ليس فيها $h$</span>
 
-**الخطوة 3:** $\dfrac{4xh + 2h^2 - 3h}{h} = \dfrac{h(4x + 2h - 3)}{h} = 4x + 2h - 3$
+$\dfrac{4xh + 2h^2 - 3h}{h} = \dfrac{h(4x + 2h - 3)}{h}$ <span class="reason">$h$ عامل مشترك في كل الحدود، وهذه علامة على أن الحساب صحيح</span>
+
+$= 4x + 2h - 3$ <span class="reason">نختصر $h$، وهذا مسموح لأن $h \ne 0$</span>
 </Solution>
 </Example>
+
+<Deep title="ماذا يحدث عندما يصغر h؟">
+خارج قسمة الفرق في المثال السابق هو $4x + 2h - 3$، وهو ميل القاطع بين النقطتين $(x, f(x))$ و $(x + h, f(x + h))$.
+
+خذ $x = 1$: الميل $4 + 2h - 3 = 1 + 2h$. ومع تصغير $h$:
+
+| $h$ | $1$ | $0.1$ | $0.01$ | $0.001$ |
+|---|---|---|---|---|
+| ميل القاطع | $3$ | $1.2$ | $1.02$ | $1.002$ |
+
+الميل يقترب من **1**. والنقطة الثانية تقترب من الأولى، والقاطع يقترب من مستقيم يمس المنحنى عند $x = 1$ فقط: **المماس**. فميل المماس عند $x = 1$ هو 1.
+
+ولا يمكننا أن نضع $h = 0$ في الكسر الأصلي، لأنه يصير $\tfrac00$. لكن بعد التبسيط اختفت المشكلة، فصار الجواب $4x - 3$ لكل $x$. هذه هي **المشتقة**، وهذه الفكرة نفسها هي ما يبدأ به التفاضل: النهاية عندما $h \to 0$.
+</Deep>
 
 <Box kind="mistake" title="f(x + h) ليست f(x) + h">
 $f(x + h)$ تعني أن **المدخل** هو $x + h$. أما $f(x) + h$ فتعني أن نضيف $h$ إلى **المخرج**. للدالة $f(x) = x^2$: $f(x + h) = x^2 + 2xh + h^2$، بينما $f(x) + h = x^2 + h$.
 </Box>
+
+<Example n="4" title="مستوى الاختبار: خارج قسمة الفرق لكسر">
+أوجد خارج قسمة الفرق لـ $f(x) = \dfrac{1}{x}$ وبسّطه.
+
+<Solution>
+$f(x + h) - f(x) = \dfrac{1}{x + h} - \dfrac{1}{x}$ <span class="reason">الخطوتان الأوليان كالمعتاد</span>
+
+$= \dfrac{x - (x + h)}{x(x + h)} = \dfrac{-h}{x(x + h)}$ <span class="reason">نوحّد المقامات كما في الدرس R.5، ونطرح البسط كاملًا بين قوسين</span>
+
+$\dfrac{-h}{x(x + h)} \div h = \dfrac{-h}{x(x + h)} \cdot \dfrac{1}{h}$ <span class="reason">القسمة على $h$ ضرب في مقلوبه</span>
+
+$= \dfrac{-1}{x(x + h)}$ <span class="reason">نختصر $h$. ولو صغّرنا $h$ لاقترب الناتج من $-\tfrac{1}{x^2}$: ميل رسم $\tfrac1x$ سالب دائمًا، فهي متناقصة على كل فترة من مجالها</span>
+</Solution>
+</Example>
 
 ## تركيب الدوال ومجاله <span class="en" lang="en">Composition of Functions and Domain</span>
 
@@ -118,43 +149,49 @@ $$(f \circ g)(x) = f(g(x))$$
 
 <Composition />
 
-<Example n="4" title="تركيب عند قيمة">
+<Box kind="mistake" title="التركيب ليس ضربًا">
+$(f \circ g)(x)$ تعني $f(g(x))$، لا $f(x) \cdot g(x)$. الدائرة الصغيرة $\circ$ رمز تركيب، والضرب يُكتب $(fg)(x)$. مع $f(x) = x^2$ و $g(x) = x + 1$: التركيب $(x + 1)^2$، أما الضرب فـ $x^2(x + 1)$.
+</Box>
+
+<Example n="5" title="تركيب عند قيمة">
 لتكن $f(x) = 2x - 1$ و $g(x) = \dfrac{4}{x - 1}$. أوجد $(f \circ g)(2)$ و $(g \circ f)(-3)$.
 
 <Solution>
-**$(f \circ g)(2)$:** الداخلية أولًا: $g(2) = \dfrac{4}{1} = 4$، ثم $f(4) = 7$.
+$g(2) = \dfrac{4}{1} = 4$، ثم $f(4) = 7$، فـ $(f \circ g)(2) = 7$. <span class="reason">نقرأ من اليمين: الدالة الأقرب إلى $x$ تُطبق أولًا</span>
 
-**$(g \circ f)(-3)$:** $f(-3) = -7$، ثم $g(-7) = \dfrac{4}{-8} = -\dfrac{1}{2}$.
+$f(-3) = -7$، ثم $g(-7) = \dfrac{4}{-8} = -\dfrac{1}{2}$، فـ $(g \circ f)(-3) = -\dfrac12$. <span class="reason">هنا $f$ هي الداخلية، فنبدأ بها</span>
 </Solution>
 </Example>
 
-<Example n="5" title="تركيب الصيغ والمجال">
+<Example n="6" title="تركيب الصيغ والمجال">
 لتكن $f(x) = \sqrt{x}$ و $g(x) = x - 3$. أوجد $f \circ g$ و $g \circ f$ ومجاليهما.
 
 <Solution>
-**$f \circ g$:** $f(g(x)) = f(x - 3) = \sqrt{x - 3}$
+$f(g(x)) = f(x - 3) = \sqrt{x - 3}$ <span class="reason">نضع $g(x)$ كلها مدخلًا لـ $f$</span>
 
-مجال $g$ كل الأعداد، لكن نحتاج $g(x) = x - 3 \ge 0$ ليكون في مجال $f$. المجال $[3, \infty)$.
+مجال $f \circ g$ هو $[3, \infty)$. <span class="reason">$g$ تقبل كل الأعداد، لكن ناتجها $x - 3$ يجب أن يكون $\ge 0$ ليدخل الجذر</span>
 
-**$g \circ f$:** $g(f(x)) = g(\sqrt{x}) = \sqrt{x} - 3$
+$g(f(x)) = g(\sqrt{x}) = \sqrt{x} - 3$ <span class="reason">الآن الجذر هو الداخلي</span>
 
-نحتاج $x$ في مجال $f$، أي $x \ge 0$، وكل ناتج مقبول في $g$. المجال $[0, \infty)$.
+مجال $g \circ f$ هو $[0, \infty)$. <span class="reason">الشرط على مدخل الجذر $x \ge 0$، وكل ناتج له تقبله $g$</span>
 
-لاحظ: $f \circ g \ne g \circ f$، فالتركيب **ليس إبداليًا**.
+$f \circ g \ne g \circ f$، فالتركيب **ليس إبداليًا**. <span class="reason">«اطرح 3 ثم خذ الجذر» تختلف عن «خذ الجذر ثم اطرح 3»</span>
 </Solution>
 </Example>
 
-<Example n="6" title="مجال تركيب فيه كسور">
+<Example n="7" title="مجال تركيب فيه كسور">
 لتكن $f(x) = \dfrac{6}{x - 3}$ و $g(x) = \dfrac{1}{x}$. أوجد $f \circ g$ ومجاله.
 
 <Solution>
-$f(g(x)) = \dfrac{6}{\tfrac{1}{x} - 3}$. نضرب البسط والمقام في $x$: $\dfrac{6x}{1 - 3x}$
+$f(g(x)) = \dfrac{6}{\tfrac{1}{x} - 3}$ <span class="reason">نضع $\tfrac1x$ مكان $x$ في $f$</span>
 
-**المجال:** يجب أن يكون $x$ في مجال $g$، أي $x \ne 0$. ويجب أن يكون $g(x)$ في مجال $f$، أي $\dfrac{1}{x} \ne 3$، أي $x \ne \dfrac{1}{3}$.
+$= \dfrac{6x}{1 - 3x}$ <span class="reason">نضرب البسط والمقام في $x$ لنتخلص من الكسر المركّب</span>
 
-المجال $(-\infty, 0) \cup \left(0, \tfrac{1}{3}\right) \cup \left(\tfrac{1}{3}, \infty\right)$.
+$x \ne 0$ <span class="reason">الشرط الأول: $x$ في مجال $g$</span>
 
-انتبه: الصيغة المبسطة $\dfrac{6x}{1 - 3x}$ تبدو معرفة عند $x = 0$، لكن $x = 0$ مستبعد لأنه خارج مجال $g$.
+$\dfrac{1}{x} \ne 3$ ← $x \ne \dfrac{1}{3}$ <span class="reason">الشرط الثاني: $g(x)$ في مجال $f$، أي لا يساوي 3</span>
+
+المجال $(-\infty, 0) \cup \left(0, \tfrac{1}{3}\right) \cup \left(\tfrac{1}{3}, \infty\right)$. <span class="reason">الصيغة المبسطة تبدو معرّفة عند $x = 0$، لكن الصفر مستبعد لأنه خارج مجال $g$</span>
 </Solution>
 </Example>
 
@@ -162,27 +199,25 @@ $f(g(x)) = \dfrac{6}{\tfrac{1}{x} - 3}$. نضرب البسط والمقام في
 
 العملية العكسية مهمة جدًا في التفاضل (قاعدة السلسلة): أن ترى دالة معقدة كتركيب دالتين بسيطتين.
 
-<Example n="7" title="التفكيك">
+<Example n="8" title="التفكيك">
 اكتب $h(x) = (x^2 - 5)^3 - 4(x^2 - 5) + 3$ على صورة $f(g(x))$.
 
 <Solution>
-المقدار $x^2 - 5$ يتكرر، فنجعله الدالة الداخلية: $g(x) = x^2 - 5$.
+$g(x) = x^2 - 5$ <span class="reason">المقدار الذي يتكرر هو المرشح الطبيعي للدالة الداخلية</span>
 
-ثم الخارجية تصف ما نفعله به: $f(x) = x^3 - 4x + 3$.
+$f(x) = x^3 - 4x + 3$ <span class="reason">نضع $x$ مكان كل $x^2 - 5$ لنرى ما تفعله الدالة الخارجية</span>
 
-**تحقق:** $f(g(x)) = (x^2 - 5)^3 - 4(x^2 - 5) + 3 = h(x)$ ✓
-
-(وهناك تفكيكات أخرى صحيحة، لكن هذا الأوضح.)
+**تحقق:** $f(g(x)) = (x^2 - 5)^3 - 4(x^2 - 5) + 3 = h(x)$ ✓ <span class="reason">هناك تفكيكات أخرى صحيحة، لكن هذا الأوضح</span>
 </Solution>
 </Example>
 
-<Example n="8" title="تطبيق">
+<Example n="9" title="تطبيق">
 يُستخدم $f(x) = 3.75x$ لتحويل الدولار إلى ريال، و $g(x) = 1.15x$ لإضافة ضريبة 15٪. اشتريت سلعة بـ 40 دولارًا والضريبة تُحسب بالريال. ما المبلغ النهائي بالريال؟
 
 <Solution>
-نحوّل أولًا ثم نضيف الضريبة: $(g \circ f)(40) = g(f(40)) = g(150) = 172.5$ ريالًا.
+$(g \circ f)(40) = g(f(40)) = g(150) = 172.5$ ريالًا. <span class="reason">نحوّل أولًا ($f$ داخلية) ثم نضيف الضريبة ($g$ خارجية)</span>
 
-وفي هذا المثال بالذات $g \circ f = f \circ g = 4.3125x$ لأن الدالتين ضرب في ثابت، وهي حالة نادرة.
+وهنا $g \circ f = f \circ g = 4.3125x$. <span class="reason">ضرب في ثابت ثم ضرب في ثابت آخر يساوي العكس، وهي حالة نادرة لا قاعدة</span>
 </Solution>
 </Example>
 
@@ -190,14 +225,25 @@ $f(g(x)) = \dfrac{6}{\tfrac{1}{x} - 3}$. نضرب البسط والمقام في
   q="إذا كان $f(x) = x^2$ و $g(x) = x + 1$، فما $(f \\circ g)(x)$؟"
   options={["$x^2 + 1$", "$(x + 1)^2$", "$x^3 + x^2$", "$x^2 + x + 1$"]}
   answer={1}
-  explain="$f(g(x)) = f(x + 1) = (x + 1)^2$. أما $x^2 + 1$ فهو $(g \\circ f)(x)$."
+  explain="$f(g(x)) = f(x + 1) = (x + 1)^2$. أما $x^2 + 1$ فهو $(g \\circ f)(x)$، و $x^3 + x^2$ هو الضرب $(fg)(x)$."
 />
+
+<Check
+  q="إذا كان $f(x) = x^2 - 1$ و $g(x) = 2x$، فما $(g \\circ f)(3)$؟"
+  options={["$16$", "$35$", "$48$", "$17$"]}
+  answer={0}
+  explain="$f(3) = 8$ أولًا، ثم $g(8) = 16$. أما 35 فهو $(f \\circ g)(3) = f(6)$، و 48 هو الضرب $f(3) \\cdot g(3)$."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+في الفصل 4، الدالة العكسية معرّفة بالتركيب: $f(f^{-1}(x)) = x$. وفي الفصل 7 تحسب مقادير مثل $\sin(\arccos x)$، وهي تركيب. وفي التفاضل، خارج قسمة الفرق يصير المشتقة، وتفكيك الدوال هو مفتاح قاعدة السلسلة. وفي البرمجة، تمرير ناتج دالة إلى أخرى هو التركيب نفسه.
+</Box>
 
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
 - $(f \pm g)$ و $fg$ و $\tfrac{f}{g}$ تُحسب عند كل $x$، والمجال المشترك بين المجالين، مع $g(x) \ne 0$ للقسمة.
-- خارج قسمة الفرق $\dfrac{f(x + h) - f(x)}{h}$: احسب، اطرح، اقسم على $h$.
-- $(f \circ g)(x) = f(g(x))$: الداخلية أولًا، والترتيب مهم.
+- خارج قسمة الفرق $\dfrac{f(x + h) - f(x)}{h}$: احسب، اطرح، اقسم على $h$. ومع تصغير $h$ يقترب من ميل المماس.
+- $(f \circ g)(x) = f(g(x))$: الداخلية أولًا، والترتيب مهم، وهو ليس ضربًا.
 - مجال التركيب: $x$ في مجال $g$ **و** $g(x)$ في مجال $f$، ويُحدد قبل التبسيط.
 
 <Practice set="2.8" count={6} />

@@ -1,7 +1,7 @@
 ---
 section: "A.B"
-summary: "دوران المحاور: اشتقاق معادلات الدوران x = x′cos θ − y′sin θ و y = x′sin θ + y′cos θ، واختيار الزاوية بـ cot 2θ = (A − C)/B لإزالة الحد xy، وتمييز القطع بالمميز B² − 4AC."
-minutes: 35
+summary: "دوران المحاور: اشتقاق معادلات الدوران x = x′cos θ − y′sin θ و y = x′sin θ + y′cos θ، واختيار الزاوية بـ cot 2θ = (A − C)/B لإزالة الحد xy، ومن أين يأتي معامل xy الجديد، وتمييز القطع بالمميز B² − 4AC."
+minutes: 50
 prerequisites: ["7.2", "7.3", "10.4"]
 terms:
   - { ar: "دوران المحاور", en: "Rotation of Axes", def: "نظام إحداثيات جديد x′y′ ناتج من تدوير المحورين حول الأصل بزاوية θ." }
@@ -13,10 +13,13 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import RotateAxes from '../../components/widgets/RotateAxes.astro';
 
 كل القطوع في الفصل 10 كانت محاورها أفقية أو رأسية، ولذلك خلت معادلاتها من الحد $xy$. أما القطع **المائل** فمعادلته تحتوي $Bxy$. الفكرة هنا: بدل أن ندوّر القطع، ندوّر **المحورين** حتى يصطفّا مع محوري تماثله، فيختفي الحد $xy$ ونعود إلى الصور القياسية.
+
+تخيل ورقة رُسم عليها قطع ناقص مائل. لا تغيّر الرسم، بل أدِر رأسك حتى يبدو الشكل مستقيمًا. هذا بالضبط ما يفعله دوران المحاور: النقاط في مكانها، والذي يتغير هو **الإحداثيات** التي نصفها بها.
 
 ## اشتقاق معادلات الدوران <span class="en" lang="en">Derivation of Rotation Equations</span>
 
@@ -26,25 +29,47 @@ import RotateAxes from '../../components/widgets/RotateAxes.astro';
 
 $$\begin{aligned} x &= r\cos(\theta + \alpha) \\ &= r\cos\alpha\cos\theta - r\sin\alpha\sin\theta \\ &= x'\cos\theta - y'\sin\theta \end{aligned}$$
 
-وبالمثل لـ $y$ بقانون جيب مجموع زاويتين.
+وبقانون جيب مجموع زاويتين:
+
+$$\begin{aligned} y &= r\sin(\theta + \alpha) \\ &= r\cos\alpha\sin\theta + r\sin\alpha\cos\theta \\ &= x'\sin\theta + y'\cos\theta \end{aligned}$$
 
 <Box kind="rule" title="معادلات الدوران" en="Rotation equations">
-$$x = x'\cos\theta - y'\sin\theta \qquad y = x'\sin\theta + y'\cos\theta$$
+$$x = x'\cos\theta - y'\sin\theta$$
+
+$$y = x'\sin\theta + y'\cos\theta$$
 
 وبالعكس:
 
-$$x' = x\cos\theta + y\sin\theta \qquad y' = -x\sin\theta + y\cos\theta$$
+$$x' = x\cos\theta + y\sin\theta$$
+
+$$y' = -x\sin\theta + y\cos\theta$$
 </Box>
 
-<Example n="1" title="xy = 2">
+<Box kind="tip" title="كيف تتذكر الإشارة؟">
+عوّض $\theta = 90^\circ$: يصير $x = -y'$ و $y = x'$. أي أن المحور $x'$ الجديد يشير إلى حيث كان $y$ الموجب، وهذا صحيح لدوران ربع دورة عكس عقارب الساعة. لو وضعت الإشارة السالبة في المكان الخطأ لما تحقق هذا.
+</Box>
+
+<Example n="1" title="بداية سهلة: نقطة في النظام الجديد">
+دُوِّر المحوران بزاوية $30^\circ$. ما إحداثيات النقطة $(2, 4)$ في النظام الجديد؟
+
+<Solution>
+$x' = x\cos\theta + y\sin\theta = 2\cdot\tfrac{\sqrt3}{2} + 4\cdot\tfrac12 = \sqrt3 + 2 \approx 3.73$ <span class="reason">نعرف $x$ و $y$ ونريد $x'$ و $y'$، فنستخدم المعادلات العكسية</span>
+
+$y' = -x\sin\theta + y\cos\theta = -2\cdot\tfrac12 + 4\cdot\tfrac{\sqrt3}{2} = 2\sqrt3 - 1 \approx 2.46$ <span class="reason">قيم $30^\circ$ الخاصة</span>
+
+النقطة $(\sqrt3 + 2,\ 2\sqrt3 - 1)$ في النظام الجديد. <span class="reason">تحقق: البعد عن الأصل لا يتغير بالدوران، $3.73^2 + 2.46^2 \approx 20 = 2^2 + 4^2$</span>
+</Solution>
+</Example>
+
+<Example n="2" title="xy = 2">
 دوّر المحورين بزاوية $45^\circ$ لتحديد نوع $xy = 2$.
 
 <Solution>
-$\cos45^\circ = \sin45^\circ = \tfrac{1}{\sqrt2}$: $x = \tfrac{x' - y'}{\sqrt2}$ و $y = \tfrac{x' + y'}{\sqrt2}$.
+$\cos45^\circ = \sin45^\circ = \tfrac{1}{\sqrt2}$: $x = \tfrac{x' - y'}{\sqrt2}$ و $y = \tfrac{x' + y'}{\sqrt2}$. <span class="reason">نعوّض $x$ و $y$ بدلالة الإحداثيات الجديدة، لأن المعادلة مكتوبة بـ $x$ و $y$</span>
 
-$xy = \dfrac{(x' - y')(x' + y')}{2} = \dfrac{x'^2 - y'^2}{2} = 2$.
+$xy = \dfrac{(x' - y')(x' + y')}{2} = \dfrac{x'^2 - y'^2}{2} = 2$. <span class="reason">فرق بين مربعين؛ واختفى الحد $x'y'$</span>
 
-$\dfrac{x'^2}{4} - \dfrac{y'^2}{4} = 1$: **قطع زائد** محوره القاطع على المستقيم $y = x$، ورأساه على بعد 2 من الأصل. وهذا هو منحنى $y = \tfrac2x$ المألوف.
+$\dfrac{x'^2}{4} - \dfrac{y'^2}{4} = 1$: **قطع زائد** محوره القاطع على المستقيم $y = x$، ورأساه على بعد 2 من الأصل. وهذا هو منحنى $y = \tfrac2x$ المألوف. <span class="reason">المحور $x'$ هو المستقيم $y = x$ لأنه مائل $45^\circ$</span>
 </Solution>
 </Example>
 
@@ -58,33 +83,63 @@ $$\cot 2\theta = \frac{A - C}{B}, \qquad 0^\circ < \theta < 90^\circ$$
 وإذا $A = C$ فإن $\theta = 45^\circ$. ولإيجاد $\cos\theta$ و $\sin\theta$ دون آلة: احسب $\cos2\theta$ من $\cot2\theta$، ثم استخدم قانوني نصف الزاوية $\cos\theta = \sqrt{\tfrac{1 + \cos2\theta}{2}}$ و $\sin\theta = \sqrt{\tfrac{1 - \cos2\theta}{2}}$.
 </Box>
 
+<Deep title="من أين جاء معامل x′y′ الجديد؟">
+عوّض معادلات الدوران في $Ax^2 + Bxy + Cy^2$ واجمع كل الحدود التي فيها $x'y'$:
+
+- من $Ax^2 = A(x'\cos\theta - y'\sin\theta)^2$ يأتي $-2A\sin\theta\cos\theta\,x'y'$.
+- من $Cy^2 = C(x'\sin\theta + y'\cos\theta)^2$ يأتي $2C\sin\theta\cos\theta\,x'y'$.
+- من $Bxy$ يأتي $B(\cos^2\theta - \sin^2\theta)\,x'y'$.
+
+بالجمع وصيغ ضعف الزاوية من الدرس 7.4 ($2\sin\theta\cos\theta = \sin2\theta$ و $\cos^2\theta - \sin^2\theta = \cos2\theta$):
+
+$$B' = B\cos2\theta + (C - A)\sin2\theta$$
+
+نريد $B' = 0$، أي $B\cos2\theta = (A - C)\sin2\theta$، ونقسم على $B\sin2\theta$ فنحصل على $\cot2\theta = \tfrac{A - C}{B}$. ولأن $\cot$ يأخذ كل القيم الحقيقية في $0^\circ < 2\theta < 180^\circ$، فيوجد دائمًا دوران بين $0^\circ$ و $90^\circ$ يزيل الحد $xy$.
+</Deep>
+
 <RotateAxes />
+
+<Example n="3" title="زاوية 45°">
+أزل الحد $xy$ من $5x^2 - 6xy + 5y^2 = 8$ وحدد القطع.
+
+<Solution>
+$A = C = 5$، فـ $\cot2\theta = 0$ ← $2\theta = 90^\circ$ ← $\theta = 45^\circ$. <span class="reason">تساوي $A$ و $C$ يعني دائمًا زاوية $45^\circ$</span>
+
+$x = \tfrac{x' - y'}{\sqrt2}$ و $y = \tfrac{x' + y'}{\sqrt2}$. بعد التعويض: $2x'^2 + 8y'^2 = 8$. <span class="reason">$5x^2 + 5y^2 = 5(x'^2 + y'^2)$، و $-6xy = -3(x'^2 - y'^2)$</span>
+
+$\dfrac{x'^2}{4} + y'^2 = 1$: **قطع ناقص** محوره الأكبر على المستقيم $y = x$. <span class="reason">المقام الأكبر تحت $x'^2$</span>
+</Solution>
+</Example>
 
 ## تطبيق <span class="en" lang="en">Application of a Rotation Equation</span>
 
-<Example n="2" title="قطع ناقص مائل">
+<Example n="4" title="قطع ناقص مائل">
 أزل الحد $xy$ من $52x^2 - 72xy + 73y^2 = 100$ وحدد القطع.
 
 <Solution>
-$\cot2\theta = \dfrac{52 - 73}{-72} = \dfrac{7}{24}$، فـ $2\theta$ في الربع الأول ومثلثه $7, 24, 25$: $\cos2\theta = \tfrac{7}{25}$.
+$\cot2\theta = \dfrac{52 - 73}{-72} = \dfrac{7}{24}$، فـ $2\theta$ في الربع الأول ومثلثه $7, 24, 25$: $\cos2\theta = \tfrac{7}{25}$. <span class="reason">$\cot$ موجب، فنأخذ $2\theta$ حادة؛ المجاور 7 والمقابل 24 والوتر 25</span>
 
-$\cos\theta = \sqrt{\tfrac{1 + 7/25}{2}} = \tfrac45$ و $\sin\theta = \sqrt{\tfrac{1 - 7/25}{2}} = \tfrac35$، أي $\theta \approx 36.87^\circ$. عوّض $x = \tfrac{4x' - 3y'}{5}$ و $y = \tfrac{3x' + 4y'}{5}$.
+$\cos\theta = \sqrt{\tfrac{1 + 7/25}{2}} = \tfrac45$ و $\sin\theta = \sqrt{\tfrac{1 - 7/25}{2}} = \tfrac35$، أي $\theta \approx 36.87^\circ$. عوّض $x = \tfrac{4x' - 3y'}{5}$ و $y = \tfrac{3x' + 4y'}{5}$. <span class="reason">صيغ نصف الزاوية؛ و $\theta$ حادة فالإشارتان موجبتان</span>
 
-بعد التبسيط: $25x'^2 + 100y'^2 = 100$، أي $\dfrac{x'^2}{4} + y'^2 = 1$: **قطع ناقص** محوره الأكبر (طوله 4) على المحور $x'$ المائل بزاوية $36.87^\circ$.
+بعد التبسيط: $25x'^2 + 100y'^2 = 100$، أي $\dfrac{x'^2}{4} + y'^2 = 1$: **قطع ناقص** محوره الأكبر (طوله 4) على المحور $x'$ المائل بزاوية $36.87^\circ$. <span class="reason">معامل $x'y'$ يخرج صفرًا كما صممنا</span>
 </Solution>
 </Example>
 
-<Example n="3" title="قطع مكافئ مائل">
+<Example n="5" title="قطع مكافئ مائل">
 حدد نوع $3x^2 - 2\sqrt3\,xy + y^2 - 2x - 2\sqrt3\,y = 0$ بالدوران.
 
 <Solution>
-$\cot2\theta = \dfrac{3 - 1}{-2\sqrt3} = -\dfrac{1}{\sqrt3}$، فـ $2\theta = 120^\circ$ و $\theta = 60^\circ$: $\cos\theta = \tfrac12$ و $\sin\theta = \tfrac{\sqrt3}{2}$.
+$\cot2\theta = \dfrac{3 - 1}{-2\sqrt3} = -\dfrac{1}{\sqrt3}$، فـ $2\theta = 120^\circ$ و $\theta = 60^\circ$: $\cos\theta = \tfrac12$ و $\sin\theta = \tfrac{\sqrt3}{2}$. <span class="reason">$\cot$ سالب، فـ $2\theta$ منفرجة في الربع الثاني</span>
 
-عوّض $x = \tfrac{x' - \sqrt3\,y'}{2}$ و $y = \tfrac{\sqrt3\,x' + y'}{2}$. حدود الدرجة الثانية تصبح $4y'^2$ (يختفي $x'^2$)، والحدود الخطية $-4x'$.
+عوّض $x = \tfrac{x' - \sqrt3\,y'}{2}$ و $y = \tfrac{\sqrt3\,x' + y'}{2}$. حدود الدرجة الثانية تصبح $4y'^2$ (يختفي $x'^2$)، والحدود الخطية $-4x'$. <span class="reason">الحدود الخطية تُعوَّض أيضًا: $-2x - 2\sqrt3 y$ تصير $-4x'$</span>
 
-$4y'^2 - 4x' = 0$، أي $x' = y'^2$: **قطع مكافئ** رأسه الأصل ويفتح في اتجاه $x'$ الموجب (بزاوية $60^\circ$).
+$4y'^2 - 4x' = 0$، أي $x' = y'^2$: **قطع مكافئ** رأسه الأصل ويفتح في اتجاه $x'$ الموجب (بزاوية $60^\circ$). <span class="reason">مربع واحد فقط بعد الدوران: مكافئ</span>
 </Solution>
 </Example>
+
+<Box kind="mistake" title="لا تنسَ الحدود الخطية">
+معادلات الدوران تُعوَّض في **كل** الحدود، لا في حدود الدرجة الثانية وحدها. في المثال الأخير لو أبقيت $-2x - 2\sqrt3\,y$ كما هي لاختلطت الإحداثيات القديمة بالجديدة في معادلة واحدة.
+</Box>
 
 <Box kind="rule" title="التمييز دون دوران" en="Discriminant test">
 المقدار $B^2 - 4AC$ لا يتغير بالدوران. لذلك يكشف نوع القطع (إن لم يكن منحلًا) مباشرة:
@@ -98,6 +153,20 @@ $4y'^2 - 4x' = 0$، أي $x' = y'^2$: **قطع مكافئ** رأسه الأصل 
 تحقق مع الأمثلة: $(-72)^2 - 4(52)(73) = -10000 < 0$ ناقص، و $12 - 12 = 0$ مكافئ، و $1 - 0 > 0$ لـ $xy = 2$ زائد.
 </Box>
 
+<Example n="6" title="مستوى الاختبار: من البداية إلى النهاية">
+للمعادلة $x^2 + 4xy - 2y^2 = 6$: حدد النوع بالمميز، ثم أوجد زاوية الدوران والصورة القياسية.
+
+<Solution>
+$B^2 - 4AC = 16 - 4(1)(-2) = 24 > 0$: **قطع زائد**. <span class="reason">نعرف النوع قبل أي دوران، ونستخدمه للتحقق في النهاية</span>
+
+$\cot2\theta = \dfrac{1 - (-2)}{4} = \dfrac34$ ← $\cos2\theta = \tfrac35$، فـ $\cos\theta = \sqrt{\tfrac{1 + 3/5}{2}} = \tfrac{2}{\sqrt5}$ و $\sin\theta = \tfrac{1}{\sqrt5}$. <span class="reason">مثلث $3, 4, 5$ لـ $2\theta$، ثم نصف الزاوية؛ $\theta \approx 26.57^\circ$</span>
+
+عوّض $x = \tfrac{2x' - y'}{\sqrt5}$ و $y = \tfrac{x' + 2y'}{\sqrt5}$: الطرف الأيسر يصير $2x'^2 - 3y'^2$. <span class="reason">معامل $x'y'$ صفر، كما يجب</span>
+
+$2x'^2 - 3y'^2 = 6$ ← $\dfrac{x'^2}{3} - \dfrac{y'^2}{2} = 1$: قطع زائد محوره القاطع على $x'$. ✓ <span class="reason">إشارتان مختلفتان، يطابق نتيجة المميز</span>
+</Solution>
+</Example>
+
 <Check
   q="ما نوع $2x^2 + 5xy + 2y^2 = 7$؟"
   options={["قطع ناقص", "قطع مكافئ", "قطع زائد", "دائرة"]}
@@ -105,10 +174,22 @@ $4y'^2 - 4x' = 0$، أي $x' = y'^2$: **قطع مكافئ** رأسه الأصل 
   explain="$B^2 - 4AC = 25 - 16 = 9 > 0$: قطع زائد."
 />
 
+<Check
+  q="ما زاوية الدوران التي تزيل الحد $xy$ من $3x^2 + 2xy + 3y^2 = 4$؟"
+  options={["$30^\\circ$", "$45^\\circ$", "$60^\\circ$", "$90^\\circ$"]}
+  answer={1}
+  explain="$A = C = 3$، فـ $\\cot2\\theta = 0$ ← $2\\theta = 90^\\circ$ ← $\\theta = 45^\\circ$."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+في رسومات الحاسوب تُدوَّر الأشكال بمعادلات الدوران نفسها، مكتوبة كضرب في مصفوفة (الدرس 9.7). وفي الجبر الخطي ستجد أن إزالة الحد $xy$ هي «تقطير» مصفوفة متماثلة، والمحوران الجديدان هما **المتجهات الذاتية**؛ وهي فكرة يقوم عليها تحليل البيانات بالمكونات الرئيسية.
+</Box>
+
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
-- $x = x'\cos\theta - y'\sin\theta$ و $y = x'\sin\theta + y'\cos\theta$.
-- $\cot2\theta = \tfrac{A - C}{B}$ يزيل الحد $xy$.
-- $B^2 - 4AC$: سالب ناقص، صفر مكافئ، موجب زائد.
+- $x = x'\cos\theta - y'\sin\theta$ و $y = x'\sin\theta + y'\cos\theta$، من صيغتي المجموع.
+- $\cot2\theta = \tfrac{A - C}{B}$ يزيل الحد $xy$؛ و $A = C$ يعني $45^\circ$.
+- عوّض في كل الحدود، الخطية أيضًا.
+- $B^2 - 4AC$: سالب ناقص، صفر مكافئ، موجب زائد، ولا يتغير بالدوران.
 
 <Practice set="A.B" count={4} />

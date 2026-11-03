@@ -1,7 +1,7 @@
 ---
 section: "4.3"
 summary: "اللوغاريتم هو الأس: تعريفه كمعكوس للدالة الأسية، والتحويل بين الصيغتين اللوغاريتمية والأسية، والمنحنى والمجال، واللوغاريتمات العشرية والطبيعية، وخصائص الضرب والقسمة والقوة لفك العبارات وجمعها."
-minutes: 45
+minutes: 60
 prerequisites: ["4.1", "4.2"]
 terms:
   - { ar: "لوغاريتم", en: "Logarithm", def: "y = log_b x تعني b^y = x: اللوغاريتم هو الأس الذي يُرفع إليه b ليعطي x." }
@@ -17,6 +17,7 @@ import Box from '../../components/Box.astro';
 import Example from '../../components/Example.astro';
 import Solution from '../../components/Solution.astro';
 import Check from '../../components/Check.astro';
+import Deep from '../../components/Deep.astro';
 import Practice from '../../components/Practice.astro';
 import LogGraph from '../../components/widgets/LogGraph.astro';
 
@@ -38,27 +39,31 @@ $$y = \log_b x \quad\iff\quad b^y = x$$
 
 $$\underbrace{\log_{\color{teal}{b}} x = \color{orange}{y}}_{\text{logarithmic form}} \qquad \underbrace{\color{teal}{b}^{\color{orange}{y}} = x}_{\text{exponential form}}$$
 
-<Example n="1" title="التحويل بين الصيغتين">
+<Example n="1" title="بداية سهلة: التحويل بين الصيغتين">
 حوّل: (أ) $\log_3 81 = 4$ إلى صيغة أسية. (ب) $5^{-2} = \tfrac{1}{25}$ إلى صيغة لوغاريتمية.
 
 <Solution>
-(أ) الأساس 3 والأس 4: $3^4 = 81$.
+**(أ)** $3^4 = 81$ <span class="reason">الأساس 3 يبقى أساسًا، وقيمة اللوغاريتم 4 تصير الأس</span>
 
-(ب) الأساس 5 والأس $-2$ والناتج $\tfrac{1}{25}$: $\log_5 \tfrac{1}{25} = -2$.
-
-في الحالتين اللوغاريتم = الأس.
+**(ب)** $\log_5 \tfrac{1}{25} = -2$ <span class="reason">الأساس 5، والأس $-2$ يصير قيمة اللوغاريتم، والناتج $\tfrac{1}{25}$ يدخل داخل اللوغاريتم</span>
 </Solution>
 </Example>
+
+<Box kind="mistake" title="خلط الأساس بالناتج عند التحويل">
+$\log_3 81 = 4$ تعني $3^4 = 81$، لا $4^3 = 81$ ولا $81^4 = 3$. الأساس الصغير المكتوب أسفل $\log$ هو أساس القوة دائمًا. اقرأها بصوت عالٍ: «3 مرفوعًا لأي قوة يعطي 81؟ الجواب 4».
+</Box>
 
 <Example n="2" title="حساب لوغاريتمات ذهنيًا">
 احسب: $\log_2 32$، $\log_4 \tfrac{1}{16}$، $\log_9 3$، $\log_7 1$.
 
 <Solution>
-$\log_2 32 = 5$ لأن $2^5 = 32$.
+$\log_2 32 = 5$ <span class="reason">$2^5 = 32$</span>
 
-$\log_4 \tfrac{1}{16} = -2$ لأن $4^{-2} = \tfrac{1}{16}$. و $\log_9 3 = \tfrac12$ لأن $9^{1/2} = \sqrt{9} = 3$.
+$\log_4 \tfrac{1}{16} = -2$ <span class="reason">$4^2 = 16$، والمقلوب يحتاج أسًا سالبًا: $4^{-2} = \tfrac{1}{16}$</span>
 
-$\log_7 1 = 0$ لأن $7^0 = 1$.
+$\log_9 3 = \tfrac12$ <span class="reason">3 هو الجذر التربيعي لـ 9، والجذر التربيعي أس $\tfrac12$</span>
+
+$\log_7 1 = 0$ <span class="reason">$7^0 = 1$، وهذا صحيح لأي أساس</span>
 </Solution>
 </Example>
 
@@ -76,11 +81,11 @@ $$\log_b b^x = x \qquad b^{\log_b x} = x \ (x > 0)$$
 حل $\log_x \tfrac{8}{27} = 3$، ثم $\log_4 (2x - 1) = \tfrac{3}{2}$.
 
 <Solution>
-الأولى بالصيغة الأسية: $x^3 = \tfrac{8}{27}$ ← $x = \tfrac{2}{3}$ (والأساس موجب كما يجب).
+$x^3 = \tfrac{8}{27}$ ← $x = \tfrac{2}{3}$ <span class="reason">الصيغة الأسية تحرر المجهول، ثم نأخذ الجذر التكعيبي للبسط والمقام. والأساس موجب ولا يساوي 1 كما يجب</span>
 
-الثانية: $2x - 1 = 4^{3/2} = (\sqrt4)^3 = 8$
+$2x - 1 = 4^{3/2} = (\sqrt4)^3 = 8$ <span class="reason">في الثانية المجهول داخل اللوغاريتم، والصيغة الأسية تخرجه. ونحسب الجذر قبل التكعيب لأنه أسهل</span>
 
-$2x = 9$ ← $x = \tfrac{9}{2}$
+$2x = 9$ ← $x = \tfrac{9}{2}$ <span class="reason">تحقق: $2x - 1 = 8 > 0$، فاللوغاريتم معرّف</span>
 </Solution>
 </Example>
 
@@ -105,11 +110,11 @@ $\log_2 (-8)$ غير معرّف: لا يوجد أس يجعل $2^y$ سالبًا.
 أوجد مجال $f(x) = \log_5 (3 - 2x)$.
 
 <Solution>
-نشترط $3 - 2x > 0$ ← $-2x > -3$
+$3 - 2x > 0$ ← $-2x > -3$ <span class="reason">ما داخل اللوغاريتم يجب أن يكون موجبًا تمامًا، فالمتباينة صارمة</span>
 
-نقسم على سالب فتنقلب المتباينة: $x < \tfrac{3}{2}$
+$x < \tfrac{3}{2}$ <span class="reason">القسمة على عدد سالب تقلب اتجاه المتباينة (الدرس 1.7)</span>
 
-المجال $\left(-\infty, \tfrac32\right)$، وخط التقارب الرأسي $x = \tfrac32$.
+المجال $\left(-\infty, \tfrac32\right)$، وخط التقارب الرأسي $x = \tfrac32$. <span class="reason">خط التقارب حيث يصير ما داخل اللوغاريتم صفرًا</span>
 </Solution>
 </Example>
 
@@ -136,11 +141,17 @@ $$\log_b \frac{x}{y} = \log_b x - \log_b y$$
 $$\log_b x^n = n \log_b x$$
 </Box>
 
-<details class="derive">
-<summary>لماذا تصح خاصية الضرب؟</summary>
+<Deep title="لماذا تصح هذه الخصائص؟">
+كل خاصية هي قاعدة أسس مكتوبة بلغة اللوغاريتمات.
 
-ضع $m = \log_b x$ و $n = \log_b y$، أي $x = b^m$ و $y = b^n$. عندئذ $xy = b^m b^n = b^{m+n}$، وبالتعريف $\log_b(xy) = m + n = \log_b x + \log_b y$.
-</details>
+**الضرب:** ضع $m = \log_b x$ و $n = \log_b y$، أي $x = b^m$ و $y = b^n$. عندئذ $xy = b^m b^n = b^{m+n}$، وبالتعريف $\log_b(xy) = m + n = \log_b x + \log_b y$.
+
+**القسمة:** بالطريقة نفسها $\tfrac{x}{y} = \tfrac{b^m}{b^n} = b^{m - n}$، فـ $\log_b \tfrac{x}{y} = m - n$.
+
+**القوة:** $x^k = (b^m)^k = b^{mk}$، فـ $\log_b x^k = km = k\log_b x$.
+
+ولهذا اخترع نابيير اللوغاريتمات في القرن السابع عشر: كانت جداولها تحوّل ضرب الأعداد الطويلة (عملية صعبة) إلى جمع (عملية سهلة). كان الفلكي يبحث عن لوغاريتمي العددين في الجدول، ويجمعهما، ثم يبحث عن العدد الذي لوغاريتمه المجموع.
+</Deep>
 
 <Box kind="mistake" title="أخطاء شائعة جدًا">
 - $\log_b(x + y) \ne \log_b x + \log_b y$. لا توجد قاعدة للوغاريتم المجموع.
@@ -148,15 +159,15 @@ $$\log_b x^n = n \log_b x$$
 - $(\log_b x)^n \ne n\log_b x$. خاصية القوة للأس **داخل** اللوغاريتم فقط.
 </Box>
 
-<Example n="5" title="فك اللوغاريتم" >
+<Example n="5" title="فك اللوغاريتم">
 اكتب $\log_3 \left(\dfrac{x^4 \sqrt{y}}{z^2}\right)$ مجموعًا وفرقًا للوغاريتمات (المتغيرات موجبة).
 
 <Solution>
-القسمة أولًا: $= \log_3 (x^4\sqrt{y}) - \log_3 z^2$
+$= \log_3 (x^4\sqrt{y}) - \log_3 z^2$ <span class="reason">نبدأ بالعملية «الخارجية»: الكسر كله قسمة</span>
 
-ثم الضرب: $= \log_3 x^4 + \log_3 y^{1/2} - \log_3 z^2$
+$= \log_3 x^4 + \log_3 y^{1/2} - \log_3 z^2$ <span class="reason">البسط ضرب فيصير جمعًا، والجذر أس $\tfrac12$</span>
 
-ثم القوة: $= 4\log_3 x + \tfrac12 \log_3 y - 2\log_3 z$
+$= 4\log_3 x + \tfrac12 \log_3 y - 2\log_3 z$ <span class="reason">خاصية القوة تنزل كل أس معاملًا</span>
 </Solution>
 </Example>
 
@@ -164,11 +175,25 @@ $$\log_b x^n = n \log_b x$$
 اكتب $2\ln x - 3\ln y + \ln(x + 1)$ لوغاريتمًا واحدًا.
 
 <Solution>
-المعاملات تدخل أسسًا: $= \ln x^2 - \ln y^3 + \ln(x + 1)$
+$= \ln x^2 - \ln y^3 + \ln(x + 1)$ <span class="reason">نعكس خاصية القوة: المعاملات تصعد أسسًا أولًا</span>
 
-الجمع ضرب والطرح قسمة: $= \ln\dfrac{x^2(x + 1)}{y^3}$
+$= \ln\dfrac{x^2(x + 1)}{y^3}$ <span class="reason">الحدود الموجبة في البسط، والمطروحة في المقام</span>
 
-انتبه: $\ln(x + 1)$ تبقى كما هي داخل الضرب، ولا تُفك.
+$\ln(x + 1)$ تبقى كما هي داخل الضرب. <span class="reason">لا قاعدة تفك لوغاريتم مجموع، فـ $x + 1$ تدخل البسط كتلة واحدة</span>
+</Solution>
+</Example>
+
+<Example n="7" title="مستوى الاختبار: حساب من لوغاريتمين معروفين">
+إذا كان $\log_7 2 \approx 0.3562$ و $\log_7 3 \approx 0.5646$، فاحسب دون آلة حاسبة: (أ) $\log_7 12$  (ب) $\log_7 \tfrac{9}{2}$  (ج) $\log_7 \sqrt[3]{6}$
+
+<Solution>
+**(أ)** $\log_7 12 = \log_7 (2^2 \cdot 3) = 2\log_7 2 + \log_7 3$ <span class="reason">نحلل 12 إلى عوامل أولية معروفة لوغاريتماتها</span>
+
+$\approx 2(0.3562) + 0.5646 = 1.2770$ <span class="reason">معقول: $7^1 = 7 < 12 < 49 = 7^2$</span>
+
+**(ب)** $\log_7 \tfrac{9}{2} = 2\log_7 3 - \log_7 2 \approx 1.1292 - 0.3562 = 0.7730$ <span class="reason">$9 = 3^2$ في البسط، و 2 في المقام</span>
+
+**(ج)** $\log_7 6^{1/3} = \tfrac13(\log_7 2 + \log_7 3) \approx \tfrac13(0.9208) \approx 0.3069$ <span class="reason">الجذر التكعيبي أس $\tfrac13$، و $6 = 2 \cdot 3$</span>
 </Solution>
 </Example>
 
@@ -178,6 +203,17 @@ $$\log_b x^n = n \log_b x$$
   answer={1}
   explain="الفرق لوغاريتم القسمة: $\\log_2 \\tfrac{24}{3} = \\log_2 8 = 3$."
 />
+
+<Check
+  q="ما قيمة $\\log_5 \\sqrt5$؟"
+  options={["$\\tfrac12$", "$2$", "$\\sqrt5$", "$5$"]}
+  answer={0}
+  explain="$\\sqrt5 = 5^{1/2}$، فـ $\\log_5 5^{1/2} = \\tfrac12$. اللوغاريتم هو الأس."
+/>
+
+<Box kind="note" title="أين ستستخدم هذا؟">
+في الدرسين التاليين تحسب اللوغاريتمات بأي أساس، وتحل بها المعادلات الأسية التي لا يمكن توحيد أساسها. وفي العلوم: مقياس الحموضة pH، ومقياس ريختر للزلازل، والديسيبل للصوت، وكلها لوغاريتمات. وفي علوم الحاسوب: البحث الثنائي في قائمة من مليون عنصر يحتاج نحو $\log_2 10^6 \approx 20$ خطوة فقط.
+</Box>
 
 ## الخلاصة <span class="en" lang="en">Summary</span>
 
